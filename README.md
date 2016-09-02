@@ -25,7 +25,7 @@ ST     |  Shared Storage |           1                    |           1/8       
 
 **Wordpress Version**: 4.6<br/>
 **Nginx Version**: 1.8.0<br/>
-**Php Version**: PHP 5.6.20<br/>
+**Php Version**: 7.0.7<br/>
 **MySQL Database**: 5.7.14<br/>
 
 ### Additional functionality:
