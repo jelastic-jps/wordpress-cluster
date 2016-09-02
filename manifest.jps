@@ -1,0 +1,138 @@
+{
+  "jpsType": "install",
+  "application": {
+    "logo": "https://download.jelastic.com/public.php?service=files&t=3da2215839f82aa50d3d961271cd1cb9&download",
+    "name": "Wordpress Cluster",
+    "homepage": "https://wordpress.org//",
+    "description": "Get your highly available and scalable clustered solution for WordPress, the extremely popular open source CMS and blogging tool. This package is designed to ensure the load tracking and distribution, as well as automatic adjusting the amount of allocated resources according to it.",
+    "env": {
+      "topology": {
+        "nodes": [
+          {
+            "cloudlets": 8,
+            "count": 2,
+            "nodeType": "docker",
+            "nodeGroup": "cp",
+            "docker": {
+              "image": "jelastic/wp-nginxphp",
+              "links": "sqldb:db",
+              "volumes": ["/var/www/webroot/ROOT"],
+              "volumeMounts": {
+                "/var/www/webroot/ROOT": {
+                  "readOnly": false,
+                  "sourcePath": "/data",
+                  "sourceNodeGroup": "storage"
+                }
+              }
+            },
+            "displayName": "AppServer"
+          }, {
+            "cloudlets": 8,
+            "nodeGroup": "storage",
+            "nodeType": "docker",
+            "docker": {
+              "image": "jelastic/storage"
+            },
+            "displayName": "Storage"
+          }, {
+            "cloudlets": 8,
+            "count": 2,
+            "nodeType": "docker",
+            "nodeGroup": "sqldb",
+            "docker": {
+              "image": "jelastic/wp-db",
+            },
+            "displayName": "Database"
+          },
+          {
+            "extip": true,
+            "cloudlets": 8,
+            "count": 2,
+            "nodeType": "docker",
+            "nodeGroup": "bl",
+            "docker": {
+              "image": "jelastic/wp-nginxlb"
+            },
+            "displayName": "Load balancer"
+          }
+        ]
+      },
+      "onAfterScaleIn[nodeGroup:cp]": {
+        "call": "ScaleNodes"
+      },
+      "onAfterScaleOut[nodeGroup:cp]": {
+        "call": "ScaleNodes"
+      },
+      "onInit": {
+        "call": [ "configureDBReplication","setupWP", "ScaleNodes", "enableAutoScaling" ]
+      }
+    },
+    "success": "Below you will find your admin panel link, username and password.<\/br><\/br> <table style='font-size:13px; border: none;'><tr><td>Admin panel URL:<\/td><td style='padding-left: 10px;'><a href='${env.protocol}://${env.domain}/wp-login.php' target='_blank'>${env.protocol}://${env.domain}/wp-login.php<\/a><\/td><\/tr> <tr><td>Admin name:<\/td><td style='padding-left: 10px;'>admin<\/td><\/tr><tr><td>Password:<\/td><td style='padding-left: 10px;'>${user.appPassword}<\/td><\/tr><\/table><\/br>To add custom domain name for your Wordpress Cluster installation follow the steps described in our <a href='http://docs.jelastic.com/custom-domains' target='_blank'>documentation<\/a>",    "procedures": [
+      {
+        "id": "configureDBReplication",
+        "onCall": [
+          {
+            "execCmd": [
+              {
+                "nodeId": "${nodes.sqldb[0].id}",
+                "commands": [
+                  "bash /root/setReplica.sh ${nodes.sqldb[1].address} 1"
+                ]
+              },
+              {
+                "nodeId": "${nodes.sqldb[1].id}",
+                "commands": [
+                  "bash /root/setReplica.sh ${nodes.sqldb[0].address} 2"
+                ]
+              }
+            ]
+          }
+        ]
+      },{
+        "id": "setupWP",
+        "onCall": [
+          {
+            "execCmd": [
+              {
+                "nodeId": "${nodes.cp[0].id}",
+                "commands": [ "bash /setupWP.sh \"${user.email}\" \"${user.appPassword}\" \"${env.url}\" " ]
+              }
+            ]
+          }
+        ]
+      },{
+        "id": "enableAutoScaling",
+        "onCall": [{
+          "executeScript": [{
+            "description": "Enable AutoScaling trigger",
+            "type": "javascript",
+            "script": "https://download.jelastic.com/public.php?service=files&t=a0ff8d4ba0415cd9972b43ebc5fd14d0&download"
+          }
+          ]
+        }
+        ]
+      },{
+        "id": "ScaleNodes",
+        "onCall": [{
+          "execCmd": [{
+            "commands": ["echo \"\" > /etc/nginx/upstreams/common"],
+            "nodeGroup": "bl"
+          }]
+        }, {
+          "forEach(node:nodes.cp)": {
+            "execCmd": {
+              "commands": ["echo \"${@node.intIP}\" >> /etc/nginx/upstreams/common"],
+              "nodeGroup": "bl"
+            }
+          }
+        }, {
+          "execCmd": {
+            "commands": ["jem balancer rebuildCommon", "/etc/init.d/nginx reload"],
+            "nodeGroup": "bl"
+          }
+        }
+        ]
+      }
+    ]
+  }
+}
