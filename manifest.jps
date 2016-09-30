@@ -40,7 +40,7 @@
             "nodeType": "docker",
             "nodeGroup": "sqldb",
             "docker": {
-              "image": "jelastic/wp-db",
+              "image": "jelastic/wp-db"
             },
             "displayName": "Database"
           },
