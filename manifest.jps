@@ -1,138 +1,164 @@
 {
-  "jpsType": "install",
-  "application": {
-    "logo": "https://download.jelastic.com/public.php?service=files&t=3da2215839f82aa50d3d961271cd1cb9&download",
-    "name": "Wordpress Cluster",
-    "homepage": "https://wordpress.org//",
-    "description": "Get your highly available and scalable clustered solution for WordPress, the extremely popular open source CMS and blogging tool. This package is designed to ensure the load tracking and distribution, as well as automatic adjusting the amount of allocated resources according to it.",
-    "env": {
-      "topology": {
-        "nodes": [
-          {
-            "cloudlets": 8,
-            "count": 2,
-            "nodeType": "docker",
-            "nodeGroup": "cp",
-            "docker": {
-              "image": "jelastic/wp-nginxphp",
-              "links": "sqldb:db",
-              "volumes": ["/var/www/webroot/ROOT"],
-              "volumeMounts": {
-                "/var/www/webroot/ROOT": {
-                  "readOnly": false,
-                  "sourcePath": "/data",
-                  "sourceNodeGroup": "storage"
+    "jpsType": "install",
+    "jpsVersion": "0.99",
+    "application": {
+        "name": "Wordpress Cluster",
+        "categories": ["apps/clustered-dbs", "apps/popular", "apps/clusters"],
+        "description": "Get your highly available and scalable clustered solution for WordPress, the extremely popular open source CMS and blogging tool. This package is designed to ensure the load tracking and distribution, as well as automatic adjusting the amount of allocated resources according to it.",
+        "logo": "https://download.jelastic.com/public.php?service=files&t=3da2215839f82aa50d3d961271cd1cb9&download",
+        "settings": {
+            "fields": [{
+                "name": "wp_title",
+                "caption": "WP Title",
+                "type": "string",
+                "default": "Hello World",
+                "required": "true"
+            }]
+        },
+        "env": {
+            "topology": {
+                "ssl": "true",
+                "nodes": [{
+                    "image": "jelastic/mysql:5.7.14",
+                    "count": 2,
+                    "cloudlets": 8,
+                    "nodeGroup": "sqldb",
+                    "displayName": "Database"
+                }, {
+                    "image": "jelastic/nginxphp:1.10.1-php-7.0.10",
+                    "count": 2,
+                    "cloudlets": 8,
+                    "nodeGroup": "cp",
+                    "links": "sqldb:DB",
+                    "volumes": ["/var/www/webroot/ROOT"],
+                    "volumeMounts": {
+                        "/var/www/webroot/ROOT": {
+                            "readOnly": false,
+                            "sourcePath": "/data",
+                            "sourceNodeGroup": "storage"
+                        }
+                    },
+                    "displayName": "AppServer"
+                }, {
+                    "image": "jelastic/storaged",
+                    "cloudlets": 8,
+                    "nodeGroup": "storage",
+                    "displayName": "Storage"
+                }, {
+                    "image": "jelastic/nginxbalancer:1.10.1",
+                    "count": 2,
+                    "cloudlets": 8,
+                    "nodeGroup": "bl",
+                    "displayName": "Load balancer"
+                }]
+            },
+            "onAfterScaleOut[nodeGroup:cp]": [{
+                "forEach(event.response.nodes)": {
+                    "setupNode": {
+                        "filter": "${@i.id}",
+                        "intIP": "${@i.intIP}"
+                    },
+                    "setNodeDisplayName [${@i.id}]": "AppServer"
                 }
-              }
-            },
-            "displayName": "AppServer"
-          }, {
-            "cloudlets": 8,
-            "nodeGroup": "storage",
-            "nodeType": "docker",
-            "docker": {
-              "image": "jelastic/storage"
-            },
-            "displayName": "Storage"
-          }, {
-            "cloudlets": 8,
-            "count": 2,
-            "nodeType": "docker",
-            "nodeGroup": "sqldb",
-            "docker": {
-              "image": "jelastic/wp-db"
-            },
-            "displayName": "Database"
-          },
-          {
-            "extip": true,
-            "cloudlets": 8,
-            "count": 2,
-            "nodeType": "docker",
-            "nodeGroup": "bl",
-            "docker": {
-              "image": "jelastic/wp-nginxlb"
-            },
-            "displayName": "Load balancer"
-          }
-        ]
-      },
-      "onAfterScaleIn[nodeGroup:cp]": {
-        "call": "ScaleNodes"
-      },
-      "onAfterScaleOut[nodeGroup:cp]": {
-        "call": "ScaleNodes"
-      },
-      "onInit": {
-        "call": [ "configureDBReplication","setupWP", "ScaleNodes", "enableAutoScaling" ]
-      }
-    },
-    "success": "Below you will find your admin panel link, username and password.<\/br><\/br> <table style='font-size:13px; border: none;'><tr><td>Admin panel URL:<\/td><td style='padding-left: 10px;'><a href='${env.protocol}://${env.domain}/wp-login.php' target='_blank'>${env.protocol}://${env.domain}/wp-login.php<\/a><\/td><\/tr> <tr><td>Admin name:<\/td><td style='padding-left: 10px;'>admin<\/td><\/tr><tr><td>Password:<\/td><td style='padding-left: 10px;'>${user.appPassword}<\/td><\/tr><\/table><\/br>To add custom domain name for your Wordpress Cluster installation follow the steps described in our <a href='http://docs.jelastic.com/custom-domains' target='_blank'>documentation<\/a>",    "procedures": [
-      {
-        "id": "configureDBReplication",
-        "onCall": [
-          {
-            "execCmd": [
-              {
-                "nodeId": "${nodes.sqldb[0].id}",
-                "commands": [
-                  "bash /root/setReplica.sh ${nodes.sqldb[1].address} 1"
-                ]
-              },
-              {
-                "nodeId": "${nodes.sqldb[1].id}",
-                "commands": [
-                  "bash /root/setReplica.sh ${nodes.sqldb[0].address} 2"
-                ]
-              }
-            ]
-          }
-        ]
-      },{
-        "id": "setupWP",
-        "onCall": [
-          {
-            "execCmd": [
-              {
-                "nodeId": "${nodes.cp[0].id}",
-                "commands": [ "bash /setupWP.sh \"${user.email}\" \"${user.appPassword}\" \"${env.url}\" " ]
-              }
-            ]
-          }
-        ]
-      },{
-        "id": "enableAutoScaling",
-        "onCall": [{
-          "executeScript": [{
-            "description": "Enable AutoScaling trigger",
-            "type": "javascript",
-            "script": "https://download.jelastic.com/public.php?service=files&t=a0ff8d4ba0415cd9972b43ebc5fd14d0&download"
-          }
-          ]
-        }
-        ]
-      },{
-        "id": "ScaleNodes",
-        "onCall": [{
-          "execCmd": [{
-            "commands": ["echo \"\" > /etc/nginx/upstreams/common"],
-            "nodeGroup": "bl"
-          }]
-        }, {
-          "forEach(node:nodes.cp)": {
-            "execCmd": {
-              "commands": ["echo \"${@node.intIP}\" >> /etc/nginx/upstreams/common"],
-              "nodeGroup": "bl"
+            }],
+            "onBeforeScaleIn[nodeGroup:cp]": {
+                "forEach(event.response.nodes)": {
+                    "removeNode": {
+                        "intIP": "${@i.intIP}"
+                    }
+                }
             }
-          }
+        },
+        "globals": {
+            "PATH": "https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/dev",
+            "DB_USER": "jelastic-${fn.random}",
+            "DB_PASS": "${fn.password(20)}",
+            "ADMIN_PASSWD": "${fn.password(20)}"
+        },
+        "onInstall": [{
+            "log": "Auto Scaling Triggers"
         }, {
-          "execCmd": {
-            "commands": ["jem balancer rebuildCommon", "/etc/init.d/nginx reload"],
-            "nodeGroup": "bl"
-          }
-        }
-        ]
-      }
-    ]
-  }
+            "script": "${globals.PATH}/scripts/addTriggers.js"
+        }, {
+            "log": "DB Multi-Master Cluster Setup"
+        }, {
+            "installJps": {
+                "jps": "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/dev/scripts/multimaster-configuration.jps",
+                "settings": {
+                    "db_user": "${globals.DB_USER}",
+                    "db_pass": "${globals.DB_PASS}"
+                }
+            }
+        }, {
+            "log": "CP Layer Setup"
+        }, {
+            "forEach(nodes.cp)": {
+                "setupNode": {
+                    "filter": "${@i.id}",
+                    "intIP": "${@i.intIP}"
+                }
+            }
+        }, {
+            "log": "Download and Unpack latest WordPress release"
+        }, {
+            "cmd[storage]": ["wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /data"]
+        }, {
+            "log": "Setup WordPress"
+        }, {
+            "installJps": {
+                "jps": "${globals.PATH}/addons/setup-wordpress.jps",
+                "settings": {
+                    "db_host": "DB_1",
+                    "db_user": "${globals.DB_USER}",
+                    "db_pass": "${globals.DB_PASS}",
+                    "admin_passwd": "${globals.ADMIN_PASSWD}",
+                    "wp_title": "${settings.wp_title}"
+                }
+            }
+        }, {
+            "log": "Install HyperDB - is an advanced database class that supports replication, failover, load balancing and partitioning. "
+        }, {
+            "cmd[storage]": [
+                "wget ${globals.PATH}/configs/db-config.php -O /data/db-config.php",
+                "wget ${globals.PATH}/configs/db.php -O /data/wp-content/db.php"
+            ]
+        }, {
+            "log": "Enabled SSL for WordPress. "
+        }, {
+            "cmd[storage]": [
+                "sed -i \"/<?php/a if (strpos(\"'$_SERVER'\"['HTTP_X_FORWARDED_PROTO'], 'https') !== false) \"'$_SERVER'\"['HTTPS']='on';\" /data/wp-config.php",
+                "sed -i \"/<?php/a define('FORCE_SSL_ADMIN', true);\" /data/wp-config.php"
+            ]
+        }, {
+            "log": "Plugins install"
+        }, {
+            "installJps": {
+                "jps": "${globals.PATH}/addons/install-plugins.jps",
+                "settings": {
+                    "plugins_list": "${globals.PATH}/configs/plugins"
+                }
+            }
+        }],
+        "actions": {
+            "setupNode": [{
+                "cmd[${this.filter}]": [
+                    "/etc/init.d/nginx restart"
+                ]
+            }, {
+                "cmd[bl]": [
+                    "jem balancer addCommonHost -h ${this.intIP}",
+                    "jem balancer rebuildCommon",
+                    "/etc/init.d/nginx reload"
+                ]
+            }],
+            "removeNode": {
+                "cmd[bl]": [
+                    "jem balancer RemoveCommonHost -h ${this.intIP}",
+                    "jem balancer rebuildCommon",
+                    "/etc/init.d/nginx reload"
+                ]
+            }
+        },
+        "success": "Below you will find your admin panel link, username and password.</br></br> <table style='font-size:14px'><tr><td>Admin panel URL:</td><td><a href='${env.protocol}://${env.domain}/wp-admin/' target='_blank'>${env.protocol}://${env.domain}/wp-admin/</a></td></tr><tr><td>Login:</td><td><b>admin</b></td></tr><tr><td>Password:</td><td><b>${globals.ADMIN_PASSWD}</b></td></tr></table></br>To add custom domain name for your Wordpress installation follow the steps described in our <a href='http://docs.jelastic.com/custom-domains' target='_blank'>documentation</a>"
+    }
 }

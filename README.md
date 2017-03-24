@@ -1,16 +1,14 @@
 # Highly Available and Auto-scalable Wordpress Cluster
 
-[![Deploy](https://github.com/jelastic-jps/git-push-deploy/raw/master/images/deploy-to-jelastic.png)](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps) 
-
 The JPS package deploy Wordpress that initially contains 2 balancers, 2 application servers, 2 MySQL databases and 1 storage container.
 
-##Highlights
+## Highlights
 Get your highly available and scalable clustered solution for Wordpress, the extremely popular open source CMS and blogging tool. This package is designed to ensure the load tracking and distribution, as well as automatic adjusting the amount of allocated resources according to it.
 
-##Environment Topology
+## Environment Topology
 ![Cluster Topology](images/topology.png)
 
-###Specifics
+### Specifics
  Layer | Server          | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
 -------|-----------------| :-----------------------------:|:-----------------------------------------:|:-----:
 LB     |      Nginx      |           2                    |           1/8                             |   -
@@ -23,9 +21,9 @@ ST     |  Shared Storage |           1                    |           1/8       
 * DB - Database
 * ST - Shared Storage
 
-**Wordpress Version**: 4.6<br/>
-**Nginx Version**: 1.8.0<br/>
-**Php Version**: 7.0.7<br/>
+**Wordpress Version**: Latest version<br/>
+**Nginx Version**: 1.10.1<br/>
+**Php Version**: 7.0.10<br/>
 **MySQL Database**: 5.7.14<br/>
 
 ### Additional functionality:
