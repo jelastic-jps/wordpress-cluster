@@ -142,7 +142,7 @@
         "actions": {
             "setupNode": [{
                 "cmd[${this.filter}]": [
-                    "/etc/init.d/nginx restart"
+                    "/etc/init.d/nginx reload"
                 ]
             }, {
                 "cmd[bl]": [
