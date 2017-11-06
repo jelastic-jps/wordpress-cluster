@@ -63,7 +63,7 @@
             }]
         },
         "globals": {
-            "PATH": "https://raw.githubusercontent.com/sych74/wordpress-cluster-1/master",
+            "PATH": "https://raw.githubusercontent.com/siruslan/wordpress-cluster/master",
             "DB_USER": "jelastic-${fn.random}",
             "DB_PASS": "${fn.password(20)}",
             "ADMIN_PASSWD": "${fn.password(20)}"
@@ -76,7 +76,7 @@
             "log": "DB Multi-Master Cluster Setup"
         }, {
             "installJps": {
-                "jps": "https://raw.githubusercontent.com/sych74/mysql-cluster-1/master/scripts/multimaster-configuration.jps",
+                "jps": "https://raw.githubusercontent.com/siruslan/mysql-cluster/master/scripts/multimaster-configuration.jps",
                 "settings": {
                     "db_user": "${globals.DB_USER}",
                     "db_pass": "${globals.DB_PASS}",
