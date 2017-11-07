@@ -11,7 +11,8 @@
         "cmd[${nodes.cp[0].id}]": [
             "wget ${globals.PLUGINS_LIST} -O /tmp/plugins",
             "while read plugin; do wp --allow-root plugin install $plugin --activate --path=/var/www/webroot/ROOT; done < /tmp/plugins"
-        ]
+        ],
+        "user": "root"
     }
 }
 
