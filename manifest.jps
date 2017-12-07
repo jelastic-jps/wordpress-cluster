@@ -11,8 +11,11 @@
                 "name": "wp_title",
                 "caption": "WP Title",
                 "type": "string",
-                "default": "Hello World",
-                "required": "true"
+                "default": "HelloWorld",
+                "required": "true",
+                "regex": "^[\\w-.]*$",
+                "regexText": "Incorrect WP Title."
+
             }]
         },
         "env": {
