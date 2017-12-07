@@ -20,7 +20,7 @@
         },
         "env": {
             "topology": {
-                "ssl": "true",
+                "ssl": false,
                 "nodes": [{
                     "nodeType": "mysql",
                     "count": 2,
