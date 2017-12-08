@@ -1,6 +1,6 @@
 {
     "jpsType": "install",
-    "jpsVersion": "0.99",
+    "jpsVersion": "1.1",
     "application": {
         "name": "Wordpress Cluster",
         "categories": ["apps/clustered-dbs", "apps/popular", "apps/clusters","apps/dev-and-admin-tools"],
@@ -11,13 +11,16 @@
                 "name": "wp_title",
                 "caption": "WP Title",
                 "type": "string",
-                "default": "Hello World",
-                "required": "true"
+                "default": "HelloWorld",
+                "required": "true",
+                "regex": "^[\\w-.]*$",
+                "regexText": "Incorrect WP Title."
+
             }]
         },
         "env": {
             "topology": {
-                "ssl": "true",
+                "ssl": false,
                 "nodes": [{
                     "nodeType": "mysql",
                     "count": 2,
