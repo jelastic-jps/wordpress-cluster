@@ -45,22 +45,24 @@
         "displayName": "Storage"
     }, {
         "nodeType": "nginx",
-        "count": 2,
+        "count": 1,
         "cloudlets": 8,
         "nodeGroup": "bl",
         "displayName": "Load balancer"
     }],
-    "onAfterScaleOut[nodeGroup:cp]": [{
+    "onAfterScaleOut[nodeGroup:cp]": {
         "forEach(event.response.nodes)": {
-            "setupNode": {
-                "nodeId": "${@i.id}",
-                "intIP": "${@i.intIP}"
-            },
+            "cmd [${@i.id}]": "sudo service nginx reload",
             "setNodeDisplayName [${@i.id}]": "AppServer"
         }
-    }],
+    },
+    "onAfterScaleOut[nodeGroup:bl]": {
+        "forEach(event.response.nodes)": {
+            "setNodeDisplayName [${@i.id}]": "Load balancer"
+        }
+    },
     "globals": {
-        "PATH": "https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master",
+        "PATH": "https://raw.githubusercontent.com/sych74/wordpress-cluster/master",
         "DB_USER": "jelastic-${fn.random}",
         "DB_PASS": "${fn.password(20)}",
         "ADMIN_PASSWD": "${fn.password(20)}"
@@ -85,8 +87,7 @@
     }, {
         "forEach(nodes.cp)": {
             "setupNode": {
-                "nodeId": "${@i.id}",
-                "intIP": "${@i.intIP}"
+                "nodeId": "${@i.id}"
             }
         }
     }, {
@@ -110,8 +111,8 @@
         "log": "Install HyperDB - is an advanced database class that supports replication, failover, load balancing and partitioning. "
     }, {
         "cmd[storage]": [
-            "wget ${globals.PATH}/configs/db-config.php -O /data/db-config.php",
-            "wget ${globals.PATH}/configs/db.php -O /data/wp-content/db.php"
+            "wget ${globals.PATH}/configs/wordpress/db-config.php -O /data/db-config.php",
+            "wget ${globals.PATH}/configs/wordpress/db.php -O /data/wp-content/db.php"
         ]
     }, {
         "log": "Enabled SSL for WordPress. "
@@ -126,13 +127,16 @@
         "installJps": {
             "jps": "${globals.PATH}/addons/install-plugins.jps",
             "settings": {
-                "plugins_list": "${globals.PATH}/configs/plugins"
+                "plugins_list": "${globals.PATH}/configs/wordpress/plugins"
             }
         }
     }],
     "actions": {
         "setupNode": [{
             "cmd[${this.nodeId}]": [
+                "mkdir -p /etc/nginx/sites-enabled",
+                "wget ${globals.PATH}/configs/nginx/nginx.conf -O /etc/nginx/nginx.conf",
+                "wget ${globals.PATH}/configs/nginx/default.conf -O /etc/nginx/sites-enabled/default.conf",
                 "sudo service nginx reload"
             ]
         }]
