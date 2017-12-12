@@ -134,9 +134,8 @@
     "actions": {
         "setupNode": [{
             "cmd[${this.nodeId}]": [
-                "mkdir -p /etc/nginx/sites-enabled",
                 "wget ${globals.PATH}/configs/nginx/nginx.conf -O /etc/nginx/nginx.conf",
-                "wget ${globals.PATH}/configs/nginx/default.conf -O /etc/nginx/sites-enabled/default.conf",
+                "wget ${globals.PATH}/configs/nginx/default.conf -O /etc/nginx/conf.d/default.conf",
                 "sudo service nginx reload"
             ]
         }]
