@@ -4,7 +4,7 @@
     "name": "WordPress Cluster",
     "categories": ["apps/clustered-dbs", "apps/popular", "apps/clusters", "apps/dev-and-admin-tools"],
     "description": "Get your highly available and scalable clustered solution for WordPress, the extremely popular open source CMS and blogging tool. This package is designed to ensure the load tracking and distribution, as well as automatic adjusting the amount of allocated resources according to it.",
-    "logo": "https://download.jelastic.com/public.php?service=files&t=3da2215839f82aa50d3d961271cd1cb9&download",
+    "logo": "https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png",
     "settings": {
         "fields": [{
             "name": "wp_title",
