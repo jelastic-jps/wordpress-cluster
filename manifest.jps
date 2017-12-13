@@ -120,10 +120,11 @@
             "wget ${globals.PATH}/configs/wordpress/db.php -O /data/wp-content/db.php"
         ]
     }, {
-        "log": "Enabled SSL for WordPress. "
+        "log": "Additional configuration for WordPress."
     }, {
         "cmd[storage]": [
-            "sed -i \"/<?php/a if (strpos(\"'$_SERVER'\"['HTTP_X_FORWARDED_PROTO'], 'https') !== false) \"'$_SERVER'\"['HTTPS']='on';\" /data/wp-config.php"
+            "wget ${globals.PATH}/configs/wordpress/wp-jelastic.php -O /data/wp-jelastic.php",
+            "echo \"require_once ABSPATH . 'wp-jelastic.php';\" >> /data/wp-config.php"
         ]
     }, {
         "log": "Plugins install"
