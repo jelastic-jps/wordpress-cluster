@@ -82,8 +82,11 @@
                 "custom_conf": "${globals.PATH}/configs/mysql/mysql.cnf"
             }
         }
-    }, {
-        "script": "jelastic.development.scripting.Eval(MARKETPLACE_APPID, session, 'GetNextEvent', { criteria: {'params.actionKey' : { like : '%${env.shortdomain}%' }}});"
+    }, {    
+        "script": [
+            "jelastic.development.scripting.Eval(MARKETPLACE_APPID, session, 'GetNextEvent', { criteria: {'params.actionKey' : { like : '%${env.shortdomain}%' }}});",
+            "return { result : 0};"
+       ]
     }, {
         "log": "CP Layer Setup"
     }, {
