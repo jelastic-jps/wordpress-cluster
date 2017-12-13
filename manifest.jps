@@ -83,6 +83,8 @@
             }
         }
     }, {
+        "script": "jelastic.development.scripting.Eval(MARKETPLACE_APPID, session, 'GetNextEvent', { criteria: {'params.actionKey' : { like : '%${env.shortdomain}%' }}});"
+    }, {
         "log": "CP Layer Setup"
     }, {
         "forEach(nodes.cp)": {
