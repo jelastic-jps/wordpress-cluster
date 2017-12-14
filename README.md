@@ -1,47 +1,37 @@
-# Highly Available and Auto-scalable Wordpress Cluster
+# Highly Available and Auto-Scalable WordPress Cluster
 
-The JPS package deploy Wordpress that initially contains 2 balancers, 2 application servers, 2 MySQL databases and 1 storage container.
+Out-of-the-box automated WordPress Cluster solution for one-click installation of the latest CMS version on the top of certified Jelastic dockerized stack templates.
 
-## Highlights
-Get your highly available and scalable clustered solution for Wordpress, the extremely popular open source CMS and blogging tool. This package is designed to ensure the load tracking and distribution, as well as automatic adjusting the amount of allocated resources according to it.
+## WordPress Cluster Environment Topology
 
-## Environment Topology
-![Cluster Topology](images/topology.png)
+Upon the package installation, a new environment with the following components will be created: 
+* as an entry point, the **NGINX** load balancer is used, aimed  to distribute the incoming traffic within a cluster
+* the WordPress application itself is handled by two **NGINX PHP** servers with preconfigured [automatic horizontal scaling](https://docs.jelastic.com/automatic-horizontal-scaling) to handle load spikes
+* two **MySQL** DB servers with asynchronous Master-Master replication to store and operate user data
+* dedicated **[Data Storage](https://docs.jelastic.com/data-storage-container)** node with WordPress-dedicated directory being mounted to all application server nodes, which allows them to operate the same data set rather than keeping and constantly synchronizing changes within their own content copies
 
-### Specifics
- Layer | Server          | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
--------|-----------------| :-----------------------------:|:-----------------------------------------:|:-----:
-LB     |      Nginx      |           2                    |           1/8                             |   -
-AS     | Nginx (PHP-FPM) |           2                    |           1/8                             |   -
-DB     |      MySQL      |           2                    |           1/8                             |   -
-ST     |  Shared Storage |           1                    |           1/8                             |   -
+![WP Cluster Topology](images/wp-cluster-topology.png)
 
-* LB - Load balancer
-* AS - Application server
-* DB - Database
-* ST - Shared Storage
+All software stacks utilize the default image tag when creating the appropriate containers (usually, points to the latest software version by default, though could be customized by your hosting provider as well).
 
-**Wordpress Version**: Latest version<br/>
-**Nginx Version**: 1.10.1<br/>
-**Php Version**: 7.0.10<br/>
-**MySQL Database**: 5.7.14<br/>
+Each node is provisioned with the default  resource limit of 8 [cloudlets](https://docs.jelastic.com/cloudlet) (i.e. up to _1 GiB_ of RAM and _3.2 GHz_ of CPU), which could be subsequently easily increased through the _Environment topology_ wizard.
 
-### Additional functionality:
-* MySQL databases with configured asynchronous master-master replication;
-* horizontal scaling enabled on compute nodes by CPU load. New AppServer will be added while 70% loading;
+## WordPress Cluster Deployment
 
----
+In order to get this solution installed, just click the **Deploy** button below, specify your email address within the widget, choose one of the [Jelastic Public Cloud providers](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps&keys=app.diadem.io;app.jelastic.eapps.com;app.cloud.hostnet.nl;app.jelastichosting.nl;app.appengine.flow.ch;app.jelasticlw.com.br;app.milesweb.cloud;app.mircloud.host;app.jcs.opusinteractive.io;app.paas.quarinet.eu) and press **Install**.
 
-## Deployment
+[![Deploy to Jelastic](images/deploy-to-jelastic.png)](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps&keys=app.diadem.io;app.jelastic.eapps.com;app.cloud.hostnet.nl;app.jelastichosting.nl;app.appengine.flow.ch;app.jelasticlw.com.br;app.milesweb.cloud;app.mircloud.host;app.jcs.opusinteractive.io;app.paas.quarinet.eu)
 
-### Public Cloud
+> **Note:** If you are already registered at Jelastic, you can deploy this cluster by importing the  [the package manifest raw link](https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps) within the dashboard.
 
-In order to get this solution instantly deployed, click the "Deploy" button, specify your email address within the widget, choose one of the [Jelastic Public Cloud providers](https://jelastic.cloud) and press Install.
+In the opened confirmation window at Jelastic dashboard, type the preferable **WP Title** for your blog site. Also, set an _Environment_ name and, optionally, customize its _[Display Name](https://docs.jelastic.com/environment-aliases)_. Then, select the preferable _[region](https://docs.jelastic.com/environment-regions)_ (if several are available) and click on **Install**.
 
-[![Deploy](https://github.com/jelastic-jps/git-push-deploy/raw/master/images/deploy-to-jelastic.png)](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps&keys=app.diadem.io;app.jelastic.eapps.com;app.cloud.hostnet.nl;app.jelastichosting.nl;app.appengine.flow.ch;app.jelasticlw.com.br;app.milesweb.cloud;app.mircloud.host;app.jcs.opusinteractive.io;app.paas.quarinet.eu) 
+![WP Cluster Installation](images/wp-cluster-installation.png)
 
-### Private Cloud 
-To deploy this package to Jelastic Private Cloud, import [this JPS manifest](../../raw/master/manifest.jps) within your dashboard ([detailed instruction](https://docs.jelastic.com/environment-export-import#import)).
+Once the deployment is finished, you’ll see the appropriate success pop-up with access credentials to your administration WordPress panel, whilst the same information will be duplicated to your email box.
 
-### Add To Website
-More information about installation widget for your website can be found in the [Jelastic JPS Application Package](https://github.com/jelastic-jps/jpswiki/wiki/Jelastic-JPS-Application-Package) reference.
+![WP Cluster Installed](images/wp-cluster-installed.png)
+
+So now you can just click on the **Open in browser** button within the shown frame and start filling your highly available and reliable WP installation with the required content, being ready to handle as much users as your service requires.
+
+> For more details on the auto-scalable WordPress cluster solution installation and management, refer to the appropriate article or ask our technical experts for an assistance at [Stackoverflow](http://stackoverflow.com/questions/tagged/jelastic).
