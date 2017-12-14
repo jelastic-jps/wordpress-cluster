@@ -4,7 +4,7 @@ Out-of-the-box automated WordPress Cluster solution for one-click installation o
 
 ## WordPress Cluster Environment Topology
 
-Upon the package installation, a new environment with the following components will be created: 
+Upon the package installation, a new environment with the following topology will be created: 
 * as an entry point, the **NGINX** load balancer is used, aimed  to distribute the incoming traffic within a cluster
 * the WordPress application itself is handled by two **NGINX PHP** servers with preconfigured [automatic horizontal scaling](https://docs.jelastic.com/automatic-horizontal-scaling) to handle load spikes
 * two **MySQL** DB servers with asynchronous Master-Master replication to store and operate user data
