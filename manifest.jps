@@ -82,11 +82,11 @@
                 "custom_conf": "${globals.PATH}/configs/mysql/mysql.cnf"
             }
         }
-    }, {    
+    }, {
         "script": [
             "jelastic.development.scripting.Eval(MARKETPLACE_APPID, session, 'GetNextEvent', { criteria: {'params.actionKey' : { like : '%${env.shortdomain}%' }}});",
             "return { result : 0};"
-       ]
+        ]
     }, {
         "log": "CP Layer Setup"
     }, {
@@ -141,7 +141,8 @@
             "cmd[${this.nodeId}]": [
                 "wget ${globals.PATH}/configs/nginx/nginx.conf -O /etc/nginx/nginx.conf",
                 "wget ${globals.PATH}/configs/nginx/default.conf -O /etc/nginx/conf.d/default.conf",
-                "sudo service nginx reload"
+                "wget ${globals.PATH}/configs/php/wp-upload.ini -O /etc/php.d/wp-upload.ini",
+                "sudo service nginx restart"
             ]
         }]
     },
