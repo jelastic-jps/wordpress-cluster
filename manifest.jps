@@ -30,8 +30,14 @@
         "nodeGroup": "cp",
         "links": "sqldb:DB",
         "volumes": ["/var/www/webroot/ROOT"],
+        "volumes": ["/var/ftp/webroot/ROOT"],
         "volumeMounts": {
             "/var/www/webroot/ROOT": {
+                "readOnly": false,
+                "sourcePath": "/data",
+                "sourceNodeGroup": "storage"
+            },
+            "/var/ftp/webroot/ROOT": {
                 "readOnly": false,
                 "sourcePath": "/data",
                 "sourceNodeGroup": "storage"
