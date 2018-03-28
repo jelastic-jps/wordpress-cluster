@@ -29,8 +29,7 @@
         "cloudlets": 8,
         "nodeGroup": "cp",
         "links": "sqldb:DB",
-        "volumes": ["/var/www/webroot/ROOT"],
-        "volumes": ["/var/ftp/webroot/ROOT"],
+        "volumes": ["/var/www/webroot/ROOT", "/var/ftp/webroot/ROOT"],
         "volumeMounts": {
             "/var/www/webroot/ROOT": {
                 "readOnly": false,
