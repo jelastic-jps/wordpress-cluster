@@ -77,6 +77,11 @@
     }, {
         "script": "${globals.PATH}/scripts/addTriggers.js"
     }, {
+        "log": "Set Node Display Name"
+    }, {
+        "setNodeDisplayName [bl]": "Load balancer",
+        "setNodeDisplayName [cp]": "AppServer"
+    }, {
         "log": "DB Multi-Master Cluster Setup"
     }, {
         "installJps": {
