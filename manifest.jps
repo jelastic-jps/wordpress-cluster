@@ -134,7 +134,7 @@
     }, {
         "cmd[storage]": [
             "wget ${globals.PATH}/configs/wordpress/wp-jelastic.php -O /data/wp-jelastic.php",
-            "echo \"require_once ABSPATH . 'wp-jelastic.php';\" >> /data/wp-config.php"
+            "sed -i \"19i\require_once ABSPATH . 'wp-jelastic.php';\" /data/wp-config.php"
         ]
     }, {
         "log": "Plugins install"
