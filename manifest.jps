@@ -22,7 +22,10 @@
         "count": 2,
         "cloudlets": 8,
         "nodeGroup": "sqldb",
-        "displayName": "Database"
+        "displayName": "Database",
+        "env": {
+            "ON_ENV_INSTALL": ""
+        }
     }, {
         "nodeType": "nginxphp",
         "count": 2,
