@@ -1,0 +1,17 @@
+{
+    "jpsType": "update",
+    "name": "WordPress plugins addon",
+    "description": "This addon for plugins install",
+    "globals": {
+        "SERVER_WEBROOT": "/var/www/webroot/ROOT",
+        "PLUGINS_LIST": "${settings.plugins_list}"
+        
+    },
+    "onInstall": {
+        "cmd[${nodes.cp[0].id}]": [
+            "wget ${globals.PLUGINS_LIST} -O ~/plugins",
+            "while read plugin; do wp plugin install $plugin --activate --path=/var/www/webroot/ROOT; done < ~/plugins"
+        ]
+    }
+}
+
