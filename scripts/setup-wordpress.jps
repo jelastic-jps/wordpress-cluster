@@ -1,0 +1,23 @@
+---
+jpsType: update
+name: WordPress setup addon
+description: This package for WowrdPress configurations
+
+globals:
+  SERVER_WEBROOT: "/var/www/webroot/ROOT"
+  ADMIN_PASSWD: "${settings.admin_passwd}"
+  CONFIG_FILE: "/var/www/webroot/ROOT/wp-config.php"
+  WP_TITLE: "${settings.wp_title}"
+  DB_HOST: "${settings.db_host}"
+  DB_NAME: wordpress
+  DB_USER: "${settings.db_user}"
+  DB_PASS: "${settings.db_pass}"
+
+onInstall:
+- cmd[${nodes.cp[0].id}]: |-
+    curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x /usr/local/bin/wp
+    mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${globals.DB_HOST} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
+    wp --allow-root core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${globals.SERVER_WEBROOT}
+    wp --allow-root core install --title="${globals.WP_TITLE}" --admin_user=admin --admin_password=${globals.ADMIN_PASSWD} --url=${env.url} --admin_email=${user.email} --path=${globals.SERVER_WEBROOT}
+  user: root
+  
