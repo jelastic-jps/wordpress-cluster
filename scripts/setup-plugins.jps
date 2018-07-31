@@ -1,0 +1,21 @@
+---
+jpsType: update
+name: WordPress plugins addon
+description: This addon for plugins install
+
+globals:
+  SERVER_WEBROOT: "${settings.server_webroot}"
+
+onInstall:
+- log: Plugins installation and activation
+- cmd[${nodes.cp[0].id}]: |-
+    wget ${baseUrl}../configs/wordpress/plugins -O ~/plugins
+    while read plugin; do wp --allow-root plugin install $plugin --activate --path=${globals.SERVER_WEBROOT}; done < ~/plugins
+  user: root
+
+- log: w3-total-cache configuration
+- cmd[${nodes.cp[0].id}]: |-
+    wget ${baseUrl}../configs/wordpress/w3-total-cache.json -O ~/w3-total-cache.json
+    wp --allow-root w3-total-cache import ~/w3-total-cache.json --path=${globals.SERVER_WEBROOT}
+  user: root
+  
