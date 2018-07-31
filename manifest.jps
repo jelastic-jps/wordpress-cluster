@@ -1,163 +1,149 @@
-{
-    "jpsType": "install",
-    "jpsVersion": "1.1",
-    "name": "WordPress Cluster",
-    "categories": ["apps/clustered-dbs", "apps/popular", "apps/clusters", "apps/dev-and-admin-tools"],
-    "description": "Get your highly available and scalable clustered solution for WordPress, the extremely popular open source CMS and blogging tool. This package is designed to ensure the load tracking and distribution, as well as automatic adjusting the amount of allocated resources according to it.",
-    "logo": "https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png",
-    "settings": {
-        "fields": [{
-            "name": "wp_title",
-            "caption": "WP Title",
-            "type": "string",
-            "default": "HelloWorld",
-            "required": "true",
-            "regex": "^[\\w-.]*$",
-            "regexText": "Incorrect WP Title."
-        }]
-    },
-    "ssl": false,
-    "nodes": [{
-        "nodeType": "mysql",
-        "count": 2,
-        "cloudlets": 8,
-        "nodeGroup": "sqldb",
-        "displayName": "Database",
-        "env": {
-            "ON_ENV_INSTALL": ""
-        }
-    }, {
-        "nodeType": "nginxphp",
-        "count": 2,
-        "cloudlets": 8,
-        "nodeGroup": "cp",
-        "links": "sqldb:DB",
-        "volumes": ["/var/www/webroot/ROOT", "/var/ftp/webroot/ROOT"],
-        "volumeMounts": {
-            "/var/www/webroot/ROOT": {
-                "readOnly": false,
-                "sourcePath": "/data",
-                "sourceNodeGroup": "storage"
-            },
-            "/var/ftp/webroot/ROOT": {
-                "readOnly": false,
-                "sourcePath": "/data",
-                "sourceNodeGroup": "storage"
-            }
-        },
-        "displayName": "AppServer"
-    }, {
-        "nodeType": "storage",
-        "cloudlets": 8,
-        "nodeGroup": "storage",
-        "displayName": "Storage"
-    }, {
-        "nodeType": "nginx",
-        "count": 1,
-        "cloudlets": 8,
-        "nodeGroup": "bl",
-        "displayName": "Load balancer"
-    }],
-    "onAfterScaleOut[nodeGroup:cp]": {
-        "forEach(event.response.nodes)": {
-            "cmd [${@i.id}]": "sudo service nginx reload",
-            "setNodeDisplayName [${@i.id}]": "AppServer"
-        }
-    },
-    "onAfterScaleOut[nodeGroup:bl]": {
-        "forEach(event.response.nodes)": {
-            "setNodeDisplayName [${@i.id}]": "Load balancer"
-        }
-    },
-    "globals": {
-        "PATH": "https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master",
-        "DB_USER": "jelastic-${fn.random}",
-        "DB_PASS": "${fn.password(20)}",
-        "ADMIN_PASSWD": "${fn.password(20)}"
-    },
-    "onInstall": [{
-        "log": "Auto Scaling Triggers"
-    }, {
-        "script": "${globals.PATH}/scripts/addTriggers.js"
-    }, {
-        "log": "Set Node Display Name"
-    }, {
-        "setNodeDisplayName [bl]": "Load balancer",
-        "setNodeDisplayName [cp]": "AppServer"
-    }, {
-        "log": "DB Multi-Master Cluster Setup"
-    }, {
-        "installJps": {
-            "jps": "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/multimaster-configuration.jps",
-            "settings": {
-                "db_user": "${globals.DB_USER}",
-                "db_pass": "${globals.DB_PASS}",
-                "custom_conf": "${globals.PATH}/configs/mysql/mysql.cnf"
-            }
-        }
-    }, {
-        "script": [
-            "jelastic.development.scripting.Eval(MARKETPLACE_APPID, session, 'GetNextEvent', { criteria: {'params.actionKey' : { like : '%${env.shortdomain}%' }}});",
-            "return { result : 0};"
-        ]
-    }, {
-        "log": "CP Layer Setup"
-    }, {
-        "forEach(nodes.cp)": {
-            "setupNode": {
-                "nodeId": "${@i.id}"
-            }
-        }
-    }, {
-        "log": "Download and Unpack latest WordPress release"
-    }, {
-        "cmd[storage]": ["wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /data"]
-    }, {
-        "log": "Setup WordPress"
-    }, {
-        "installJps": {
-            "jps": "${globals.PATH}/addons/setup-wordpress.jps",
-            "settings": {
-                "db_host": "DB_1",
-                "db_user": "${globals.DB_USER}",
-                "db_pass": "${globals.DB_PASS}",
-                "admin_passwd": "${globals.ADMIN_PASSWD}",
-                "wp_title": "${settings.wp_title}"
-            }
-        }
-    }, {
-        "log": "Install HyperDB - is an advanced database class that supports replication, failover, load balancing and partitioning. "
-    }, {
-        "cmd[storage]": [
-            "wget ${globals.PATH}/configs/wordpress/db-config.php -O /data/db-config.php",
-            "wget ${globals.PATH}/configs/wordpress/db.php -O /data/wp-content/db.php"
-        ]
-    }, {
-        "log": "Additional configuration for WordPress."
-    }, {
-        "cmd[storage]": [
-            "wget ${globals.PATH}/configs/wordpress/wp-jelastic.php -O /data/wp-jelastic.php",
-            "echo \"require_once ABSPATH . 'wp-jelastic.php';\" >> /data/wp-config.php"
-        ]
-    }, {
-        "log": "Plugins install"
-    }, {
-        "installJps": {
-            "jps": "${globals.PATH}/addons/install-plugins.jps",
-            "settings": {
-                "plugins_list": "${globals.PATH}/configs/wordpress/plugins"
-            }
-        }
-    }],
-    "actions": {
-        "setupNode": [{
-            "cmd[${this.nodeId}]": [
-                "wget ${globals.PATH}/configs/nginx/nginx.conf -O /etc/nginx/nginx.conf",
-                "wget ${globals.PATH}/configs/nginx/default.conf -O /etc/nginx/conf.d/default.conf",
-                "wget ${globals.PATH}/configs/php/wp-upload.ini -O /etc/php.d/wp-upload.ini",
-                "sudo service nginx restart"
-            ]
-        }]
-    },
-    "success": "Below you will find your admin panel link, username and password.</br></br> <table style='font-size:14px'><tr><td>Admin panel URL:</td><td><a href='${env.protocol}://${env.domain}/wp-admin/' target='_blank'>${env.protocol}://${env.domain}/wp-admin/</a></td></tr><tr><td>Login:</td><td><b>admin</b></td></tr><tr><td>Password:</td><td><b>${globals.ADMIN_PASSWD}</b></td></tr></table></br>To add custom domain name for your WordPress installation follow the steps described in our <a href='http://docs.jelastic.com/custom-domains' target='_blank'>documentation</a>"
-}
+---
+jpsType: install
+jpsVersion: '1.1'
+name: WordPress Cluster
+categories:
+  - apps/clustered-dbs
+  - apps/popular
+  - apps/clusters
+  - apps/dev-and-admin-tools
+description: Get your highly available and scalable clustered solution for WordPress,
+  the extremely popular open source CMS and blogging tool. This package is designed
+  to ensure the load tracking and distribution, as well as automatic adjusting the
+  amount of allocated resources according to it.
+logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+
+
+settings:
+  fields:
+  - name: wp_title
+    caption: WP Title
+    type: string
+    default: HelloWorld
+    required: 'true'
+    regex: "^[\\w-.]*$"
+    regexText: Incorrect WP Title.
+
+ssl: false
+nodes:
+  - nodeType: mysql
+    count: 2
+    cloudlets: 8
+    nodeGroup: sqldb
+    displayName: Database
+    env:
+      ON_ENV_INSTALL: ''
+
+  - nodeType: nginxphp
+    count: 2
+    cloudlets: 8
+    nodeGroup: cp
+    displayName: AppServer
+    links: sqldb:DB
+    volumes:
+      - "/var/www/webroot/ROOT"
+      - "/var/ftp/webroot/ROOT"
+    volumeMounts:
+      "/var/www/webroot/ROOT":
+        readOnly: false
+        sourcePath: "/data"
+        sourceNodeGroup: storage
+      "/var/ftp/webroot/ROOT":
+        readOnly: false
+        sourcePath: "/data"
+        sourceNodeGroup: storage
+
+  - nodeType: storage
+    cloudlets: 8
+    nodeGroup: storage
+    displayName: Storage
+
+  - nodeType: nginx
+    count: 1
+    cloudlets: 8
+    nodeGroup: bl
+    displayName: Load balancer
+
+onAfterScaleOut[nodeGroup:cp]:
+  forEach(event.response.nodes):
+    cmd [${@i.id}]: sudo service nginx reload
+    setNodeDisplayName [${@i.id}]: AppServer
+
+onAfterScaleOut[nodeGroup:bl]:
+  forEach(event.response.nodes):
+    setNodeDisplayName [${@i.id}]: Load balancer
+
+globals:
+  DB_USER: jelastic-${fn.random}
+  DB_PASS: "${fn.password(20)}"
+  ADMIN_PASSWD: "${fn.password(20)}"
+
+onInstall:
+  - log: Auto Scaling Triggers
+  - script: "${baseUrl}/scripts/addTriggers.js"
+
+  - log: Set Node Display Name
+  - setNodeDisplayName [bl]: Load balancer
+  - setNodeDisplayName [cp]: AppServer
+
+  - log: DB Multi-Master Cluster Setup
+  - installJps:
+      jps: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/multimaster-configuration.jps
+      settings:
+        db_user: "${globals.DB_USER}"
+        db_pass: "${globals.DB_PASS}"
+        custom_conf: "${baseUrl}/configs/mysql/mysql.cnf"
+      user: root
+
+  - log: CP Layer Setup
+  - forEach(nodes.cp):
+      setupNode:
+        nodeId: "${@i.id}"
+
+  - log: Download and Unpack latest WordPress release
+  - cmd[storage]: wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /data
+
+  - log: Setup WordPress
+  - installJps:
+      jps: "${baseUrl}/scripts/setup-wordpress.jps"
+      settings:
+        db_host: DB_1
+        db_user: "${globals.DB_USER}"
+        db_pass: "${globals.DB_PASS}"
+        admin_passwd: "${globals.ADMIN_PASSWD}"
+        wp_title: "${settings.wp_title}"
+
+  - log: 'Install HyperDB - is an advanced database class that supports replication, failover, load balancing and partitioning.'
+  - cmd[storage]: |-
+      wget ${baseUrl}/configs/wordpress/db-config.php -O /data/db-config.php
+      wget ${baseUrl}/configs/wordpress/db.php -O /data/wp-content/db.php
+
+  - log: Additional configuration for WordPress.
+  - cmd[storage]: |-
+      wget ${baseUrl}/configs/wordpress/wp-jelastic.php -O /data/wp-jelastic.php
+      echo "require_once ABSPATH . 'wp-jelastic.php';" >> /data/wp-config.php
+
+  - log: Plugins install
+  - installJps:
+      jps: "${baseUrl}/scripts/setup-plugins.jps"
+      settings:
+        server_webroot: /var/www/webroot/ROOT
+
+  - log: Set permission
+  - cmd[storage]: chown 700:700 -Rh /data/
+
+actions:
+  setupNode:
+  - cmd[${this.nodeId}]: |-
+      wget ${baseUrl}/configs/nginx/nginx.conf -O /etc/nginx/nginx.conf
+      wget ${baseUrl}/configs/nginx/default.conf -O /etc/nginx/conf.d/default.conf
+      wget ${baseUrl}/configs/php/wp-upload.ini -O /etc/php.d/wp-upload.ini
+      wget ${baseUrl}/configs/php/opcache.ini -O /etc/php.d/opcache.ini
+      sudo service nginx restart
+
+success: Below you will find your admin panel link, username and password.</br></br>
+  <table style='font-size:14px'><tr><td>Admin panel URL:</td><td><a href='${env.protocol}://${env.domain}/wp-admin/'
+  target='_blank'>${env.protocol}://${env.domain}/wp-admin/</a></td></tr><tr><td>Login:</td><td><b>admin</b></td></tr><tr><td>Password:</td><td><b>${globals.ADMIN_PASSWD}</b></td></tr></table></br>To
+  add custom domain name for your WordPress installation follow the steps described
+  in our <a href='http://docs.jelastic.com/custom-domains' target='_blank'>documentation</a>
