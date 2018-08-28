@@ -12,7 +12,7 @@ description: Get your highly available and scalable clustered solution for WordP
   to ensure the load tracking and distribution, as well as automatic adjusting the
   amount of allocated resources according to it.
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
 
 
 settings:
