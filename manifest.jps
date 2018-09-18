@@ -122,7 +122,7 @@ onInstall:
   - log: Additional configuration for WordPress.
   - cmd[storage]: |-
       wget ${baseUrl}/configs/wordpress/wp-jelastic.php -O /data/wp-jelastic.php
-      echo "require_once ABSPATH . 'wp-jelastic.php';" >> /data/wp-config.php
+      sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /data/wp-config.php
 
   - log: Plugins install
   - installJps:
