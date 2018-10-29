@@ -27,7 +27,7 @@ settings:
 
 ssl: false
 nodes:
-  - nodeType: mysql5
+  - nodeType: mysql
     count: 2
     cloudlets: 8
     nodeGroup: sqldb
@@ -89,12 +89,14 @@ onInstall:
 
   - log: DB Multi-Master Cluster Setup
   - installJps:
-      jps: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/multimaster-configuration.jps
+      jps: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
       settings:
+        path: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master"
         db_user: "${globals.DB_USER}"
         db_pass: "${globals.DB_PASS}"
+        scheme: master
         custom_conf: "${baseUrl}/configs/mysql/mysql.cnf"
-      user: root
+      nodeGroup: sqldb
 
   - log: CP Layer Setup
   - forEach(nodes.cp):
