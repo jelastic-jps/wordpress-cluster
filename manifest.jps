@@ -27,7 +27,8 @@ settings:
 
 ssl: false
 nodes:
-  - nodeType: mysql5
+  - nodeType: mysql
+    tag: 5.7.22
     count: 2
     cloudlets: 8
     nodeGroup: sqldb
