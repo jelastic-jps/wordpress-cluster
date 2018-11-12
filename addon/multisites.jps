@@ -10,6 +10,6 @@ onInstall:
   - cmd[${nodes.cp.first.id}]: |-
       wp plugin deactivate w3-total-cache --path=/var/www/webroot/ROOT
       wp core multisite-convert --path=/var/www/webroot/ROOT
-  - cmd[cp]:
+  - cmd[cp]: |-
       wget ${baseUrl}/configs/nginx/wordpress-ms-subdir.conf -O /etc/nginx/conf.d/default.conf
       sudo /etc/init.d/nginx restart
