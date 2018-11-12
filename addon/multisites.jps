@@ -7,7 +7,7 @@ logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/im
 baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
 
 onInstall:
-  - cmd[${nodes.cp.master.id}]: |-
+  - cmd[${nodes.cp[0].id}]: |-
       wp plugin deactivate w3-total-cache --path=/var/www/webroot/ROOT
       wp core multisite-convert --path=/var/www/webroot/ROOT
   - cmd[cp]: |-
