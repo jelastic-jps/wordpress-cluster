@@ -5,3 +5,8 @@ name: Multisites addon for Wordpress cluster
 description: Multisites addon for Wordpress cluster
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
 baseUrl: https://raw.githubusercontent.com/sych74/jmeter-cluster/master
+
+onInstall:
+  cmd[${nodes.cp.first.id}]: |-
+    wp plugin deactivate w3-total-cache --path=/var/www/webroot/ROOT
+    wp core multisite-convert --path=/var/www/webroot/ROOT
