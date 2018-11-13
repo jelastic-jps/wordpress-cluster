@@ -5,7 +5,22 @@ name: Multisites addon for Wordpress cluster
 description: Multisites addon for Wordpress cluster
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
-
+settings:
+  main:
+    fields:
+    - name: mode
+      caption: Multisites mode
+      type: radio-fieldset
+      values:
+        subdir: SubDirectories
+        subdom: SubDomain
+      default: subdir
+      showIf:
+        subdom:
+          name: domain
+          caption: Domain
+          type: string
+          default: example.com
 onInstall:
   - cmd[${nodes.cp.master.id}]: |-
       curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x /usr/local/bin/wp
