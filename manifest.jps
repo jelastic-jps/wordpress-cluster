@@ -66,6 +66,11 @@ nodes:
     nodeGroup: bl
     displayName: Load balancer
 
+onBeforeInit: |  
+  var resp = jelastic.billing.account.GetQuotas(appid, session, 'environment.jelasticssl.enabled');
+  if (resp.result != 0 ) return resp;  
+  return  { result: 0, ssl: !!resp.array[0].value };
+
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
     cmd [${@i.id}]: sudo service nginx reload
