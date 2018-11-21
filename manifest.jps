@@ -7,6 +7,7 @@ categories:
   - apps/popular
   - apps/clusters
   - apps/dev-and-admin-tools
+  - apps/content-management
 description: Get your highly available and scalable clustered solution for WordPress,
   the extremely popular open source CMS and blogging tool. This package is designed
   to ensure the load tracking and distribution, as well as automatic adjusting the
