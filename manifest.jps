@@ -3,10 +3,7 @@ jpsType: install
 jpsVersion: '1.1'
 name: WordPress Cluster
 categories:
-  - apps/clustered-dbs
-  - apps/popular
   - apps/clusters
-  - apps/dev-and-admin-tools
   - apps/content-management
 description: Get your highly available and scalable clustered solution for WordPress,
   the extremely popular open source CMS and blogging tool. This package is designed
