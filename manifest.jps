@@ -1,6 +1,6 @@
 ---
-jpsType: install
-jpsVersion: '1.1'
+type: install
+version: '1.1'
 name: WordPress Cluster
 categories:
   - apps/clusters
@@ -147,8 +147,4 @@ actions:
       wget ${baseUrl}/configs/php/opcache.ini -O /etc/php.d/opcache.ini
       sudo service nginx restart
 
-success: Below you will find your admin panel link, username and password.</br></br>
-  <table style='font-size:14px'><tr><td>Admin panel URL:</td><td><a href='${env.protocol}://${env.domain}/wp-admin/'
-  target='_blank'>${env.protocol}://${env.domain}/wp-admin/</a></td></tr><tr><td>Login:</td><td><b>admin</b></td></tr><tr><td>Password:</td><td><b>${globals.ADMIN_PASSWD}</b></td></tr></table></br>To
-  add custom domain name for your WordPress installation follow the steps described
-  in our <a href='http://docs.jelastic.com/custom-domains' target='_blank'>documentation</a>
+success: /text/success.md
