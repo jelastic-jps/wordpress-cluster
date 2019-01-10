@@ -1,4 +1,4 @@
-**Admin panel URL**: [${env.url}/wp-admin/](${env.url}/wp-admin/)  
+**Admin Panel**: [${env.url}wp-admin/](${env.url}wp-admin/)  
 **Login**: admin  
 **Password**: ${globals.ADMIN_PASSWD}  
 
