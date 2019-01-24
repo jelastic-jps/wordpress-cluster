@@ -33,7 +33,8 @@ nodes:
     env:
       ON_ENV_INSTALL: ''
 
-  - nodeType: nginxphp
+  - nodeType: nginxphp-dockerized
+    tag: 1.14.2-php-7.3.0
     count: 2
     cloudlets: 8
     nodeGroup: cp
@@ -57,7 +58,8 @@ nodes:
     nodeGroup: storage
     displayName: Storage
 
-  - nodeType: nginx
+  - nodeType: nginx-dockerized
+    tag: 1.14.2
     count: 1
     cloudlets: 8
     nodeGroup: bl
