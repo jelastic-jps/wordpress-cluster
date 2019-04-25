@@ -5,10 +5,7 @@ name: WordPress Cluster
 categories:
   - apps/clusters
   - apps/content-management
-description: Get your highly available and scalable clustered solution for WordPress,
-  the extremely popular open source CMS and blogging tool. This package is designed
-  to ensure the load tracking and distribution, as well as automatic adjusting the
-  amount of allocated resources according to it.
+description: WordPress Cluster package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
 
