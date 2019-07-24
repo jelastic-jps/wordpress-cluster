@@ -9,7 +9,7 @@ if (oQoutas.result != 0) {
 
 nLimitQuota = oQoutas.array[0].value;
 
-oRespTurnOn = jelastic.env.trigger.AddTrigger(APPID, session,'{"isEnabled":true,"name":"hs-add-nginx","nodeGroup":"cp","period":1,"condition":{"type":"GREATER","value":70,"resourceType":"CPU","valueType":"PERCENTAGES"},"actions":[{"type":"ADD_NODE","customData":{"limit":' + nLimitQuota + ',"count":1,"notify":true}}]}');
+oRespTurnOn = jelastic.env.trigger.AddTrigger(APPID, session,'{"isEnabled":true,"name":"hs-add-nginx","nodeGroup":"cp","period":1,"condition":{"type":"GREATER","value":60,"resourceType":"CPU","valueType":"PERCENTAGES"},"actions":[{"type":"ADD_NODE","customData":{"limit":' + nLimitQuota + ',"count":1,"notify":true}}]}');
 
 if (oRespTurnOn.result != 0) {
     return oRespTurnOn;
