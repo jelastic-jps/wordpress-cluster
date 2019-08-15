@@ -1,7 +1,7 @@
 ---
 jpsType: update
 name: WordPress setup addon
-description: This package for WowrdPress configurations
+description: This package for WordPress configurations
 
 globals:
   SERVER_WEBROOT: "/var/www/webroot/ROOT"
