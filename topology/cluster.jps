@@ -4,8 +4,6 @@ name: WordPress Cluster
 
 globals:
   PATH: ${settings.PATH}
-  MASTER_ENV: ${settings.MASTER_ENV:false}
-  SLAVE_ENV: ${settings.SLAVE_ENV:false}
   CP_NODE_TYPE: ${settings.CP_NODE_TYPE}
   CP_NODE_TAG: ${settings.CP_NODE_TAG}
   BL_NODE_TYPE: ${settings.BL_NODE_TYPE}
@@ -69,10 +67,6 @@ nodes:
     cloudlets: 8
     nodeGroup: storage
     displayName: Storage
-    nodeGroupData:
-      validation:
-        maxCount: 1
-
     
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
@@ -98,36 +92,11 @@ onAfterInstallAddon [nodeGroup:cp, id:cdn]:
     settings:
       PATH: ${globals.PATH}
       
-onBeforeInstallAddon [nodeGroup:cp, id:letsencrypt-ssl-addon]:
-  - if ('${globals.SLAVE_ENV}' != 'false'):
-    - api: jelastic.env.control.GetEnvInfo
-      envName: ${globals.SLAVE_ENV}
-    - forEach(response.nodes):
-        - if ('${@i.nodeGroup}' == 'bl'):
-          - env.binder.AttachExtIp:
-              envName: ${globals.SLAVE_ENV}
-              nodeid:  ${@i.id}
-
 onAfterBindSSL:
   - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
   - set:
       domain: ${response.out}
-  - cmd[cp]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
-
-  - if ('${globals.SLAVE_ENV}' != 'false'):
-    - api: jelastic.env.control.GetEnvInfo
-      envName: ${globals.SLAVE_ENV}
-    - forEach(response.nodes):
-        if ('${@i.nodeGroup}' == 'bl'):
-          - set:
-              SLAVE-ID: ${@i.id}
-    - env.control.ExecCmdById:
-      envName: ${globals.SLAVE_ENV}
-      nodeId: ${this.SLAVE-ID}
-      userName: root
-      commandList: 
-        - command: |-
-            jem ssl install
+  - cmd[${nodes.cp.master}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
 
 onInstall:
   - log: Auto Scaling Triggers
