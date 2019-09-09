@@ -109,7 +109,8 @@ actions:
 
     - setGlobals: 
             masterBL-ID: ${response.nodes.bl.id}     
-            masterCP-ID: ${response.nodes.cp.id}  
+            masterCP-ID: ${response.nodes.cp.id}
+            masterDB-ID: ${response.nodes.sqldb.id}
             DB_HOST: sqldb
 
   getTopologyNodes:
