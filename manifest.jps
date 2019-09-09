@@ -37,19 +37,14 @@ onInstall:
 
   - createEnvs: ${settings.envName}
 
-  - forEach(response.regions):
-      run:
-        envName: ${settings.envName}
-        region: ${@i}
-        index: ${@}
-
   - if (${settings.le-addon:false}):
-      - install-LE-addon
       - setGlobals:
           PROTOCOL: https
 
   - install-wordpress:
       protocol: ${globals.PROTOCOL}
+      
+  - if (${settings.le-addon:false}): install-LE-addon
 
   - if (${settings.cdn-addon:false}): configure-edgeport-CDN
   
@@ -95,6 +90,7 @@ actions:
       loggerName: ${settings.envName}
       envGroups: ${response.envGroups}
       region: ${globals.REGION}
+      ssl: ${globals.IS_JELASTIC_SSL}
       displayName: WordPress Cluster
       settings:
           PATH: ${baseUrl}
