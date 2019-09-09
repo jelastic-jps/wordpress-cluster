@@ -1,8 +1,8 @@
-**WordPress environment**: [${globals.PROTOCOL}://${settings.envName}.${globals.REGION-0}/](${globals.PROTOCOL}://${settings.envName}.${globals.REGION-0}/)  
+**WordPress environment**: [${globals.PROTOCOL}://${settings.envName}.${globals.REGION}/](${globals.PROTOCOL}://${settings.envName}.${globals.REGION}/)  
 
 Use the following credentials to access the admin panel:   
 
-**Admin Panel**: [${globals.PROTOCOL}://${settings.envName}.${globals.REGION-0}/wp-admin/](${globals.PROTOCOL}://${settings.envName}.${globals.REGION-0}/wp-admin/)  
+**Admin Panel**: [${globals.PROTOCOL}://${settings.envName}.${globals.REGION}/wp-admin/](${globals.PROTOCOL}://${settings.envName}.${globals.REGION}/wp-admin/)  
 **Login**: ${user.email}  
 **Password**: ${globals.WP_ADMIN_PASS}  
 
