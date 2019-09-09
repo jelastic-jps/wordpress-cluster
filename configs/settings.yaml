@@ -13,7 +13,20 @@ fields:
   randomName: true
   showFullDomain: true
   required: true
-    
+
+- caption: Scaling Load Growth
+  type: list
+  name: loadGrowth
+  default: slow
+  required: true
+  values:        
+    - value: slow
+      caption: Slow
+    - value: medium
+      caption: Medium
+    - value: fast
+      caption: Fast
+
 - caption: Advanced Features
   type: displayfield
   name: displayfield
