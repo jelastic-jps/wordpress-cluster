@@ -46,7 +46,9 @@ onInstall:
       
   - if (${settings.le-addon:false}): install-LE-addon
 
-  - if (${settings.cdn-addon:false}): configure-edgeport-CDN
+  - if (${settings.cdn-addon:false}):
+      - install-edgeport-CDN
+      - configure-edgeport-CDN
   
   - if (${settings.mu-addon:false}): configure-MU
   
