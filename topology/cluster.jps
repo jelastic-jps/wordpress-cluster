@@ -24,7 +24,7 @@ nodes:
 
   - nodeType: ${globals.CP_NODE_TYPE}
     tag: ${globals.CP_NODE_TAG}
-    count: 1
+    count: 2
     cloudlets: 8
     nodeGroup: cp
     scalingMode: STATELESS
