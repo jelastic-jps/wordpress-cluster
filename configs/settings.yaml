@@ -11,7 +11,7 @@ fields:
   name: envName
   dependsOn: region
   randomName: true
-  showFullDomain: false
+  showFullDomain: true
   required: true
     
 - caption: Advanced Features
