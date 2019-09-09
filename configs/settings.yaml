@@ -3,7 +3,7 @@ fields:
   type: regionlist
   name: regions
   disableInactive: true
-  selectFirstAvailable: true
+  selectFirstAvailable: false
   multiSelect: false
 
 - caption: Environment
