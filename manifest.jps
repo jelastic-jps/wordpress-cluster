@@ -144,8 +144,6 @@ actions:
     envName: ${settings.envName}
     nodeGroup: bl
     skipEmail: true
-    settings:
-      masterEnv: ${this.masterEnv:}    
 
   configure-edgeport-CDN:
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
