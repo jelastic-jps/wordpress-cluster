@@ -96,7 +96,7 @@ onAfterBindSSL:
   - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
   - set:
       domain: ${response.out}
-  - cmd[${nodes.cp.master}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
+  - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
 
 onInstall:
   - log: Auto Scaling Triggers
