@@ -116,29 +116,12 @@ onInstall:
       DB_PASS: ${settings.db_pass:[fn.password(10)]}
 
   - log: DB Galera  Setup
-  - install: https://raw.githubusercontent.com/sych74/mysql-cluster/master/scripts/galera-configuration.jps
+  - install: https://raw.githubusercontent.com/sych74/mysql-cluster/master/scripts/galera.jps
     settings:
       db_user: "${globals.DB_USER}"
       db_pass: "${globals.DB_PASS}"
       custom_conf: "${globals.PATH}/configs/sqldb/wordpress.cnf"
     nodeGroup: sqldb
-
-  - log: App Server Configuration and dummy addons for slave
-  - if ('${env.envName}' == '${globals.SLAVE_ENV}'):
-      install: 
-        - jps: ${globals.PATH}/scripts/webrootModeForLE.jps?_r=${fn.random}
-          settings:
-            PATH: ${globals.PATH}
-            ENV_TYPE: slave
-            TOPOLOGY: standalone
-
-        - jps: ${globals.PATH}/scripts/dummyLE.jps?_r=${fn.random}
-          nodeGroup: bl
-          skipEmail: true
-
-        - jps: ${globals.PATH}/scripts/dummyCDN.jps?_r=${fn.random}        
-          nodeGroup: bl            
-          skipEmail: true
 
   - setupNode:
       nodeId: cp
