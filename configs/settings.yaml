@@ -3,7 +3,7 @@ fields:
   type: regionlist
   name: regions
   disableInactive: true
-  selectFirstAvailable: false
+  selectFirstAvailable: true
   multiSelect: false
 
 - caption: Environment
@@ -11,7 +11,7 @@ fields:
   name: envName
   dependsOn: region
   randomName: true
-  showFullDomain: true
+  showFullDomain: false
   required: true
 
 - caption: Scaling Load Growth
