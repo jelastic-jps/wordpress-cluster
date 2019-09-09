@@ -35,22 +35,6 @@ onInstall:
         BL_NODE_TAG: 2.5.1
         APP_CONFIGS_PATH: /var/www/webroot/TMP
 
-  - script: |
-        return {
-          result:0,
-          regions:'${settings.regions}'.split(','),
-          envGroups:eval('(' + MANIFEST + ')').envGroups,
-          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
-        }
-  - if (${response.ssl}):
-        setGlobals:
-          IS_JELASTIC_SSL: true
-          PROTOCOL: https
-
-  - setGlobals:
-        REGION: ${response.regions[0]}
-        ENVGROUP: ${response.envGroups}
-
   - createEnvs: ${settings.envName}
 
   - if (${settings.le-addon:false}):
@@ -68,6 +52,23 @@ onInstall:
   
 actions:
   createEnvs:
+  
+    - script: |
+        return {
+          result:0,
+          regions:'${settings.regions}'.split(','),
+          envGroups:eval('(' + MANIFEST + ')').envGroups,
+          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
+        }
+    - if (${response.ssl}):
+        setGlobals:
+          IS_JELASTIC_SSL: true
+          PROTOCOL: https
+
+    - setGlobals:
+        REGION: ${response.regions[0]}
+        ENVGROUP: ${response.envGroups}  
+  
     - script: |
         var resp, result;
         resp = jelastic.env.control.GetRegions(appid, session);
@@ -178,7 +179,7 @@ actions:
         targetNodeID: ${globals.masterCP-ID}
 
 success:
-  email: success/email/${settings.topology}/${globals.CLUSTER_TYPE}-${globals.EMAIL}.md?_r=${fn.random}
-  text: success/text/${globals.CLUSTER_TYPE}/${globals.SUCCESS}.md?_r=${fn.random}
+  email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
+  text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
 
 startPage: ${globals.PROTOCOL}://${settings.envName}.${globals.REGION}/
