@@ -84,7 +84,7 @@ actions:
         return {result: 0, domain: resp[0].domain}
   
     - setGlobals:
-        REGION-DOMAIN: ${response.domain}
+        DOMAIN: ${response.domain}
 
     - install: /topology/cluster.jps?_r=${fn.random}
       envName: ${settings.envName}
@@ -137,7 +137,7 @@ actions:
     nodeGroup: bl
     skipEmail: true
     settings:
-      customDomains: ${settings.envName}.${globals.REGION}
+      customDomains: ${settings.envName}.${globals.DOMAIN}
 
   install-edgeport-CDN:
     install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
@@ -182,4 +182,4 @@ success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
 
-startPage: ${globals.PROTOCOL}://${settings.envName}.${globals.REGION}/
+startPage: ${globals.PROTOCOL}://${settings.envName}.${globals.DOMAIN}/
