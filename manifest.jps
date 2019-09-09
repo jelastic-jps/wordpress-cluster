@@ -148,19 +148,6 @@ actions:
     nodeGroup: bl
     skipEmail: true
 
-  configure-edgeport-CDN:
-    - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
-    - setGlobals:
-        CDN_URL: ${globals.PROTOCOL}://${settings.envName}-${response.response.partnerCode}.cdn.edgeport.net/
-        SUCCESS: success-cdn
-        EMAIL: cdn
-    - install: ${baseUrl}/scripts/setupCDN.jps
-      envName: ${settings.envName}
-      settings:
-        PATH: ${baseUrl}
-        CDN_URL: ${globals.CDN_URL}
-        TARGET_NODE_ID: ${globals.masterCP-ID}
-
   configure-MU:
     - install: ${baseUrl}/addon/WPMU.jps
       envName: ${settings.envName}
