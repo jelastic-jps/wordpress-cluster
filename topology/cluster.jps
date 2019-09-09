@@ -129,7 +129,7 @@ onInstall:
 actions:
   setupNode:
     - log: OPTIMIZATION
-    - install: https://raw.githubusercontent.com/sych74/templates/master/config.jps?_r=${fn.random}
+    - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
       settings:
         targetGroup: cp
         targetNodes: ${this.nodeId}
