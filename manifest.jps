@@ -35,6 +35,22 @@ onInstall:
         BL_NODE_TAG: 2.5.1
         APP_CONFIGS_PATH: /var/www/webroot/TMP
 
+  - script: |
+        return {
+          result:0,
+          regions:'${settings.regions}'.split(','),
+          envGroups:eval('(' + MANIFEST + ')').envGroups,
+          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
+        }
+  - if (${response.ssl}):
+        setGlobals:
+          IS_JELASTIC_SSL: true
+          PROTOCOL: https
+
+  - setGlobals:
+        REGION: ${response.regions[0]}
+        ENVGROUP: ${response.envGroups}
+
   - createEnvs: ${settings.envName}
 
   - if (${settings.le-addon:false}):
@@ -52,22 +68,6 @@ onInstall:
   
 actions:
   createEnvs:
-    - script: |
-        return {
-          result:0,
-          regions:'${settings.regions}'.split(','),
-          envGroups:eval('(' + MANIFEST + ')').envGroups,
-          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
-        }
-    - if (${response.ssl}):
-        setGlobals:
-          IS_JELASTIC_SSL: true
-          PROTOCOL: https
-
-    - setGlobals:
-        REGION: ${response.regions[0]}
-        ENVGROUP: ${response.envGroups}
-
     - script: |
         var resp, result;
         resp = jelastic.env.control.GetRegions(appid, session);
@@ -88,7 +88,7 @@ actions:
     - install: /topology/cluster.jps?_r=${fn.random}
       envName: ${settings.envName}
       loggerName: ${settings.envName}
-      envGroups: ${globals.envGroups}
+      envGroups: ${globals.ENVGROUP}
       region: ${globals.REGION}
       ssl: ${globals.IS_JELASTIC_SSL}
       displayName: WordPress Cluster
