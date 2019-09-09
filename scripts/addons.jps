@@ -1,0 +1,28 @@
+jpsType: update
+logo: https://download.jelastic.com/public.php?service=files&t=3da2215839f82aa50d3d961271cd1cb9&download
+name: Jelastic Add-ons for Wordpress
+description: Jelastic Add-ons for Wordpress
+      
+onInstall:
+  - setGlobals:
+      ADDONS_BASE_URL: https://raw.githubusercontent.com/sych74/wordpress-master/master/addon
+      
+  - installAddon:
+      id: purge-cache-addon
+      nodeGroup: cp
+      
+addons:
+
+  - id: purge-cache-addon
+    name: Purge all caches
+    description: Purge all caches on all web servers
+    buttons:
+      procedure: cache
+      caption: Purge all caches
+      logsPath: "/var/log/run.log"
+      successText: All caches are successfully purged.
+
+actions:   
+  cache:
+    - install: https://raw.githubusercontent.com/sych74/wordpress-master/master/addon/purgeCache.jps?_r=${fn.random}
+ 

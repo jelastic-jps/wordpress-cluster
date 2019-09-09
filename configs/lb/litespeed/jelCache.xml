@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<virtualHostConfig>
+  <logging>
+    <accessLog>
+      <useServer>1</useServer>
+    </accessLog>
+  </logging>
+  <cache>
+    <storage>
+      <cacheStorePath>/home/lscache/vhosts/$VH_NAME</cacheStorePath>
+      <litemage>0</litemage>
+    </storage>
+    <cachePolicy>
+      <checkPublicCache>1</checkPublicCache>
+      <checkPrivateCache>1</checkPrivateCache>
+      <respectCacheable>1</respectCacheable>
+    </cachePolicy>
+  </cache>
+</virtualHostConfig>

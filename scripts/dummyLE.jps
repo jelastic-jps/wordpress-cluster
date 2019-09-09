@@ -1,0 +1,12 @@
+type: update
+name: Let's Encrypt Free SSL
+id: letsencrypt-ssl-addon
+
+homepage: https://github.com/jelastic-jps/lets-encrypt
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/lets-encrypt/master
+logo: images/lets-encrypt.png
+
+description:
+  text: /text/description.md
+  short: Free tool to configure support of secured SSL connection for an environment,
+    by either internal or custom domain name.

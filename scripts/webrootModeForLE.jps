@@ -1,0 +1,37 @@
+jpsType: update
+name: Setup script for LE
+description: This script for additional configuration for LE
+
+globals:
+  PATH: ${settings.PATH}
+  ENV_TYPE: ${settings.ENV_TYPE}
+  TOPOLOGY: ${settings.TOPOLOGY}
+
+onInstall:
+  - if ('${globals.TOPOLOGY}' == 'standalone'):
+    - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
+      - cmd[cp]: |-
+          mkdir -p /var/www/letsencrypt/.well-known/acme-challenge && touch /var/www/letsencrypt/webroot;
+          wget ${globals.PATH}/configs/cp/nginx/le-${globals.ENV_TYPE}.conf -O /etc/nginx/le.conf
+        user: root
+
+    - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
+      - cmd[cp]: |-
+          mkdir -p /var/www/letsencrypt/.well-known/acme-challenge && touch /var/www/letsencrypt/webroot;
+          wget ${globals.PATH}/configs/cp/litespeed/httpd_config.xml -O /var/www/conf/httpd_config.xml
+          wget ${globals.PATH}/configs/cp/litespeed/vhconf-${globals.ENV_TYPE}.xml -O /var/www/vhconf.xml
+        user: root
+
+  - if ('${globals.TOPOLOGY}' == 'cluster'):
+    - if (/nginx/.test("${nodes.bl.nodeType}")):
+      - cmd[bl]: |-
+          mkdir -p /var/www/letsencrypt/.well-known/acme-challenge && touch /var/www/letsencrypt/webroot;
+          wget ${globals.PATH}/configs/cp/nginx/le-${globals.ENV_TYPE}.conf -O /etc/nginx/le.conf
+        user: root
+
+    - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - cmd[bl]: |-
+          mkdir -p /var/www/letsencrypt/.well-known/acme-challenge && touch /var/www/letsencrypt/webroot;
+          wget ${globals.PATH}/configs/cp/litespeed/httpd_config.xml -O /var/www/conf/httpd_config.xml
+          wget ${globals.PATH}/configs/cp/litespeed/vhconf-${globals.ENV_TYPE}.xml -O /var/www/vhconf.xml
+        user: root

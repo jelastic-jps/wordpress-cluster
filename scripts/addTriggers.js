@@ -1,18 +1,92 @@
-var APPID = getParam("TARGET_APPID"),
-    nLimitQuota;
+//@auth
+//@req(nodeGroup, resourceType, cleanOldTriggers, loadGrowth)
 
-oQoutas = jelastic.billing.account.GetQuotas(APPID, session, ["environment.maxsamenodescount"]);
+var scaleUpLoadPeriod = 1,
+    scaleDownLimit = 2,
+    scaleDownLoadPeriod = 5;
 
-if (oQoutas.result != 0) {
-    return oQoutas;
+var resp = jelastic.billing.account.GetQuotas('environment.maxsamenodescount');
+if (resp.result != 0) return resp;
+var scaleUpLimit = resp.array[0] && resp.array[0].value ? resp.array[0].value : 1000;
+
+if (scaleUpLimit <= scaleDownLimit) return {result:0, warning: 'autoscaling triggers have not been added due to upLimit ['+scaleUpLimit+'] <= downLimit ['+scaleDownLimit+']'}
+
+if (loadGrowth.toLowerCase() == "slow") {
+    var scaleUpValue = 70,
+        scaleDownValue = 20,
+        scaleNodeCount = 1;
 }
 
-nLimitQuota = oQoutas.array[0].value;
-
-oRespTurnOn = jelastic.env.trigger.AddTrigger(APPID, session,'{"isEnabled":true,"name":"hs-add-nginx","nodeGroup":"cp","period":1,"condition":{"type":"GREATER","value":60,"resourceType":"CPU","valueType":"PERCENTAGES"},"actions":[{"type":"ADD_NODE","customData":{"limit":' + nLimitQuota + ',"count":1,"notify":true}}]}');
-
-if (oRespTurnOn.result != 0) {
-    return oRespTurnOn;
+if (loadGrowth.toLowerCase() == "medium") {
+    var scaleUpValue = 50,
+        scaleDownValue = 20,
+        scaleNodeCount = 1;
 }
 
-return jelastic.env.trigger.AddTrigger(APPID, session,'{"isEnabled":true,"name":"hs-add-nginx","nodeGroup":"cp","period":5,"condition":{"type":"LESS","value":20,"resourceType":"CPU","valueType":"PERCENTAGES"},"actions":[{"type":"REMOVE_NODE","customData":{"limit":' + (nLimitQuota - 1 || 1) + ',"count":1,"notify":true}}]}');
+if (loadGrowth.toLowerCase() == "fast") {
+    var scaleUpValue = 30,
+        scaleDownValue = 10,
+        scaleNodeCount = 2;
+}
+
+if (cleanOldTriggers) {
+    var actions = ['ADD_NODE', 'REMOVE_NODE'];
+    for (var i = 0; i < actions.length; i++){
+        var array = jelastic.env.trigger.GetTriggers(appid, session, actions[i]).array;
+        for (var j = 0; j < array.length; j++) jelastic.env.trigger.DeleteTrigger(appid, session, array[j].id);          
+    }
+}
+
+resp = jelastic.env.trigger.AddTrigger('${env.envName}', session, 
+    {
+        "isEnabled": true,
+        "name": "scale-up",
+        "nodeGroup": nodeGroup,
+        "period": scaleUpLoadPeriod,
+        "condition": {
+            "type": "GREATER",
+            "value": scaleUpValue,
+            "resourceType": resourceType,
+            "valueType": "PERCENTAGES"
+        },
+        "actions": [
+            {
+                "type": "ADD_NODE",
+                "customData": {
+                    "limit": scaleUpLimit,
+                    "count": scaleNodeCount,
+                    "notify": true
+                }
+            }
+        ]
+    }
+);
+
+if (resp.result != 0) return resp;
+
+resp = jelastic.env.trigger.AddTrigger('${env.envName}', session,
+    {
+        "isEnabled": true,
+        "name": "scale-down",
+        "nodeGroup": nodeGroup,
+        "period": scaleDownLoadPeriod,
+        "condition": {
+            "type": "LESS",
+            "value": scaleDownValue,
+            "resourceType": resourceType,
+            "valueType": "PERCENTAGES"
+        },
+        "actions": [
+            {
+                "type": "REMOVE_NODE",
+                "customData": {
+                    "limit": scaleDownLimit,
+                    "count": 1,
+                    "notify": true
+                }
+            }
+        ]
+    }
+);
+
+return resp;

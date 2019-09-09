@@ -1,0 +1,5 @@
+wp-content/themes/twentynineteen/style.css
+wp-includes/css/dist/block-library/style.min.css
+wp-includes/css/dist/block-library/theme.min.css
+wp-includes/js/wp-embed.min.js
+wp-content/themes/twentynineteen/print.css

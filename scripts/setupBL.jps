@@ -1,0 +1,18 @@
+jpsType: update
+name: Load Balancer setup script
+description: This script for Load Balancer configurations
+
+globals:
+  PATH: ${settings.PATH}
+  MASTER_BACKEND: ${settings.MASTER_BACKEND:false}
+
+onInstall:
+  - if (/litespeed/.test("${nodes.bl.nodeType}") && '${globals.MASTER_BACKEND}' == 'false'): 
+    - cmd [bl]: |-
+        wget ${globals.PATH}/configs/lb/litespeed/jelastic.xml -O /var/www/conf/jelastic.xml
+        wget ${globals.PATH}/configs/lb/litespeed/letsencrypt.xml -O /tmp/letsencrypt.xml
+        sed -i '/<loadBalancerList>/r /tmp/letsencrypt.xml' /var/www/conf/lslbd_config.xml
+        sudo jem service restart
+  - if (/litespeed/.test("${nodes.bl.nodeType}") && '${globals.MASTER_BACKEND}' != 'false'): 
+    - cmd [bl]: |-
+        xmlstarlet ed --inplace -u "loadBalancerConfig/loadBalancerList/loadBalancer[name = 'Letsencrypt']/workerGroupList/workerGroup[name = 'http-le']/nodeAddresses" -v "${globals.MASTER_BACKEND}" /var/www/conf/lslbd_config.xml

@@ -1,0 +1,63 @@
+jpsType: install
+jpsVersion: '1.1'
+name: WordPress Cluster
+
+globals:
+  PATH: ${settings.PATH}
+  MASTER_ENV: ${settings.MASTER_ENV:false}
+  SLAVE_ENV: ${settings.SLAVE_ENV:false}
+  CP_NODE_TYPE: ${settings.CP_NODE_TYPE}
+  CP_NODE_TAG: ${settings.CP_NODE_TAG}
+  BL_NODE_TYPE: ${settings.BL_NODE_TYPE}
+  BL_NODE_TAG: ${settings.BL_NODE_TAG}
+  APP_CONFIGS_PATH: ${settings.APP_CONFIGS_PATH}
+  REGION: ${settings.REGION}
+  SCALING_LOAD_GROWTH: ${settings.loadGrowth}
+  
+skipNodeEmails: true
+nodes:
+  - nodeType: ${globals.BL_NODE_TYPE}
+    tag: ${globals.BL_NODE_TAG}
+    count: 1
+    cloudlets: 8
+    nodeGroup: bl
+    scalingMode: STATEFUL
+    displayName: Load balancer
+
+  - nodeType: ${globals.CP_NODE_TYPE}
+    tag: ${globals.CP_NODE_TAG}
+    count: 1
+    cloudlets: 8
+    nodeGroup: cp
+    scalingMode: STATELESS
+    displayName: AppServer
+    volumes:
+      - /var/www/webroot/ROOT
+      - ${globals.APP_CONFIGS_PATH}
+      - /var/www/webroot/.cache
+    volumeMounts:
+      "/var/www/webroot/ROOT":
+        readOnly: false
+        sourcePath: "/data/ROOT"
+        sourceNodeGroup: storage
+      "${globals.APP_CONFIGS_PATH}":
+        readOnly: false
+        sourcePath: "/data/APP_CONFIGS"
+        sourceNodeGroup: storage
+      "/var/www/webroot/.cache":
+        readOnly: false
+        sourcePath: "/data/.cache"
+        sourceNodeGroup: storage
+    env:
+      SERVER_WEBROOT: /var/www/webroot/ROOT
+      REDIS_ENABLED: TRUE
+
+  - nodeType: storage
+    cloudlets: 8
+    nodeGroup: storage
+    displayName: Storage
+    nodeGroupData:
+      validation:
+        maxCount: 1
+
+    

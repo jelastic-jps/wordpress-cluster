@@ -191,6 +191,7 @@ actions:
           envName: ${this.envName}
           region: ${this.region}
           index: ${this.index}
+
     - if (${this.index}):
         setup-cluster:
           envName: ${this.envName}-${this.index}
@@ -200,80 +201,72 @@ actions:
 
   setup-cluster:
     - if ('${settings.topology}' == 'standalone'):
+        - getTopologyNodes:
+            envName: ${this.envName}
+
         - setGlobals:
+            masterDB-IP${this.index}: ${response.nodes.cp.address} 
+            masterDB-ID${this.index}: ${response.nodes.cp.id} 
+            masterCP-ID${this.index}: ${response.nodes.cp.id} 
+            storage-IP${this.index}: ${response.nodes.cp.address} 
             DB_HOST: 127.0.0.1
             lsync-nodeGroup: cp
             cdn-nodeGroup: cp
             le-nodeGroup: cp
 
-        - api: jelastic.env.control.GetEnvInfo
-          envName: ${this.envName}
-        - forEach(response.nodes):
-            if (${@i.ismaster} && '${@i.nodeGroup}' == 'cp'):
-              - setGlobals:
-                  masterDB-IP${this.index}: ${@i.address}
-                  masterDB-ID${this.index}: ${@i.id}
-                  masterCP-ID${this.index}: ${@i.id}
-                  storage-IP${this.index}: ${@i.address}
-
-              - if (${globals.MU_REGIONS}):
-                  - setup-DB-master:
-                      nodeId: ${@i.id}
-                      envName: ${this.envName}
-                      index: ${this.index}
-
     - if ('${settings.topology}' == 'cluster'):
-        - setGlobals:
+        - getTopologyNodes:
+            envName: ${this.envName}
+
+        - setGlobals: 
+            storage-IP${this.index}: ${response.nodes.storage.address}        
+            masterBL-ID${this.index}: ${response.nodes.bl.id}     
+            masterCP-ID${this.index}: ${response.nodes.cp.id}  
+            masterDB-IP${this.index}: ${response.nodes.sqldb.address}
+            masterDB-ID${this.index}: ${response.nodes.sqldb.id}
             DB_HOST: sqldb
             lsync-nodeGroup: storage
             cdn-nodeGroup: bl
             le-nodeGroup: bl
-
-        - api: jelastic.env.control.GetEnvInfo
-          envName: ${this.envName}
-        - forEach(response.nodes):
-            - if ('${@i.nodeGroup}' == 'storage'):
-                - setGlobals:
-                    storage-IP${this.index}: ${@i.address}
-
-            - if ('${@i.nodeGroup}' == 'bl'):
-                - setGlobals:
-                    masterBL-ID${this.index}: ${@i.id}
-
-            - if (${@i.ismaster} && '${@i.nodeGroup}' == 'cp'):
-                - setGlobals:
-                    masterCP-ID${this.index}: ${@i.id}
-
-            - if (${@i.ismaster} && '${@i.nodeGroup}' == 'sqldb'):
-                - setGlobals:
-                    masterDB-IP${this.index}: ${@i.address}
-                    masterDB-ID${this.index}: ${@i.id}
-
-                - if (${globals.MU_REGIONS}):
-                    - setup-DB-master:
-                        nodeId: ${@i.id}
-                        envName: ${this.envName}
-                        index: ${this.index}
 
     - if (${settings.cdn-addon:false}):
         install-edgeport-CDN:
           envName: ${this.envName}
           masterEnv: ${this.masterEnv:}
 
-  setup-DB-master:
-    - api: env.control.ExecCmdById
-      envName: ${this.envName}
-      nodeId: ${this.nodeId}
-      commandList:
-        - command: |-
-            wget https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/configs/increment.cnf -O /etc/mysql/conf.d/increment.cnf
-            wget https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/configs/master.cnf -O /etc/mysql/conf.d/master.cnf &>> /var/log/run.log
-            sed -i "s/auto-increment-offset.*/auto-increment-offset = $((${this.index} + 1))/" /etc/mysql/conf.d/increment.cnf
-            sed -i '/server-id.*/d' /etc/mysql/conf.d/master.cnf
-            sed -i '/binlog_format.*/d' /etc/mysql/conf.d/master.cnf
-            sudo /etc/init.d/mysql restart
+  getTopologyNodes:
+    - envName: ${this.envName}
+      script: |
+        var resp = jelastic.env.control.GetEnvInfo(envName, session);
+        if (resp.result !== 0) return resp;
+
+        var envNodes = resp.nodes, nodes = {};    
+        for (var i = 0, node; node = envNodes[i]; i++) {
+          nodes[node.nodeGroup] = nodes[node.nodeGroup] || [];
+
+          if (node.ismaster) {
+            nodes[node.nodeGroup][0] = node;
+          } else {
+            nodes[node.nodeGroup].push(node);
+          }
+        }
+
+        return { result : 0, nodes: nodes };
 
   setup-replication:
+    - install:
+        - jps: https://raw.githubusercontent.com/sych74/mysql-cluster/master/scripts/setupMaster.jps 
+          envName: ${settings.envName}
+          settings:
+            nodeId: ${globals.masterDB-ID0}
+            index: 0
+
+        - jps: https://raw.githubusercontent.com/sych74/mysql-cluster/master/scripts/setupMaster.jps 
+          envName: ${settings.envName}-1
+          settings:
+            nodeId: ${globals.masterDB-ID1}
+            index: 1
+  
     - install: https://raw.githubusercontent.com/sych74/mysql-cluster/master/addons/regions-replication.jps?_r=${fn.random}
       envName: ${settings.envName}
       settings:
@@ -317,6 +310,8 @@ actions:
       sourceNodeId: ${this.sourceNodeId}
       name: SSL mount
       readOnly: true
+
+
 
   install-LE-addon:
     install: https://github.com/sych74/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}

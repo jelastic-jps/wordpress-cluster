@@ -1,0 +1,47 @@
+?xml version="1.0" encoding="UTF-8"?>
+<virtualHostConfig>
+  <docRoot>$VH_ROOT/ROOT/</docRoot>
+  <enableGzip>1</enableGzip>
+  <logging>
+    <log>
+      <useServer>0</useServer>
+      <fileName>$SERVER_ROOT/logs/error.log</fileName>
+      <logLevel>DEBUG</logLevel>
+    </log>
+    <accessLog>
+      <useServer>0</useServer>
+      <fileName>$SERVER_ROOT/logs/error.log</fileName>
+      <rollingSize>10m</rollingSize>
+      <keepDays>30</keepDays>
+      <compressArchive>0</compressArchive>
+    </accessLog>
+  </logging>
+  <index>
+    <useServer>0</useServer>
+    <indexFiles>index.php, index.html</indexFiles>
+    <autoIndex>0</autoIndex>
+  </index>
+  <htAccess>
+    <allowOverride>31</allowOverride>
+    <accessFileName>.htaccess</accessFileName>
+  </htAccess>
+  <expires>
+    <enableExpires>1</enableExpires>
+  </expires>
+  <contextList>
+    <context>
+      <type>NULL</type>
+      <uri>/.well-known/acme-challenge/</uri>
+      <location>/var/www/letsencrypt/.well-known/acme-challenge/</location>
+      <allowBrowse>1</allowBrowse>
+      <enableExpires>0</enableExpires>
+      <accessControl>
+      </accessControl>
+      <rewrite>
+      </rewrite>
+      <addDefaultCharset>off</addDefaultCharset>
+      <cachePolicy>
+      </cachePolicy>
+    </context>
+  </contextList>
+</virtualHostConfig>

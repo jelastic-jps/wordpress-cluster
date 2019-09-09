@@ -1,0 +1,14 @@
+jpsType: update
+name: Custom Sites setup script
+description: This script for Sites configurations
+
+onInstall:
+  - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
+    - nginx
+
+actions:
+  nginx:
+    - cmd[cp]: |-
+        wget ${baseUrl}../configs/cp/nginx/default.conf -O /etc/nginx/conf.d/SITES_ENABLED/default.conf
+        wget ${baseUrl}../configs/cp/nginx/skip_cache.conf -O /etc/nginx/conf.d/SITES_ENABLED/skip_cache.conf
+        sudo /etc/init.d/nginx restart

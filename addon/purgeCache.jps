@@ -1,0 +1,38 @@
+jpsType: update
+jpsVersion: '1.1'
+name: Addon for cache purge
+description: Addon for cache purge
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-master/master
+
+onInstall:
+    - script: | 
+        var env1 = '${env.name}'.match(/^(.*?)(-1)?$/)[1],           
+            env2 = env1 + "-1",
+            resp = jelastic.env.control.GetEnvInfo(env2, session);
+        
+        return { 
+          result: 0, 
+          env1: env1,
+          env2: resp.result == 0 ? env2 : ""
+        };
+    
+    - setGlobals:
+        env1: ${response.env1}
+        env2: ${response.env2}
+
+    - api: env.control.ExecCmdByGroup
+      nodeGroup: cp
+      envName: ${globals.env1}
+      commandList:
+         - command: |-
+            wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+            bash ~/bin/setupWP.sh --purge true &>> /var/log/run.log
+
+    - if (globals.env2):
+        api: env.control.ExecCmdByGroup
+        nodeGroup: cp
+        envName: ${globals.env2}
+        commandList:
+          - command: |-
+              wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+              bash ~/bin/setupWP.sh --purge true &>> /var/log/run.log

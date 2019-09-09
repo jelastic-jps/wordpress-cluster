@@ -1,0 +1,16 @@
+jpsType: update
+name: SSL check script
+description: This script for SSL check
+
+globals:
+  TARGET_NODES: ${settings.TARGET_NODES}
+
+onInstall:
+  - checkSSL
+actions:
+  checkSSL:
+    - cmd[${globals.TARGET_NODES}]: |-
+        wget ${baseUrl}../scripts/checkSSLStatus.sh -O ~/checkSSLStatus.sh
+        chmod +x ~/checkSSLStatus.sh
+        crontab -l | { cat; echo "* * * * * /bin/bash ~/checkSSLStatus.sh"; } | crontab
+        

@@ -1,0 +1,111 @@
+jpsType: install
+jpsVersion: '1.1'
+name: WordPress Standalone
+
+globals:
+  PATH: ${settings.PATH}
+  MASTER_ENV: ${settings.MASTER_ENV:false}
+  SLAVE_ENV: ${settings.SLAVE_ENV:false}
+  CP_NODE_TYPE: ${settings.CP_NODE_TYPE}
+  CP_NODE_TAG: ${settings.CP_NODE_TAG}
+  
+skipNodeEmails: true
+nodes:
+  - nodeType: ${globals.CP_NODE_TYPE}
+    tag: ${globals.CP_NODE_TAG}
+    count: 1
+    cloudlets: 16
+    nodeGroup: cp
+    displayName: AppServer
+    nodeGroupData:
+      validation:
+        maxCount: 1    
+    env:
+      SERVER_WEBROOT: /var/www/webroot/ROOT
+
+onAfterMigrate:
+  install: ${globals.PATH}/addon/Domain.jps?_r=${fn.random}
+  envName: ${event.response.env.envName}
+  settings:
+    new_domain: ${event.response.env.domain}
+    
+onAfterClone:
+  install: ${globals.PATH}/addon/Domain.jps?_r=${fn.random}
+  envName: ${event.response.env.envName}
+  settings:
+    new_domain: ${event.response.env.domain}
+    
+onAfterInstallAddon [nodeGroup:cp, id:cdn]:
+  - install: ${globals.PATH}/scripts/setupCDN.jps
+    settings:
+      PATH: ${globals.PATH}
+
+onBeforeInstallAddon [nodeGroup:cp, id:letsencrypt-ssl-addon]:
+  - if ('${globals.SLAVE_ENV}' != 'false'):
+    - api: jelastic.env.control.GetEnvInfo
+      envName: ${globals.SLAVE_ENV}
+    - forEach(response.nodes):
+        - if ('${@i.nodeGroup}' == 'cp'):
+          - env.binder.AttachExtIp:
+              envName: ${globals.SLAVE_ENV}
+              nodeid:  ${@i.id}
+
+onAfterBindSSL:
+  - cmd[cp]: source /opt/letsencrypt/settings && echo $domain
+  - set:
+      domain: ${response.out}
+  - cmd[cp]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
+
+  - if ('${globals.SLAVE_ENV}' != 'false'):
+    - api: jelastic.env.control.GetEnvInfo
+      envName: ${globals.SLAVE_ENV}
+    - forEach(response.nodes):
+        if ('${@i.nodeGroup}' == 'cp'):
+          - setGlobals:
+              SLAVE-ID: ${@i.id}
+    - env.control.ExecCmdById:
+      envName: ${globals.SLAVE_ENV}
+      nodeId: ${globals.SLAVE-ID}
+      userName: root
+      commandList: 
+        - command: |-
+            jem ssl install
+
+onInstall:
+  - log: OPTIMIZATION
+  - install: https://raw.githubusercontent.com/sych74/templates/master/config.jps?_r=${fn.random}
+    settings:
+      targetGroup: cp
+      targetNodes: cp
+      optimization: wordpress
+ 
+  - setGlobals:
+      DB_USER: ${settings.db_user:jelastic-[fn.random]}
+      DB_PASS: ${settings.db_pass:[fn.password(10)]}
+      
+  - log: Clean Webroot Directory
+  - cmd[cp]: rm -rf ${SERVER_WEBROOT}/*
+      
+  - log: DB Setup
+  - cmd[cp]: |-
+      sed -i "s/server-id.*/server-id = ${nodes.cp.master.id}/" /etc/my.cnf
+      wget https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/setupUser.sh -O ~/setupUser.sh &>> /var/log/run.log
+      bash ~/setupUser.sh ${globals.DB_USER} ${globals.DB_PASS} &>> /var/log/run.log
+    user: root  
+  
+  - log: Wordpress CLI Installation
+  - install: ${globals.PATH}/scripts/WP-CLI.jps?_r=${fn.random}
+    settings:
+      TARGET_NODES: cp
+   
+  - log: App Server Configuration and dummy addons for slave
+  - if ('${env.envName}' == '${globals.SLAVE_ENV}'):
+      install:
+        - jps: ${globals.PATH}/scripts/dummyLE.jps?_r=${fn.random}
+          nodeGroup: cp
+          skipEmail: true
+
+        - jps: ${globals.PATH}/scripts/dummyCDN.jps?_r=${fn.random}        
+          nodeGroup: cp            
+          skipEmail: true
+     

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<virtualHostConfig>
+  <logging>
+    <accessLog>
+      <useServer>1</useServer>
+    </accessLog>
+  </logging>
+  <cache>
+    <storage>
+      <cacheStorePath>/tmp/lscache/vhosts/$VH_NAME</cacheStorePath>
+      <litemage>0</litemage>
+    </storage>
+  </cache>
+  <contextList>
+    <context>
+      <type>loadbalancer</type>
+      <uri>/.well-known/acme-challenge/</uri>
+      <handler>Letsencrypt</handler>
+      <accessControl>
+      </accessControl>
+      <cachePolicy>
+      </cachePolicy>
+      <rewrite>
+      </rewrite>
+      <addDefaultCharset>off</addDefaultCharset>
+    </context>
+  </contextList>
+</virtualHostConfig>

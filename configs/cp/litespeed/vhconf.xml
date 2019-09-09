@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<virtualHostConfig>
+  <docRoot>$VH_ROOT/ROOT/</docRoot>
+  <enableGzip>1</enableGzip>
+  <logging>
+    <log>
+      <useServer>0</useServer>
+      <fileName>$SERVER_ROOT/logs/error.log</fileName>
+      <logLevel>DEBUG</logLevel>
+      <rollingSize>10M</rollingSize>
+    </log>
+    <accessLog>
+      <useServer>0</useServer>
+      <fileName>$SERVER_ROOT/logs/access.log</fileName>
+      <rollingSize>10M</rollingSize>
+      <keepDays>30</keepDays>
+      <compressArchive>0</compressArchive>
+    </accessLog>
+  </logging>
+  <index>
+    <useServer>0</useServer>
+    <indexFiles>index.php, index.html</indexFiles>
+    <autoIndex>0</autoIndex>
+    <autoIndexURI>/_autoindex/default.php</autoIndexURI>
+  </index>
+  <customErrorPages>
+    <errorPage>
+      <errCode>404</errCode>
+      <url>/error404.html</url>
+    </errorPage>
+  </customErrorPages>
+  <htAccess>
+    <allowOverride>31</allowOverride>
+    <accessFileName>.htaccess</accessFileName>
+  </htAccess>
+  <expires>
+    <enableExpires>1</enableExpires>
+  </expires>
+  <security>
+    <hotlinkCtrl>
+      <enableHotlinkCtrl>0</enableHotlinkCtrl>
+      <suffixes>gif,  jpeg,  jpg</suffixes>
+      <allowDirectAccess>1</allowDirectAccess>
+      <onlySelf>1</onlySelf>
+    </hotlinkCtrl>
+    <accessControl>
+      <allow>*</allow>
+    </accessControl>
+  </security>
+  <cache>
+    <storage>
+      <cacheStorePath>/var/www/webroot/.cache/vhosts/$VH_NAME</cacheStorePath>
+    </storage>
+  </cache>
+  <contextList>
+    <context>
+      <type>NULL</type>
+      <uri>/.well-known/acme-challenge/</uri>
+      <location>/var/www/letsencrypt/.well-known/acme-challenge/</location>
+      <allowBrowse>1</allowBrowse>
+      <accessControl>
+      </accessControl>
+      <rewrite>
+      </rewrite>
+      <addDefaultCharset>off</addDefaultCharset>
+      <cachePolicy>
+      </cachePolicy>
+    </context>
+  </contextList>
+  <rewrite>
+    <enable>0</enable>
+    <logLevel>0</logLevel>
+    <rules>RewriteCond %{HTTP_USER_AGENT}  ^NameOfBadRobot
+RewriteRule ^/nospider/         -   [F]</rules>
+  </rewrite>
+  <frontPage>
+    <enable>0</enable>
+    <disableAdmin>0</disableAdmin>
+  </frontPage>
+  <awstats>
+    <updateMode>0</updateMode>
+    <workingDir>$VH_ROOT/awstats</workingDir>
+    <awstatsURI>/awstats/</awstatsURI>
+    <siteDomain>localhost</siteDomain>
+    <siteAliases>127.0.0.1 localhost</siteAliases>
+    <updateInterval>86400</updateInterval>
+    <updateOffset>0</updateOffset>
+  </awstats>
+</virtualHostConfig>
