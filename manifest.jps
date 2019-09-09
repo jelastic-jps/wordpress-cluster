@@ -177,14 +177,6 @@ actions:
         wp_url: ${globals.PROTOCOL}://${env.domain}/
         targetNodeID: ${globals.masterCP-ID}
 
-    - api: env.control.ExecCmdById
-      envName: ${settings.envName}
-      nodeId: ${globals.masterCP-ID}
-      commandList:
-        - command: |-
-            wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
-            bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1
-
 success:
   email: success/email/${settings.topology}/${globals.CLUSTER_TYPE}-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/${globals.CLUSTER_TYPE}/${globals.SUCCESS}.md?_r=${fn.random}
