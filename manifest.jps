@@ -88,7 +88,7 @@ actions:
     - install: /topology/cluster.jps?_r=${fn.random}
       envName: ${settings.envName}
       loggerName: ${settings.envName}
-      envGroups: ${response.envGroups}
+      envGroups: ${globals.envGroups}
       region: ${globals.REGION}
       ssl: ${globals.IS_JELASTIC_SSL}
       displayName: WordPress Cluster
