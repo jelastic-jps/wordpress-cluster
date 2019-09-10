@@ -187,16 +187,16 @@ if [ $edgeportCDN == 'true' ] ; then
   case $WPCACHE in
     w3tc)
 	  checkCdnStatus;
-	  CDN_DOMAIN=$(echo ${CDN_URL} | cut -d'/' -f3)
 	  $W3TC_OPTION_SET cdn.enabled false --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET cdn.engine mirror --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $W3TC_OPTION_SET cdn.mirror.domain ${CDN_DOMAIN} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $W3TC_OPTION_SET cdn.mirror.domain ${CDN_URL} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
     lscwp)
 	  checkCdnStatus;
 	  CDN_ORI=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
+	  PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
           $LSCWP_OPTION_SET cdn false --path=${SERVER_WEBROOT} &>> /var/log/run.log
-	  $LSCWP_OPTION_SET litespeed-cache-cdn_mapping[url][0] ${CDN_URL} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+	  $LSCWP_OPTION_SET litespeed-cache-cdn_mapping[url][0] ${PROTOCOL}://${CDN_URL}/ --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $LSCWP_OPTION_SET cdn_ori "//${CDN_ORI}/" --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
   esac
