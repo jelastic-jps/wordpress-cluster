@@ -9,9 +9,9 @@ fields:
 - caption: Environment
   type: envname
   name: envName
-  dependsOn: region
+  dependsOn: regions
   randomName: true
-  showFullDomain: false
+  showFullDomain: true
   required: true
 
 - caption: Scaling Load Growth
