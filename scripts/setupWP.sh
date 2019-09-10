@@ -140,7 +140,8 @@ ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
 crontab -l | sed "/checkCdnStatus/d" | crontab -
 EOF
 chmod +x ~/bin/checkCdnStatus.sh
-crontab -l | { cat; echo "* * * * * /bin/bash ~/bin/checkCdnStatus.sh ${CDN_URL}"; } | crontab
+PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
+crontab -l | { cat; echo "* * * * * /bin/bash ~/bin/checkCdnStatus.sh ${PROTOCOL}://${CDN_URL}/"; } | crontab
 }
 
 if [ $purge == 'true' ] ; then
