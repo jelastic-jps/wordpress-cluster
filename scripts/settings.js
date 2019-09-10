@@ -39,7 +39,7 @@ if (group.groupType == 'trial') {
         }, {
             "type": "displayfield",
             "cls": "x-item-disabled",
-            "value": cdnText
+            "value": lsText
         }]
     }, {
         "type": "compositefield",
@@ -58,7 +58,7 @@ if (group.groupType == 'trial') {
         }, {
             "type": "displayfield",
             "cls": "x-item-disabled",
-            "value": lsText
+            "value": cdnText
         }]
     }, {
         "type": "compositefield",
@@ -87,15 +87,6 @@ if (group.groupType == 'trial') {
 
     });
 } else {
-    var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
-    if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
-        settings.fields.push({
-            type: "checkbox",
-            name: "cdn-addon",
-            caption: cdnText,
-            value: true
-        });
-    }
 
     var isLS = jelastic.dev.apps.GetApp(lsAppid);
     if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {
@@ -103,6 +94,17 @@ if (group.groupType == 'trial') {
             type: "checkbox",
             name: "ls-addon",
             caption: lsText,
+            value: true
+        });
+    }
+    
+    
+    var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
+    if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
+        settings.fields.push({
+            type: "checkbox",
+            name: "cdn-addon",
+            caption: cdnText,
             value: true
         });
     }
