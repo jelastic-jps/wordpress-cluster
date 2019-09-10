@@ -1,35 +1,48 @@
 # Highly Available and Auto-Scalable WordPress Cluster
 
-Out-of-the-box automated WordPress Cluster solution for large businesses and mission-critical sites
+Out-of-the-box automated Enterprise WordPress Cluster solution for large businesses and mission-critical sites
 
 
 ## WordPress Cluster Topology
 
 Upon the package installation, a new environment with the following topology will be created: 
-* **NGINX** load balancers are used for distributing the incoming traffic within a cluster
-* the WordPress application itself is handled by **NGINX PHP** servers with preconfigured [automatic horizontal scaling](https://docs.jelastic.com/automatic-horizontal-scaling) to handle load spikes
-* Highly-available **[MySQL DB Cluster](https://github.com/jelastic-jps/mysql-cluster)** is used to store and operate user data
-* **[Data Storage](https://docs.jelastic.com/data-storage-container)** is mounted to all application server nodes for sharing common data 
 
-![WP Cluster Topology](images/wp-cluster-topology.png)
+* **[Premium CDN](https://jelastic.com/blog/enterprise-cdn-verizon-integration/)** integration in order to provide Lightning-fast static assets loading  
+* Either **[LiteSpeed ADC](https://docs.jelastic.com/litespeed-web-adc)** or **[NGINX](https://docs.jelastic.com/tcp-load-balancing)** load balancer is used for distributing the incoming traffic within a cluster  
+* **Web Application Firewall** will be enabled by the default if **[LiteSpeed Web Server](https://docs.jelastic.com/litespeed-web-server)** will be installed
+* The *WordPress* application itself is handled by either **LiteSpeed Web Server** or **[NGINX PHP](https://docs.jelastic.com/nginx-php)** servers with preconfigured [automatic horizontal scaling](https://docs.jelastic.com/automatic-horizontal-scaling) to handle load spikes  
+* **Redis** is high-performance storage used as a highspeed caching solution
+* **[Shared Storage](https://docs.jelastic.com/shared-storage-container)** is mounted to all application server nodes for sharing common data  
+* Highly-available **[MariaDB Galera Cluster](https://github.com/jelastic-jps/mysql-cluster#mariadb-galera-cluster)** is used to store and operate user data   
+
+
+<p align="left"> 
+<img src="images/single-cluster-topology.png" width="500">
+</p>
 
 ## Deployment to the Cloud
 
 Click the **Deploy** button below, specify your email address within the widget, choose one of the [Jelastic Public Cloud providers](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps&keys=app.jelastic.elastx.net;app.milesweb.cloud;app.jelastic.eapps.com;app.jelastic.saveincloud.net&filter=auto_cluster) and press **Install**.
 
-[![Deploy to Jelastic](images/deploy-to-jelastic.png)](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps&keys=app.jelastic.elastx.net;app.milesweb.cloud;app.jelastic.eapps.com;app.jelastic.saveincloud.net&filter=auto_cluster)
+[![Deploy to Jelastic](https://github.com/jelastic-jps/git-push-deploy/raw/master/images/deploy-to-jelastic.png)](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps&keys=app.jelastic.elastx.net;app.milesweb.cloud;app.jelastic.eapps.com;app.jelastic.saveincloud.net&filter=auto_cluster)
 
 > **Note:** If you are already registered at Jelastic, you can deploy this cluster by importing the  [the package manifest raw link](https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/manifest.jps) within the dashboard.
 
 ## Installation Process
 
-In the opened confirmation window at Jelastic dashboard, type the preferable **WP Title** for your blog site. Also, set an _Environment_ name and, optionally, customize its _[Display Name](https://docs.jelastic.com/environment-aliases)_. Then, select the preferable _[region](https://docs.jelastic.com/environment-regions)_ (if several are available) and click on **Install**.
+In the opened confirmation window at Jelastic dashboard, if required change:  
 
-![WP Cluster Installation](images/wp-cluster-installation.png)
+* Destination __[Region](https://docs.jelastic.com/environment-regions)__ if several are available  
+* __Environment__ name  
+* Preconfigured __Scaling Load Growth__ horizontal scaling scenario
+* Choose what __Advanced Features__ should be installed or not
+and click on __Install__.
+
+![WP Cluster Installation](images/install-new.png)
 
 Once the deployment is finished, you’ll see the appropriate success pop-up with access credentials to your administration WordPress panel, whilst the same information will be duplicated to your email box.
 
-![WP Cluster Installed](images/wp-cluster-installed.png)
+![WP Cluster Installed](images/success-wordpress.png)
 
 So now you can just click on the **Open in browser** button within the shown frame and start filling your highly available and reliable WP installation with the required content, being ready to handle as much users as your service requires.
 
