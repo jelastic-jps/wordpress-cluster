@@ -1,5 +1,5 @@
 fields:
-- caption: Regions
+- caption: Region
   type: regionlist
   name: regions
   disableInactive: true
