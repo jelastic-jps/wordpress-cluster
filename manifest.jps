@@ -141,10 +141,15 @@ actions:
       customDomains: ${settings.envName}.${globals.DOMAIN}
 
   install-edgeport-CDN:
-    install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
-    envName: ${settings.envName}
-    nodeGroup: bl
-    skipEmail: true
+    - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
+      envName: ${settings.envName}
+      nodeGroup: bl
+      skipEmail: true
+    - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
+    - setGlobals:
+        CDN_URL: ${globals.PROTOCOL}://${settings.envName}-${response.response.partnerCode}.cdn.edgeport.net/
+        SUCCESS: success-cdn
+        EMAIL: cdn
 
   configure-MU:
     - install: ${baseUrl}/addon/WPMU.jps
