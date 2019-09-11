@@ -6,8 +6,8 @@ globals:
   TARGET_NODES: "${settings.TARGET_NODES}"
 onInstall:
   - cmd[${globals.TARGET_NODES}]: |- 
-      curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x /usr/local/bin/wp
-    user: root
-  - cmd[${globals.TARGET_NODES}]: |- 
       [ ! -d $HOME/bin ] && mkdir $HOME/bin
+      curl -o $HOME/bin/wp-cli.phar https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar &>> /var/log/run.log
+      cp $HOME/bin/wp-cli.phar $HOME/bin/wp && chmod +x $HOME/bin/wp
+      echo "export PATH=$PATH:$HOME/bin/" >> $HOME/.bash_profile
       wget ${baseUrl}/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
