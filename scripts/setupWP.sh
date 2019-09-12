@@ -6,6 +6,7 @@ objectcache=false;
 edgeportCDN=false;
 wpmu=false;
 DOMAIN=false;
+SERVER_WEBROOT=/var/www/webroot/ROOT;
 
 ARGUMENT_LIST=(
     "purge"
