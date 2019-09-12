@@ -14,6 +14,7 @@ globals:
 
 onInstall:
   - installWP
+  - setupWP
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
     - nginxPurgeCache
 
@@ -27,6 +28,11 @@ actions:
         wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O ${SERVER_WEBROOT}/wp-jelastic.php
         sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" ${SERVER_WEBROOT}/wp-config.php
         wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico
+
+  setupWP:
+    - cmd[${globals.TARGET_NODE_ID}]: |-
+        wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1
 
   nginxPurgeCache:
     - cmd[${globals.TARGET_NODE_ID}]: |-
