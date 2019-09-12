@@ -6,7 +6,8 @@ objectcache=false;
 edgeportCDN=false;
 wpmu=false;
 DOMAIN=false;
-SERVER_WEBROOT=/var/www/webroot/ROOT;
+
+SERVER_WEBROOT=/var/www/webroot/ROOT
 
 ARGUMENT_LIST=(
     "purge"
@@ -135,6 +136,7 @@ while read -ru 4 CONTENT; do
       exit
     fi
 done 4< ~/bin/checkCdnContent.txt
+cd ${SERVER_WEBROOT}
 ${CDN_ENABLE_CMD} --path=${SERVER_WEBROOT} &>> /var/log/run.log
 ${CACHE_FLUSH}  &>> /var/log/run.log
 ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
