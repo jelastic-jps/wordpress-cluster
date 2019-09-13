@@ -16,3 +16,4 @@ var resp = {
         displayName: "Storage"
     }]
 }
+return resp;
