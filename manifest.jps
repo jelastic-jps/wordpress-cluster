@@ -31,16 +31,12 @@ onAfterScaleOut[nodeGroup:cp]:
     - setupNode:
         nodeId: ${@i.id}
 
-onAfterInstallAddon [nodeGroup:cp, id:cdn]:
+onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${baseUrl}/scripts/setupCDN.jps
     settings:
       PATH: ${baseUrl}
       
-onAfterBindSSL:
-  - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
-  - set:
-      domain: ${response.out}
-  - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
+onAfterBindSSL: setupDomain
 
 onInstall:
 
@@ -73,7 +69,9 @@ onInstall:
 
   - install-wordpress:
       
-  - if (${settings.le-addon:false}): install-LE-addon
+  - if (${settings.le-addon:false}): 
+      - install-LE-addon
+      - setupDomain
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
@@ -82,11 +80,17 @@ onInstall:
 actions:
 
   install-LE-addon:
-    install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
-    nodeGroup: bl
-    skipEmail: true
-    settings:
-      customDomains: ${env.domain}
+    - install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
+      nodeGroup: bl
+      skipEmail: true
+      settings:
+        customDomains: ${env.domain}
+
+  setupDomain:
+    - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
+    - set:
+        domain: ${response.out}
+    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
 
   install-edgeport-CDN:
     - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
