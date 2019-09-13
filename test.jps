@@ -1,0 +1,16 @@
+type: install
+version: '1.1'
+name: WordPress Cluster
+id: wordpress-cluster
+categories:
+  - apps/clusters
+  - apps/content-management
+description: WordPress Cluster package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
+logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
+baseUrl: https://raw.githubusercontent.com/unigeocloud/wordpress-cluster/master
+
+onBeforeInstall: /scripts/beforeinstall.js
+onBeforeInit: /scripts/settings.js
+
+nodes: definedInOnBeforeInstall
+
