@@ -8,11 +8,7 @@ var resp = {
     cloudlets: 16,
     nodeGroup: "sqldb",
     displayName: "Galera cluster",
-    restartDelay: 5,
-    env: {
-      ON_ENV_INSTALL: "",
-      JELASTIC_PORTS: "4567,4568,4444"
-    }
+    restartDelay: 5
   }, {
     nodeType: "storage",
     cloudlets: 8,
