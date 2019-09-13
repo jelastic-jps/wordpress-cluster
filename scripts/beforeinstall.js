@@ -12,7 +12,8 @@ var resp = {
     env: {
       ON_ENV_INSTALL: "",
       JELASTIC_PORTS: "4567,4568,4444"
-    }, {
+    }
+  }, {
     nodeType: "storage",
     cloudlets: 8,
     nodeGroup: "storage",
