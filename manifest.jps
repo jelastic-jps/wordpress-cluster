@@ -18,11 +18,11 @@ nodes: definedInOnBeforeInstall
 globals:
   DB_USER: jelastic-${fn.random}
   DB_PASS: ${fn.password(10)}
+  DB_HOST: sqldb
   PROTOCOL: http
   WP_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
-
 
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
