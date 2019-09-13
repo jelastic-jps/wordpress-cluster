@@ -8,7 +8,11 @@ var resp = {
     cloudlets: 16,
     nodeGroup: "sqldb",
     displayName: "Galera cluster",
-    restartDelay: 5
+    restartDelay: 5,
+    env: {
+      ON_ENV_INSTALL: "",
+      JELASTIC_PORTS: "4567,4568,4444"
+    }
   }, {
     nodeType: "storage",
     cloudlets: 8,
@@ -56,5 +60,51 @@ if (${settings.ls-addon:false}) {
     }
   })
 }
-  
+
+if (!${settings.ls-addon:false}) {
+  resp.nodes.push({
+    nodeType: "litespeedadc",
+    tag: "2.5.1",
+    count: 1,
+    cloudlets: 8,
+    nodeGroup: "bl",
+    scalingMode: "STATEFUL",
+    displayName: "Load balancer"
+  }, {
+    nodeType: "nginxphp-dockerized",
+    tag: "1.16.0-php-7.3.8",
+    count: 1,
+    cloudlets: 8,
+    nodeGroup: "cp",
+    scalingMode: "STATELESS",
+    displayName: "AppServer",
+    env: {
+      SERVER_WEBROOT: "/var/www/webroot/ROOT",
+      REDIS_ENABLED: "true"
+    },
+    volumes: [
+      "/var/www/webroot/ROOT",
+      "/var/www/webroot/.cache",
+      "/etc/nginx/conf.d/SITES_ENABLED"
+    ],  
+    volumeMounts: {
+      "/var/www/webroot/ROOT": {
+        readOnly: "false",
+        sourcePath: "/data/ROOT",
+        sourceNodeGroup: "storage"
+      },
+      "/var/www/webroot/.cache": {
+        readOnly: "false",
+        sourcePath: "/data/.cache",
+        sourceNodeGroup: "storage"
+      },
+      "/etc/nginx/conf.d/SITES_ENABLED": {
+        readOnly: "false",
+        sourcePath: "/data/APP_CONFIGS",
+        sourceNodeGroup: "storage"
+      }
+    }
+  })
+}
+
 return resp;
