@@ -1,19 +1,4 @@
 fields:
-- caption: Region
-  type: regionlist
-  name: regions
-  disableInactive: true
-  selectFirstAvailable: true
-  multiSelect: false
-
-- caption: Environment
-  type: envname
-  name: envName
-  dependsOn: regions
-  randomName: true
-  showFullDomain: true
-  required: true
-
 - caption: Scaling Load Growth
   type: list
   name: loadGrowth

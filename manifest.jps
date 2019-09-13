@@ -7,159 +7,121 @@ categories:
   - apps/content-management
 description: WordPress Cluster package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
+baseUrl: https://raw.githubusercontent.com/unigeocloud/wordpress-cluster/master
 
 onBeforeInit: /scripts/settings.js
+onBeforeInstall: /scripts/beforeinstall.js
+
+skipNodeEmails: true
+nodes: definedInOnBeforeInstall
+
 globals:
   DB_USER: jelastic-${fn.random}
   DB_PASS: ${fn.password(10)}
+  DB_HOST: sqldb
   PROTOCOL: http
   WP_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
 
+onAfterScaleOut[nodeGroup:cp]:
+  forEach(event.response.nodes):
+    - log: App Servers Setup
+    - setNodeDisplayName [${@i.id}]: AppServer
+    - setupNode:
+        nodeId: ${@i.id}
+
+onAfterInstallAddon [nodeGroup:bl, id:cdn]:
+  - install: ${baseUrl}/scripts/setupCDN.jps
+    settings:
+      PATH: ${baseUrl}
+      
+onAfterBindSSL: setupDomain
+
 onInstall:
-  - if (!${settings.ls-addon:false}):
-      setGlobals:
-        CP_NODE_TYPE: nginxphp-dockerized
-        CP_NODE_TAG: 1.16.0-php-7.3.8
-        BL_NODE_TYPE: nginx-dockerized
-        BL_NODE_TAG: 1.16.0
-        APP_CONFIGS_PATH: /etc/nginx/conf.d/SITES_ENABLED
 
-  - if (${settings.ls-addon:false}):
+  - script: |
+        return {
+          result:0,
+          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
+        }
+  - if (${response.ssl}):
       setGlobals:
-        CP_NODE_TYPE: litespeedphp
-        CP_NODE_TAG: 5.4.1-php-7.3.7
-        BL_NODE_TYPE: litespeedadc
-        BL_NODE_TAG: 2.5.1
-        APP_CONFIGS_PATH: /var/www/webroot/TMP
+        PROTOCOL: https
 
-  - createEnvs: ${settings.envName}
+  - log: Auto Scaling Triggers
+  - script: "${baseUrl}/scripts/addTriggers.js"
+    nodeGroup: cp
+    resourceType: CPU
+    loadGrowth: ${settings.loadGrowth}
+    cleanOldTriggers: true
+    
+  - log: Set Node Display Name
+  - setNodeDisplayName [bl]: Load balancer
+  - setNodeDisplayName [cp]: AppServer
+  - setNodeDisplayName [storage]: Storage  
+
+  - log: DB Galera  Setup
+  - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
+    settings:
+      db_user: "${globals.DB_USER}"
+      db_pass: "${globals.DB_PASS}"
+      custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+    nodeGroup: sqldb
+
+  - setupNode:
+      nodeId: cp
 
   - if (${settings.le-addon:false}):
       - setGlobals:
           PROTOCOL: https
 
   - install-wordpress:
-      protocol: ${globals.PROTOCOL}
       
-  - if (${settings.le-addon:false}): install-LE-addon
+  - if (${settings.le-addon:false}): 
+      - install-LE-addon
+      - setupDomain
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
   - if (${settings.mu-addon:false}): configure-MU
   
 actions:
-  createEnvs:
-  
-    - script: |
-        return {
-          result:0,
-          regions:'${settings.regions}'.split(','),
-          envGroups:eval('(' + MANIFEST + ')').envGroups,
-          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
-        }
-    - if (${response.ssl}):
-        setGlobals:
-          IS_JELASTIC_SSL: true
-          PROTOCOL: https
-
-    - setGlobals:
-        REGION: ${response.regions[0]}
-        ENVGROUP: ${response.envGroups}  
-  
-    - script: |
-        var resp, result;
-        resp = jelastic.env.control.GetRegions(appid, session);
-        if (resp.result != 0) return resp;
-        resp = resp.array;
-        for (var i = 0, n = resp.length; i < n; i++) {
-          for (var k = 0, l = resp[i].hardNodeGroups.length; k < l; k++) {
-            if (resp[i].hardNodeGroups[k].uniqueName == '${globals.REGION}') {
-              return {result: 0, domain: resp[i].domain}
-            }
-          }
-        }
-        return {result: 0, domain: resp[0].domain}
-  
-    - setGlobals:
-        DOMAIN: ${response.domain}
-
-    - install: /topology/cluster.jps?_r=${fn.random}
-      envName: ${settings.envName}
-      loggerName: ${settings.envName}
-      envGroups: ${globals.ENVGROUP}
-      region: ${globals.REGION}
-      ssl: ${globals.IS_JELASTIC_SSL}
-      displayName: WordPress Cluster
-      settings:
-          PATH: ${baseUrl}
-          BL_NODE_TYPE: ${globals.BL_NODE_TYPE}
-          BL_NODE_TAG: ${globals.BL_NODE_TAG}
-          CP_NODE_TYPE: ${globals.CP_NODE_TYPE}
-          CP_NODE_TAG: ${globals.CP_NODE_TAG}
-          APP_CONFIGS_PATH: ${globals.APP_CONFIGS_PATH}
-          loadGrowth: ${settings.loadGrowth}
-          db_user: ${globals.DB_USER}
-          db_pass: ${globals.DB_PASS}
-
-    - getTopologyNodes:
-        envName: ${settings.envName}
-
-    - setGlobals: 
-            masterBL-ID: ${response.nodes.bl.id}     
-            masterCP-ID: ${response.nodes.cp.id}
-            masterDB-ID: ${response.nodes.sqldb.id}
-            DB_HOST: sqldb
-
-  getTopologyNodes:
-    - envName: ${this.envName}
-      script: |
-        var resp = jelastic.env.control.GetEnvInfo(envName, session);
-        if (resp.result !== 0) return resp;
-
-        var envNodes = resp.nodes, nodes = {};    
-        for (var i = 0, node; node = envNodes[i]; i++) {
-          nodes[node.nodeGroup] = nodes[node.nodeGroup] || [];
-
-          if (node.ismaster) {
-            nodes[node.nodeGroup][0] = node;
-          } else {
-            nodes[node.nodeGroup].push(node);
-          }
-        }
-
-        return { result : 0, nodes: nodes };
 
   install-LE-addon:
-    install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
-    envName: ${settings.envName}
-    nodeGroup: bl
-    skipEmail: true
-    settings:
-      customDomains: ${settings.envName}.${globals.DOMAIN}
+    - install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
+      nodeGroup: bl
+      skipEmail: true
+      settings:
+        customDomains: ${env.domain}
+
+  setupDomain:
+    - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
+    - set:
+        domain: ${response.out}
+    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}/
 
   install-edgeport-CDN:
     - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
-      envName: ${settings.envName}
       nodeGroup: bl
       skipEmail: true
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
     - setGlobals:
-        CDN_URL: ${globals.PROTOCOL}://${settings.envName}-${response.response.partnerCode}.cdn.edgeport.net/
+        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
         SUCCESS: success-cdn
         EMAIL: cdn
+    - cmd[${nodes.cp.master.id}]: |-
+        wget ${baseUrl/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+        wget ${baseUrl}/scripts/checkCdnContent.txt?_r=${fn.random} -O ~/bin/checkCdnContent.txt &>> /var/log/run.log
+        bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${globals.CDN_URL}
 
   configure-MU:
     - install: ${baseUrl}/addon/WPMU.jps
-      envName: ${settings.envName}
       settings:
         mode: subdir
 
   install-wordpress:
     - install: ${baseUrl}/scripts/installWP.jps
-      envName: ${settings.envName}
       settings:
         db_host: ${globals.DB_HOST}
         db_user: ${globals.DB_USER}
@@ -167,10 +129,23 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${env.domain}/
-        targetNodeID: ${globals.masterCP-ID}
+        targetNodeID: ${nodes.cp.master.id}
+
+  setupNode:
+    - log: OPTIMIZATION
+    - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+      settings:
+        targetGroup: cp
+        targetNodes: ${this.nodeId}
+        optimization: wordpress
+
+    - log: Wordpress CLI Installation
+    - install: ${baseUrl}/scripts/WP-CLI.jps?_r=${fn.random}
+      settings:
+        TARGET_NODES: ${this.nodeId}
 
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
 
-startPage: ${globals.PROTOCOL}://${settings.envName}.${globals.DOMAIN}/
+startPage: ${globals.PROTOCOL}://${env.domain}/

@@ -1,10 +1,10 @@
-**WordPress environment**: [${globals.PROTOCOL}://${settings.envName}.${globals.DOMAIN}/](${globals.PROTOCOL}://${settings.envName}.${globals.DOMAIN}/)   
+**WordPress environment**: [${globals.PROTOCOL}://${env.domain}/](${globals.PROTOCOL}://${env.domain}/)   
 
 **CDN Endpoint URL**:  [${globals.CDN_URL}](${globals.CDN_URL})   
 
 Use the following credentials to access the admin panel:   
 
-**Admin Panel**: [${globals.PROTOCOL}://${settings.envName}.${globals.DOMAIN}/wp-admin/](${globals.PROTOCOL}://${settings.envName}.${globals.DOMAIN}/wp-admin/)  
+**Admin Panel**: [${globals.PROTOCOL}://${env.domain}/wp-admin/](${globals.PROTOCOL}://${env.domain}/wp-admin/)  
 **Login**: ${user.email}  
 **Password**: ${globals.WP_ADMIN_PASS}  
 
