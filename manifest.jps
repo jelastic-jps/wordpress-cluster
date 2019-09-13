@@ -113,7 +113,7 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${env.domain}/
-        targetNodeID: ${globals.masterCP-ID}
+        targetNodeID: ${nodes.cp.master.id}
 
   setupNode:
     - log: OPTIMIZATION
