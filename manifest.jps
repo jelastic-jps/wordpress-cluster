@@ -61,7 +61,7 @@ onInstall:
     settings:
       db_user: "${globals.DB_USER}"
       db_pass: "${globals.DB_PASS}"
-      custom_conf: "${globals.PATH}/configs/sqldb/wordpress.cnf"
+      custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
     nodeGroup: sqldb
 
   - setupNode:
@@ -113,7 +113,7 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${env.domain}/
-        targetNodeID: ${nodes.cp.master.id}
+        targetNodeID: ${globals.masterCP-ID}
 
   setupNode:
     - log: OPTIMIZATION
@@ -124,7 +124,7 @@ actions:
         optimization: wordpress
 
     - log: Wordpress CLI Installation
-    - install: ${globals.PATH}/scripts/WP-CLI.jps?_r=${fn.random}
+    - install: ${baseUrl}/scripts/WP-CLI.jps?_r=${fn.random}
       settings:
         TARGET_NODES: ${this.nodeId}
 
