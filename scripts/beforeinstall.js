@@ -4,8 +4,8 @@ var resp = {
   nodes: [{
     nodeType: "mariadb-dockerized",
     tag: "10.3.16",
-    count: 1,
-    cloudlets: 16,
+    count: 3,
+    cloudlets: 8,
     nodeGroup: "sqldb",
     displayName: "Galera cluster",
     restartDelay: 5,
@@ -33,7 +33,7 @@ if (${settings.ls-addon:false}) {
   }, {
     nodeType: "litespeedphp",
     tag: "5.4.1-php-7.3.7",
-    count: 1,
+    count: 2,
     cloudlets: 8,
     nodeGroup: "cp",
     scalingMode: "STATELESS",
@@ -73,7 +73,7 @@ if (!${settings.ls-addon:false}) {
   }, {
     nodeType: "nginxphp-dockerized",
     tag: "1.16.0-php-7.3.8",
-    count: 1,
+    count: 2,
     cloudlets: 8,
     nodeGroup: "cp",
     scalingMode: "STATELESS",
