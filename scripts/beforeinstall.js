@@ -16,4 +16,44 @@ var resp = {
     displayName: "Storage"
   }]
 }
+
+if (${settings.ls-addon:false}) {
+  resp.nodes.push({
+    nodeType: "litespeedadc",
+    tag: "2.5.1",
+    count: 1,
+    cloudlets: 8,
+    nodeGroup: "bl",
+    scalingMode: "STATEFUL",
+    displayName: "Load balancer"
+  }, {
+    nodeType: "litespeedphp",
+    tag: "5.4.1-php-7.3.7",
+    count: 1,
+    cloudlets: 8,
+    nodeGroup: "cp",
+    scalingMode: "STATELESS",
+    displayName: "AppServer",
+    env: {
+      SERVER_WEBROOT: "/var/www/webroot/ROOT",
+      REDIS_ENABLED: true
+    },
+    volumes: [
+      "/var/www/webroot/ROOT",
+      "/var/www/webroot/.cache"
+    ],  
+    volumeMounts: {
+      "/var/www/webroot/ROOT": {
+        readOnly: false,
+        sourcePath: "/data/ROOT",
+        sourceNodeGroup: storage
+      },   
+      "/var/www/webroot/.cache": {
+        readOnly: false,
+        sourcePath: "/data/.cache",
+        sourceNodeGroup: storage
+      }
+  })
+}
+  
 return resp;
