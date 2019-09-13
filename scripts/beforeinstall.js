@@ -36,7 +36,7 @@ if (${settings.ls-addon:false}) {
     displayName: "AppServer",
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: true
+      REDIS_ENABLED: "true"
     },
     volumes: [
       "/var/www/webroot/ROOT",
@@ -44,15 +44,16 @@ if (${settings.ls-addon:false}) {
     ],  
     volumeMounts: {
       "/var/www/webroot/ROOT": {
-        readOnly: false,
+        readOnly: "false",
         sourcePath: "/data/ROOT",
         sourceNodeGroup: "storage"
       },   
       "/var/www/webroot/.cache": {
-        readOnly: false,
+        readOnly: "false",
         sourcePath: "/data/.cache",
         sourceNodeGroup: "storage"
       }
+    }
   })
 }
   
