@@ -46,12 +46,12 @@ if (${settings.ls-addon:false}) {
       "/var/www/webroot/ROOT": {
         readOnly: false,
         sourcePath: "/data/ROOT",
-        sourceNodeGroup: storage
+        sourceNodeGroup: "storage"
       },   
       "/var/www/webroot/.cache": {
         readOnly: false,
         sourcePath: "/data/.cache",
-        sourceNodeGroup: storage
+        sourceNodeGroup: "storage"
       }
   })
 }
