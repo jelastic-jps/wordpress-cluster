@@ -72,7 +72,6 @@ onInstall:
           PROTOCOL: https
 
   - install-wordpress:
-      protocol: ${globals.PROTOCOL}
       
   - if (${settings.le-addon:false}): install-LE-addon
 
@@ -87,7 +86,7 @@ actions:
     nodeGroup: bl
     skipEmail: true
     settings:
-      customDomains: ${settings.envName}.${globals.DOMAIN}
+      customDomains: ${env.domain}
 
   install-edgeport-CDN:
     - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
@@ -95,7 +94,7 @@ actions:
       skipEmail: true
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
     - setGlobals:
-        CDN_URL: ${globals.PROTOCOL}://${envName}-${response.response.partnerCode}.cdn.edgeport.net/
+        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
         SUCCESS: success-cdn
         EMAIL: cdn
 
@@ -113,7 +112,7 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${env.domain}/
-        targetNodeID: ${globals.masterCP-ID}
+        targetNodeID: ${nodes.cp.master.id}
 
   setupNode:
     - log: OPTIMIZATION
@@ -132,4 +131,4 @@ success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
 
-startPage: ${globals.PROTOCOL}://${settings.envName}.${globals.DOMAIN}/
+startPage: ${globals.PROTOCOL}://${env.domain}/
