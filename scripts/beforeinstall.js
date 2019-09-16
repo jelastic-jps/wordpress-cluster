@@ -63,8 +63,8 @@ if (${settings.ls-addon:false}) {
 
 if (!${settings.ls-addon:false}) {
   resp.nodes.push({
-    nodeType: "litespeedadc",
-    tag: "2.5.1",
+    nodeType: "nginx-dockerized",
+    tag: "1.16.0",
     count: 1,
     cloudlets: 8,
     nodeGroup: "bl",
