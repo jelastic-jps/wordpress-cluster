@@ -1,0 +1,41 @@
+jpsType: update
+name: WordPress Installation addon
+description: This package for WowrdPress configurations
+
+globals:
+  WP_ADMIN_PASS: "${settings.wp_admin_pass}"
+  WP_TITLE: "${settings.wp_title}"
+  DB_HOST: "${settings.db_host}"
+  DB_NAME: wp_${fn.random}
+  DB_USER: "${settings.db_user}"
+  DB_PASS: "${settings.db_pass}"
+  WP_URL: "${settings.wp_url}"
+  TARGET_NODE_ID: "${settings.targetNodeID}"
+
+onInstall:
+  - installWP
+  - setupWP
+  - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
+    - nginxPurgeCache
+
+actions:
+  installWP:
+    - cmd[${globals.TARGET_NODE_ID}]: |-
+        wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* ${SERVER_WEBROOT}
+        mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${globals.DB_HOST} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
+        cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT}
+        cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=${SERVER_WEBROOT}
+        wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O ${SERVER_WEBROOT}/wp-jelastic.php
+        sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" ${SERVER_WEBROOT}/wp-config.php
+        wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico
+
+  setupWP:
+    - cmd[${globals.TARGET_NODE_ID}]: |-
+        wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1
+
+  nginxPurgeCache:
+    - cmd[${globals.TARGET_NODE_ID}]: |-
+        cd ${SERVER_WEBROOT};
+        wp plugin install ${baseUrl}../scripts/nginx-fastcgi-cache-purge.zip --path=${SERVER_WEBROOT}
+        wp plugin activate nginx-fastcgi-cache-purge --path=${SERVER_WEBROOT}

@@ -9,141 +9,144 @@ description: WordPress Cluster package provides integrated autoscaling and high 
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
 
+onBeforeInit: /scripts/settings.js
+onBeforeInstall: /scripts/beforeinstall.js
 
-settings:
-  fields:
-  - name: wp_title
-    caption: WP Title
-    type: string
-    default: HelloWorld
-    required: 'true'
-    regex: "^[\\w-.]*$"
-    regexText: Incorrect WP Title.
-    
-nodes:
-  - nodeType: mysql
-    tag: 5.7.22
-    count: 2
-    cloudlets: 8
-    nodeGroup: sqldb
-    displayName: Database
-    env:
-      ON_ENV_INSTALL: ''
-
-  - nodeType: nginxphp-dockerized
-    tag: 1.16.0-php-7.3.5
-    count: 2
-    cloudlets: 8
-    nodeGroup: cp
-    displayName: AppServer
-    links: sqldb:DB
-    volumes:
-      - "/var/www/webroot/ROOT"
-      - "/var/ftp/webroot/ROOT"
-    volumeMounts:
-      "/var/www/webroot/ROOT":
-        readOnly: false
-        sourcePath: "/data"
-        sourceNodeGroup: storage
-      "/var/ftp/webroot/ROOT":
-        readOnly: false
-        sourcePath: "/data"
-        sourceNodeGroup: storage
-
-  - nodeType: storage
-    cloudlets: 8
-    nodeGroup: storage
-    displayName: Storage
-
-  - nodeType: nginx-dockerized
-    tag: 1.16.0
-    count: 1
-    cloudlets: 8
-    nodeGroup: bl
-    displayName: Load balancer
-
-onBeforeInit: |  
-  var resp = jelastic.billing.account.GetQuotas(appid, session, 'environment.jelasticssl.enabled');
-  if (resp.result != 0 ) return resp;  
-  return  { result: 0, ssl: !!resp.array[0].value };
-
-onAfterScaleOut[nodeGroup:cp]:
-  forEach(event.response.nodes):
-    cmd [${@i.id}]: sudo service nginx reload
-    setNodeDisplayName [${@i.id}]: AppServer
-
-onAfterScaleOut[nodeGroup:bl]:
-  forEach(event.response.nodes):
-    setNodeDisplayName [${@i.id}]: Load balancer
+skipNodeEmails: true
+nodes: definedInOnBeforeInstall
 
 globals:
   DB_USER: jelastic-${fn.random}
-  DB_PASS: "${fn.password(20)}"
-  ADMIN_PASSWD: "${fn.password(20)}"
+  DB_PASS: ${fn.password(10)}
+  DB_HOST: sqldb
+  PROTOCOL: http
+  WP_ADMIN_PASS: ${fn.password(10)}
+  SUCCESS: success
+  EMAIL: default
+
+onAfterScaleOut[nodeGroup:cp]:
+  forEach(event.response.nodes):
+    - log: App Servers Setup
+    - setNodeDisplayName [${@i.id}]: AppServer
+    - setupNode:
+        nodeId: ${@i.id}
+
+onAfterInstallAddon [nodeGroup:bl, id:cdn]:
+  - install: ${baseUrl}/scripts/setupCDN.jps
+    settings:
+      PATH: ${baseUrl}
+      
+onAfterBindSSL: setupDomain
 
 onInstall:
+
+  - script: |
+        return {
+          result:0,
+          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
+        }
+  - if (${response.ssl}):
+      setGlobals:
+        PROTOCOL: https
+
   - log: Auto Scaling Triggers
   - script: "${baseUrl}/scripts/addTriggers.js"
-
+    nodeGroup: cp
+    resourceType: CPU
+    loadGrowth: ${settings.loadGrowth}
+    cleanOldTriggers: true
+    
   - log: Set Node Display Name
   - setNodeDisplayName [bl]: Load balancer
   - setNodeDisplayName [cp]: AppServer
+  - setNodeDisplayName [storage]: Storage  
 
-  - log: DB Multi-Master Cluster Setup
-  - installJps:
-      jps: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
-      settings:
-        path: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master"
-        db_user: "${globals.DB_USER}"
-        db_pass: "${globals.DB_PASS}"
-        scheme: master
-        custom_conf: "${baseUrl}/configs/mysql/mysql.cnf"
-      nodeGroup: sqldb
+  - log: DB Galera  Setup
+  - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
+    settings:
+      db_user: "${globals.DB_USER}"
+      db_pass: "${globals.DB_PASS}"
+      custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+    nodeGroup: sqldb
 
-  - log: CP Layer Setup
-  - forEach(nodes.cp):
-      setupNode:
-        nodeId: "${@i.id}"
+  - setupNode:
+      nodeId: cp
 
-  - log: Download and Unpack latest WordPress release
-  - cmd[storage]: wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /data
+  - if (${settings.le-addon:false}):
+      - setGlobals:
+          PROTOCOL: https
 
-  - log: Setup WordPress
-  - installJps:
-      jps: "${baseUrl}/scripts/setup-wordpress.jps"
-      settings:
-        db_host: DB_1
-        db_user: "${globals.DB_USER}"
-        db_pass: "${globals.DB_PASS}"
-        admin_passwd: "${globals.ADMIN_PASSWD}"
-        wp_title: "${settings.wp_title}"
+  - install-wordpress:
+      
+  - if (${settings.le-addon:false}): 
+      - install-LE-addon
+      - setupDomain
 
-  - log: 'Install HyperDB - is an advanced database class that supports replication, failover, load balancing and partitioning.'
-  - cmd[storage]: |-
-      wget ${baseUrl}/configs/wordpress/db-config.php -O /data/db-config.php
-      wget ${baseUrl}/configs/wordpress/db.php -O /data/wp-content/db.php
-
-  - log: Additional configuration for WordPress.
-  - cmd[storage]: |-
-      wget ${baseUrl}/configs/wordpress/wp-jelastic.php -O /data/wp-jelastic.php
-      sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /data/wp-config.php
-
-  - log: Plugins install
-  - installJps:
-      jps: "${baseUrl}/scripts/setup-plugins.jps"
-      settings:
-        server_webroot: /var/www/webroot/ROOT
-
-  - log: Set permission
-  - cmd[storage]: chown 700:700 -Rh /data/
-
+  - if (${settings.cdn-addon:false}): install-edgeport-CDN
+  
+  - if (${settings.mu-addon:false}): configure-MU
+  
 actions:
-  setupNode:
-  - cmd[${this.nodeId}]: |-
-      wget ${baseUrl}/configs/nginx/nginx.conf -O /etc/nginx/nginx.conf
-      wget ${baseUrl}/configs/nginx/default.conf -O /etc/nginx/conf.d/default.conf
-      wget ${baseUrl}/configs/php/wp-upload.ini -O /etc/php.d/wp-upload.ini
-      wget ${baseUrl}/configs/php/opcache.ini -O /etc/php.d/opcache.ini
-      sudo service nginx restart
 
-success: /text/success.md
+  install-LE-addon:
+    - install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
+      nodeGroup: bl
+      skipEmail: true
+      settings:
+        customDomains: ${env.domain}
+
+  setupDomain:
+    - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
+    - set:
+        domain: ${response.out}
+    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}
+
+  install-edgeport-CDN:
+    - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
+      nodeGroup: bl
+      skipEmail: true
+    - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
+    - setGlobals:
+        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
+        CDN: ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
+        SUCCESS: success-cdn
+        EMAIL: cdn
+    - cmd[${nodes.cp.master.id}]: |-
+        wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+        wget ${baseUrl}/scripts/checkCdnContent.txt?_r=${fn.random} -O ~/bin/checkCdnContent.txt &>> /var/log/run.log
+        bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${globals.CDN}
+
+  configure-MU:
+    - install: ${baseUrl}/addon/WPMU.jps
+      settings:
+        mode: subdir
+
+  install-wordpress:
+    - install: ${baseUrl}/scripts/installWP.jps
+      settings:
+        db_host: ${globals.DB_HOST}
+        db_user: ${globals.DB_USER}
+        db_pass: ${globals.DB_PASS}
+        wp_admin_pass: ${globals.WP_ADMIN_PASS}
+        wp_title: "Hello World"
+        wp_url: ${globals.PROTOCOL}://${env.domain}/
+        targetNodeID: ${nodes.cp.master.id}
+
+  setupNode:
+    - log: OPTIMIZATION
+    - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+      settings:
+        targetGroup: cp
+        targetNodes: ${this.nodeId}
+        optimization: wordpress
+
+    - log: Wordpress CLI Installation
+    - install: ${baseUrl}/scripts/WP-CLI.jps?_r=${fn.random}
+      settings:
+        TARGET_NODES: ${this.nodeId}
+
+success:
+  email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
+  text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
+
+startPage: ${globals.PROTOCOL}://${env.domain}/

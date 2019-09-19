@@ -1,0 +1,16 @@
+[mysqld]
+
+# Duplicate entry '_transient_doing_cron' for key 'option_name', Error_code: 1062;
+slave-skip-errors = 1062
+
+max_connections=500
+join_buffer_size = 3M
+tmp_table_size = 128M
+max_heap_table_size = 128M
+thread_cache_size = 16K
+table_definition_cache = 4K
+open_files_limit = 524290
+innodb_log_file_size = 64M
+local-infile=0
+low_priority_updates=1
+concurrent_insert=ALWAYS

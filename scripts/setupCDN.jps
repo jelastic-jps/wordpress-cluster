@@ -1,0 +1,15 @@
+jpsType: update
+name: Edgeport CDN setup script
+description: This script for Edgeport CDN configurations
+
+globals:
+  PATH: ${settings.PATH}
+  
+onInstall:
+  - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
+  - set:
+      CDN_URL: ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
+  - cmd[${nodes.cp.master.id}]: |-
+      wget ${globals.PATH}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+      wget ${globals.PATH}/scripts/checkCdnContent.txt?_r=${fn.random} -O ~/bin/checkCdnContent.txt &>> /var/log/run.log
+      bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${this.CDN_URL}

@@ -1,0 +1,19 @@
+jpsType: update
+jpsVersion: '1.1'
+name: Addon for EdgePort CDN
+description: Addon for EdgePort CDN
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-master/master
+
+onInstall:
+  - install-edgeport-CDN
+  - configure-edgeport-CDN
+
+actions:
+  install-edgeport-CDN:
+    - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
+      
+  configure-edgeport-CDN:
+    - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
+    - cmd[${nodes.cp.master.id}]: |-
+        wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
+        bash ~/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
