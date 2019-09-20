@@ -7,6 +7,7 @@ fields:
   values:        
     - value: slow
       caption: Slow
+      tooltip: <h3>Master-Master with Extra Slaves</h3>Pre-configured replication with two interconnected master databases. While horizontal scaling the cluster is extended with additional slave nodes."
     - value: medium
       caption: Medium
     - value: fast
