@@ -1,17 +1,19 @@
 fields:
-- caption: Scaling Load Growth
+- caption: Scaling Strategy
   type: list
   name: loadGrowth
   default: slow
   required: true
   values:        
     - value: slow
-      caption: Slow
-      tooltip: <h3>Master-Master with Extra Slaves</h3>Pre-configured replication with two interconnected master databases. While horizontal scaling the cluster is extended with additional slave nodes."
+      caption: Low Load
+      tooltip: <h3>Low Load</h3>add new node when CPU > 70%, remove when CPU < 20%"
     - value: medium
-      caption: Medium
+      caption: Medium Load
+      tooltip: <h3>Medium Load</h3>add new node when CPU > 70%, remove when CPU < 20%"
     - value: fast
-      caption: Fast
+      caption: High Load
+      tooltip: <h3>High Load</h3>add new node when CPU > 70%, remove when CPU < 10%"
 
 - caption: Advanced Features
   type: displayfield
