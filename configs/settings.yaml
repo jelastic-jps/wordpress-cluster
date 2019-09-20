@@ -7,13 +7,13 @@ fields:
   values:        
     - value: slow
       caption: Low Load
-      tooltip: <h2>Low load scaling strategy</h2>add new node when <h3>CPU > 70%</h3> <p> remove when <h3>CPU < 20%</h3></p>
+      tooltip: <h2>Low load scaling strategy</h2>add 1 new node when CPU > 70% <p>remove when CPU < 20%</p>
     - value: medium
       caption: Medium Load
-      tooltip: <h3>Medium load scaling strategy</h3>add new node when CPU > 70%, remove when CPU < 20%"
+      tooltip: <h3>Medium load scaling strategy</h3>add 1 new node when CPU > 50% <p>remove when CPU < 20%</p>
     - value: fast
       caption: High Load
-      tooltip: <h3>High load scaling strategy</h3>add new node when CPU > 70%, remove when CPU < 10%"
+      tooltip: <h3>High load scaling strategy</h3>add 2 new nodes when CPU > 30% <p>remove when CPU < 10%</p>
 
 - caption: Advanced Features
   type: displayfield
