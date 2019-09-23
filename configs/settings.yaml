@@ -7,8 +7,7 @@ fields:
   width: 225
   tooltip: | 
     Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes.
-    <p>Read more about Automatic Horizontal Scaling</p>
-    <p><a href="https://docs.jelastic.com/automatic-horizontal-scaling">Automatic Horizontal Scaling</a></p>
+    <p>Read more about <a href="https://docs.jelastic.com/automatic-horizontal-scaling">Automatic Horizontal Scaling</a></p>
   values:        
     - value: slow
       caption: Low Load
