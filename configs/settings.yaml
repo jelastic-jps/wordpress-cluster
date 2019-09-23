@@ -1,16 +1,23 @@
 fields:
-- caption: Scaling Load Growth
+- caption: Scaling Strategy
   type: list
   name: loadGrowth
   default: slow
   required: true
+  width: 225
+  tooltip: | 
+    Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes.
+    <p>Read more about <a href="https://docs.jelastic.com/automatic-horizontal-scaling">Automatic Horizontal Scaling</a></p>
   values:        
     - value: slow
-      caption: Slow
+      caption: Low Load
+      tooltip: <h2>Low load scaling strategy</h2>add 1 new node when CPU > 70% <p>remove when CPU < 20%</p>
     - value: medium
-      caption: Medium
+      caption: Medium Load
+      tooltip: <h3>Medium load scaling strategy</h3>add 1 new node when CPU > 50% <p>remove when CPU < 20%</p>
     - value: fast
-      caption: Fast
+      caption: High Load
+      tooltip: <h3>High load scaling strategy</h3>add 2 new nodes when CPU > 30% <p>remove when CPU < 10%</p>
 
 - caption: Advanced Features
   type: displayfield
