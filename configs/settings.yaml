@@ -4,7 +4,7 @@ fields:
   name: loadGrowth
   default: slow
   required: true
-  width: 200
+  height: 190
   tooltip: | 
     Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes.
     <p>Read more about Automatic Horizontal Scaling</p>
