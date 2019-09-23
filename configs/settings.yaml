@@ -4,6 +4,7 @@ fields:
   name: loadGrowth
   default: slow
   required: true
+  tooltip: Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes
   values:        
     - value: slow
       caption: Low Load
