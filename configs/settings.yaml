@@ -4,7 +4,9 @@ fields:
   name: loadGrowth
   default: slow
   required: true
-  tooltip: Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes
+  tooltip: | 
+    Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes.
+    Read more about [Automatic Horizontal Scaling](https://docs.jelastic.com/automatic-horizontal-scaling)
   values:        
     - value: slow
       caption: Low Load
