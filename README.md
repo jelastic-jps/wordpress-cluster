@@ -32,15 +32,20 @@ Click the **Deploy** button below, specify your email address within the widget,
 
 In the opened confirmation window at Jelastic dashboard, if required change:  
 
-* Destination __[Region](https://docs.jelastic.com/environment-regions)__ if several are available  
+* preconfigured horizontal __Scaling Strategy__   
+ 
+*  what __Advanced Features__ should be installed or not  
 * __Environment__ name  
-* Preconfigured __Scaling Load Growth__ horizontal scaling scenario
-* Choose what __Advanced Features__ should be installed or not
+
+* __Display Name__  
+
+* destination __[Region](https://docs.jelastic.com/environment-regions)__ if several are available  
+
 and click on __Install__.
 
 ![WP Cluster Installation](images/install-new.png)
 
-Once the deployment is finished, you’ll see the appropriate success pop-up with access credentials to your administration WordPress panel, whilst the same information will be duplicated to your email box.
+Once the deployment is finished, you’ll see an appropriate success pop-up with access credentials to your administration WordPress panel, whilst the same information will be duplicated to your email box.
 
 ![WP Cluster Installed](images/success-wordpress.png)
 
