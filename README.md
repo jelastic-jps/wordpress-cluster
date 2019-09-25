@@ -50,7 +50,7 @@ and click on __Install__.
 Once the deployment is finished, you’ll see an appropriate success pop-up with access credentials to your administration WordPress panel, whilst the same information will be duplicated to your email box.
 
 <p align="left"> 
-<img src="images/success-wordpress.png" width="400">
+<img src="images/success-wordpress.png" width="350">
 </p>
 
 So now you can just click on the **Open in browser** button within the shown frame and start filling your highly available and reliable WP installation with the required content, being ready to handle as much users as your service requires.
