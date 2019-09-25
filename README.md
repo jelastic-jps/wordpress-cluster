@@ -17,7 +17,7 @@ Upon the package installation, a new environment with the following topology wil
 
 
 <p align="left"> 
-<img src="images/single-cluster-topology.png" width="500">
+<img src="images/single-cluster-topology.png" width="300">
 </p>
 
 ## Deployment to the Cloud
@@ -43,11 +43,15 @@ In the opened confirmation window at Jelastic dashboard, if required change:
 
 and click on __Install__.
 
-![WP Cluster Installation](images/install-new.png)
+<p align="left"> 
+<img src="images/install-new.png" width="500">
+</p>
 
 Once the deployment is finished, you’ll see an appropriate success pop-up with access credentials to your administration WordPress panel, whilst the same information will be duplicated to your email box.
 
-![WP Cluster Installed](images/success-wordpress.png)
+<p align="left"> 
+<img src="images/success-wordpress.png" width="350">
+</p>
 
 So now you can just click on the **Open in browser** button within the shown frame and start filling your highly available and reliable WP installation with the required content, being ready to handle as much users as your service requires.
 
