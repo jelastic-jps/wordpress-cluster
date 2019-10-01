@@ -187,15 +187,16 @@ if [ $objectcache == 'true' ] ; then
   esac
 fi
 
-if [ $edgeportCDN == 'true' ] && [ ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}) ] ; then
-  case $WPCACHE in
-    w3tc)
+if [ $edgeportCDN == 'true' ] ; then
+  if ! $(wp core is-installed --network --path=/var/www/webroot/ROOT); then 
+    case $WPCACHE in
+      w3tc)
 	  checkCdnStatus;
 	  $W3TC_OPTION_SET cdn.enabled false --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET cdn.engine mirror --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET cdn.mirror.domain ${CDN_URL} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
-    lscwp)
+      lscwp)
 	  checkCdnStatus;
 	  CDN_ORI=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
 	  PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
@@ -203,7 +204,8 @@ if [ $edgeportCDN == 'true' ] && [ ! $(${WP} core is-installed --network --path=
 	  $LSCWP_OPTION_SET litespeed-cache-cdn_mapping[url][0] ${PROTOCOL}://${CDN_URL}/ --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $LSCWP_OPTION_SET cdn_ori "//${CDN_ORI}/" --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
-  esac
+    esac
+  fi
 fi
 
 if [ $wpmu == 'true' ] ; then
@@ -223,7 +225,8 @@ if [ $wpmu == 'true' ] ; then
   esac
 fi
 
-if [ $DOMAIN != 'false' ] && [ ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}) ] ; then
+if [ $DOMAIN != 'false' ] ; then
+  if ! $(wp core is-installed --network --path=/var/www/webroot/ROOT); then 
 	OLD_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
 	OLD_SHORT_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
 	NEW_SHORT_DOMAIN=$(echo $DOMAIN | cut -d'/' -f3)
@@ -232,4 +235,5 @@ if [ $DOMAIN != 'false' ] && [ ! $(${WP} core is-installed --network --path=${SE
 	${WP} search-replace "${OLD_SHORT_DOMAIN}" "${NEW_SHORT_DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
 	${CACHE_FLUSH}  &>> /var/log/run.log
 	${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
+  fi
 fi
