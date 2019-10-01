@@ -187,7 +187,7 @@ if [ $objectcache == 'true' ] ; then
   esac
 fi
 
-if [ $edgeportCDN == 'true' ] ; then
+if [ $edgeportCDN == 'true' ] && [ ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}) ] ; then
   case $WPCACHE in
     w3tc)
 	  checkCdnStatus;
@@ -223,7 +223,7 @@ if [ $wpmu == 'true' ] ; then
   esac
 fi
 
-if [ $DOMAIN != 'false' ] ; then
+if [ $DOMAIN != 'false' ] && [ ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}) ] ; then
 	OLD_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
 	OLD_SHORT_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
 	NEW_SHORT_DOMAIN=$(echo $DOMAIN | cut -d'/' -f3)
