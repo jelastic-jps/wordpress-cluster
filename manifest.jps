@@ -77,14 +77,14 @@ onInstall:
           PROTOCOL: https
 
   - install-wordpress:
-      
+  
+  - if (${settings.mu-addon:false}): configure-MU
+    
   - if (${settings.le-addon:false}): 
       - install-LE-addon
       - setupDomain
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
-  
-  - if (${settings.mu-addon:false}): configure-MU
   
 actions:
 
