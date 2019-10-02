@@ -2,18 +2,6 @@ var resp = {
   result: 0,
   ssl: !!jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value,
   nodes: [{
-    nodeType: "mariadb-dockerized",
-    tag: "10.3.16",
-    count: 3,
-    cloudlets: 8,
-    nodeGroup: "sqldb",
-    displayName: "Galera cluster",
-    restartDelay: 5,
-    env: {
-      ON_ENV_INSTALL: "",
-      JELASTIC_PORTS: "4567,4568,4444"
-    }
-  }, {
     nodeType: "storage",
     cloudlets: 8,
     nodeGroup: "storage",
@@ -34,7 +22,7 @@ if (${settings.galera:false}) {
       ON_ENV_INSTALL: "",
       JELASTIC_PORTS: "4567,4568,4444"
     }
-  }
+  })
 }
 
 if (!${settings.galera:false}) {
@@ -45,7 +33,7 @@ if (!${settings.galera:false}) {
     cloudlets: 16,
     nodeGroup: "sqldb",
     displayName: "DB Server"
-  }
+  })
 }
 
 if (${settings.ls-addon:false}) {
