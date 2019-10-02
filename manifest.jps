@@ -61,13 +61,21 @@ onInstall:
   - setNodeDisplayName [cp]: AppServer
   - setNodeDisplayName [storage]: Storage  
 
-  - log: DB Galera  Setup
-  - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
-    settings:
-      db_user: "${globals.DB_USER}"
-      db_pass: "${globals.DB_PASS}"
-      custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-    nodeGroup: sqldb
+  - if (${settings.galera:false}):
+    - log: DB Galera  Setup
+    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
+      settings:
+        db_user: "${globals.DB_USER}"
+        db_pass: "${globals.DB_PASS}"
+        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+      nodeGroup: sqldb
+  - if (${settings.galera:false}):
+    - log: DataBase Setup
+    - cmd [sqldb]: |-
+        wget ${baseUrl}/configs/sqldb/wordpress.cnf -O /etc/mysql/conf.d/wordpress.cnf &>> /var/log/run.log
+        wget https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/setupUser.sh -O ~/setupUser.sh &>> /var/log/run.log
+        bash ~/setupUser.sh ${globals.DB_USER} ${globals.DB_PASS} &>> /var/log/run.log
+      user: root
 
   - setupNode:
       nodeId: cp
