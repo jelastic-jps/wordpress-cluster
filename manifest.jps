@@ -71,6 +71,7 @@ onInstall:
       nodeGroup: sqldb
   - if (${settings.galera:false}):
     - log: DataBase Setup
+    - setNodeDisplayName [sqldb]: DataBase Server  
     - cmd [sqldb]: |-
         wget ${baseUrl}/configs/sqldb/wordpress.cnf -O /etc/mysql/conf.d/wordpress.cnf &>> /var/log/run.log
         wget https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/setupUser.sh -O ~/setupUser.sh &>> /var/log/run.log
