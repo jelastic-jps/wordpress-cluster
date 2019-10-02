@@ -9,6 +9,7 @@ var cdnText = "Install Lightning-Fast Premium CDN with 130+ PoPs",
     sslText = "Install Let's Encrypt SSL with Auto-Renewal";
     lsText = "Install LiteSpeed High-Performance Web Server";
     muText = "Install WordPress Multisite Network";
+    dbText = "Install MariaDB Galera Cluster";
 var group = jelastic.billing.account.GetAccount(appid, session);
 
 var url = baseUrl + "/configs/settings.yaml";
@@ -40,6 +41,25 @@ if (group.groupType == 'trial') {
             "type": "displayfield",
             "cls": "x-item-disabled",
             "value": lsText
+        }]
+    }, {
+        "type": "compositefield",
+        "hideLabel": true,
+        "pack": "left",
+        "itemCls": "deploy-manager-grid",
+        "cls": "x-grid3-row-unselected",
+        "items": [{
+            "type": "spacer",
+            "width": 4
+        }, {
+            "type": "displayfield",
+            "cls": "x-grid3-row-checker x-item-disabled",
+            "width": 30,
+            "height": 20
+        }, {
+            "type": "displayfield",
+            "cls": "x-item-disabled",
+            "value": dbText
         }]
     }, {
         "type": "compositefield",
@@ -97,8 +117,15 @@ if (group.groupType == 'trial') {
             value: true
         });
     }
-    
-    
+
+    settings.fields.push({
+        type: "checkbox",
+        name: "galera",
+        caption: dbText,
+        value: true,
+        tooltip: "<h3>Requirements:</h3> -all tables must be running on InnoDB storage engine. <p>-all tables should have a primary key defined</p>"
+    });
+   
     var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
     if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
         settings.fields.push({
