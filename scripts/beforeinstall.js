@@ -21,6 +21,33 @@ var resp = {
   }]
 }
 
+if (${settings.galera:false}) {
+  resp.nodes.push({
+    nodeType: "mariadb-dockerized",
+    tag: "10.3.16",
+    count: 3,
+    cloudlets: 8,
+    nodeGroup: "sqldb",
+    displayName: "Galera cluster",
+    restartDelay: 5,
+    env: {
+      ON_ENV_INSTALL: "",
+      JELASTIC_PORTS: "4567,4568,4444"
+    }
+  }
+}
+
+if (!${settings.galera:false}) {
+  resp.nodes.push({
+    nodeType: "mariadb-dockerized",
+    tag: "10.3.16",
+    count: 1,
+    cloudlets: 16,
+    nodeGroup: "sqldb",
+    displayName: "DB Server"
+  }
+}
+
 if (${settings.ls-addon:false}) {
   resp.nodes.push({
     nodeType: "litespeedadc",
