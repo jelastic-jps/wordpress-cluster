@@ -123,7 +123,7 @@ if (group.groupType == 'trial') {
         name: "galera",
         caption: dbText,
         value: true,
-        tooltip: "<h3>Requirements:</h3> -all tables must be running on InnoDB storage engine. <p>-all tables should have a primary key defined</p>"
+        tooltip: "<h3>Limitations for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>Limitations</a>"
     });
    
     var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
