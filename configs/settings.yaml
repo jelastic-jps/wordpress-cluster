@@ -19,6 +19,23 @@ fields:
       caption: High Load
       tooltip: <h3>High load scaling strategy</h3>add 2 new nodes when CPU > 30% <p>remove when CPU < 10%</p>
 
+- caption: DataBase Type
+  type: list
+  name: database_type
+  default: single
+  required: true
+  width: 225
+  tooltip: | 
+    Database type.
+    <p>Requiments for </p>
+  values:        
+    - value: single
+      caption: Single MariaDB Server
+      tooltip: <h2>Single MariaDB Server</h2>Single MariaDB Server
+    - value: galera
+      caption: MariaDB Galera Cluster
+      tooltip: <h3>MariaDB Galera Cluster</h3>MariaDB Galera Cluster
+
 - caption: Advanced Features
   type: displayfield
   name: displayfield
