@@ -114,7 +114,8 @@ if (group.groupType == 'trial') {
             type: "checkbox",
             name: "ls-addon",
             caption: lsText,
-            value: true
+            value: true,
+            tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers"
         });
     }
 
