@@ -124,7 +124,7 @@ if (group.groupType == 'trial') {
         name: "galera",
         caption: dbText,
         value: true,
-        tooltip: "<h3>Requirements for All Tables:</h3><ul><li>run on InnoDB storage engine</li><li>have a primary key</li></ul>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
+        tooltip: "tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
     });
    
     var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
