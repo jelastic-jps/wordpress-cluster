@@ -69,7 +69,7 @@ onInstall:
         db_pass: "${globals.DB_PASS}"
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
-  - if (${settings.galera:false}):
+  - if (!${settings.galera:false}):
     - log: DataBase Setup
     - setNodeDisplayName [sqldb]: DataBase Server  
     - cmd [sqldb]: |-
