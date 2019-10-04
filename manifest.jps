@@ -49,6 +49,10 @@ onInstall:
       setGlobals:
         PROTOCOL: https
 
+  - script: ${baseUrl}/scripts/idna.js
+  - setGlobals:
+      DOMAIN: ${response.domain}         
+
   - log: Auto Scaling Triggers
   - script: "${baseUrl}/scripts/addTriggers.js"
     nodeGroup: cp
@@ -102,7 +106,7 @@ actions:
       nodeGroup: bl
       skipEmail: true
       settings:
-        customDomains: ${env.domain}
+        customDomains: ${globals.DOMAIN}
 
   setupDomain:
     - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
@@ -138,7 +142,7 @@ actions:
         db_pass: ${globals.DB_PASS}
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
-        wp_url: ${globals.PROTOCOL}://${env.domain}/
+        wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
         targetNodeID: ${nodes.cp.master.id}
 
   setupNode:
