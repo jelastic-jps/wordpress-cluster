@@ -17,7 +17,7 @@ Upon the package installation, a new environment with the following topology wil
 
 
 <p align="left"> 
-<img src="images/single-cluster-topology.png" width="300">
+<img src="images/single-cluster-topology-storage-scaling.png" width="300">
 </p>
 
 ## Deployment to the Cloud
