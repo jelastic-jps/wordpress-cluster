@@ -115,7 +115,13 @@ if (group.groupType == 'trial') {
             name: "ls-addon",
             caption: lsText,
             value: true,
-            tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers"
+            tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers",
+            showIf:
+                true:
+                    type: "toggle",
+                    caption: "Web Application Firewall",
+                    name: "waf"
+
         });
     }
 
