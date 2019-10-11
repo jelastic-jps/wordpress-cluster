@@ -117,14 +117,29 @@ if (group.groupType == 'trial') {
             value: true,
             tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers",
             "showIf": {
-                "true": [
-                    {
-                        "type": "toggle",
-                        "caption": "Web Application Firewall",
-                        "name": "waf"
-                    }
-                ]
-            }
+            "true": [
+                {
+                    "type": "compositefield",
+                    "hideLabel": true,
+                    "align": "middle",
+                    "items": [
+                        {
+                            "type": "spacer",
+                            "width": 50
+                        },
+                        {
+                            "type": "displayfield",
+                            "markup": "Web Application Firewwall",
+                            "margins": "0 15 0 0"
+                        },
+                        {
+                            "type": "toggle",
+                            "hideLabel": true,
+                            "width": 100
+                        }
+                    ]
+                }
+            ]
         });
     }
 
