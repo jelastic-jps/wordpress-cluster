@@ -140,6 +140,7 @@ if (group.groupType == 'trial') {
                     ]
                 }
             ]
+            }      
         });
     }
 
