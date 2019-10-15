@@ -135,7 +135,9 @@ if (group.groupType == 'trial') {
                         {
                             "type": "toggle",
                             "hideLabel": true,
-                            "width": 100
+                            "width": 100,
+                            "name": "waf",
+                            "value": true
                         }
                     ]
                 }
