@@ -130,7 +130,9 @@ if (group.groupType == 'trial') {
                         {
                             "type": "displayfield",
                             "markup": "Web Application Firewwall",
-                            "margins": "0 15 0 0"
+                            "margins": "0 15 0 0",
+                            "tooltip": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+
                         },
                         {
                             "type": "toggle",
