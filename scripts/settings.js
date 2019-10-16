@@ -10,6 +10,7 @@ var cdnText = "Install Lightning-Fast Premium CDN with 130+ PoPs",
     lsText = "Install LiteSpeed High-Performance Web Server";
     muText = "Install WordPress Multisite Network";
     dbText = "Install MariaDB Galera Cluster";
+    wafText = "Web Application Firewwall";
 var group = jelastic.billing.account.GetAccount(appid, session);
 
 var url = baseUrl + "/configs/settings.yaml";
@@ -117,31 +118,34 @@ if (group.groupType == 'trial') {
             value: true,
             tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers",
             "showIf": {
-                "true": [{
+                "true": {
+                    "type": "checkbox",
+                    "name": "waf",
+                    "caption": wafText,
+                    "value": true,
+                    "tooltip": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+                },
+                "false": {
                     "type": "compositefield",
                     "hideLabel": true,
-                    "align": "middle",
+                    "pack": "left",
+                    "itemCls": "deploy-manager-grid",
+                    "cls": "x-grid3-row-unselected",
                     "items": [{
                         "type": "spacer",
-                        "width": 50
+                        "width": 4
                     }, {
                         "type": "displayfield",
-                        "markup": "Web Application Firewwall"
-                    },  {
-                        "type": "tooltip",
-                        "height": 24,
-                        "text": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo",
-                        "margins": "0 10 0 0"
+                        "cls": "x-grid3-row-checker x-item-disabled",
+                        "width": 30,
+                        "height": 20
                     }, {
-                        "type": "toggle",
-                        "cls": "zero-paddings",
-                        "margins": "12 0 0 0",
-                        "value": "true",
-                        "name": "waf",
-                        "height": 24
+                        "type": "displayfield",
+                        "cls": "x-item-disabled",
+                        "value": lsText
                     }]
-                }]
-            }
+                }   
+             }
         });
     }
 
