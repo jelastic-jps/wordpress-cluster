@@ -133,7 +133,7 @@ if (group.groupType == 'trial') {
                     "cls": "x-grid3-row-unselected",
                     "items": [{
                         "type": "spacer",
-                        "width": 20
+                        "width": 4
                     }, {
                         "type": "displayfield",
                         "cls": "x-grid3-row-checker x-item-disabled",
