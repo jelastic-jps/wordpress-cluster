@@ -117,33 +117,29 @@ if (group.groupType == 'trial') {
             value: true,
             tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers",
             "showIf": {
-            "true": [
-                {
+                "true": [{
                     "type": "compositefield",
                     "hideLabel": true,
                     "align": "middle",
-                    "items": [
-                        {
-                            "type": "spacer",
-                            "width": 50
-                        },
-                        {
-                            "type": "displayfield",
-                            "markup": "Web Application Firewwall",
-                            "margins": "0 15 0 0"
-                        },
-                        {
-                            "type": "toggle",
-                            "hideLabel": true,
-                            "width": 100,
-                            "name": "waf",
-                            "value": true,
-                            "tooltip": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
-                        }
-                    ]
-                }
-            ]
-            }      
+                    "items": [{
+                        "type": "spacer",
+                        "width": 50
+                    }, {
+                        "type": "displayfield",
+                        "markup": "Web Application Firewwall"
+                    },  {
+                        "type": "tooltip",
+                        "height": 24,
+                        "text": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo",
+                        "margins": "0 10 0 0"
+                    }, {
+                        "type": "toggle",
+                        "cls": "zero-paddings",
+                        "margins": "12 0 0 0",
+                        "height": 24
+                    }]
+                }]
+            }
         });
     }
 
