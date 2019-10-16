@@ -132,17 +132,17 @@ if (group.groupType == 'trial') {
                     "itemCls": "deploy-manager-grid",
                     "cls": "x-grid3-row-unselected",
                     "items": [{
-                        "type": "spacer",
-                        "width": 4
-                    }, {
                         "type": "displayfield",
                         "cls": "x-grid3-row-checker x-item-disabled",
-                        "width": 30,
+                        "margins": "0 0 0 -3",
+                        "width": 16,
                         "height": 20
+                        
                     }, {
                         "type": "displayfield",
                         "cls": "x-item-disabled",
-                        "value": wafText
+                        "value": wafText,
+                        "margins": "0 0 0 12"
                     }]
                 }   
              }
