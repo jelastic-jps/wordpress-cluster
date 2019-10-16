@@ -129,6 +129,8 @@ if (group.groupType == 'trial') {
                     "type": "compositefield",
                     "hideLabel": true,
                     "pack": "left",
+                    "name": "waf",
+                    "value": false,
                     "itemCls": "deploy-manager-grid",
                     "cls": "x-grid3-row-unselected",
                     "items": [{
