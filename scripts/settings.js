@@ -137,7 +137,7 @@ if (group.groupType == 'trial') {
                     }, {
                         "type": "displayfield",
                         "cls": "x-grid3-row-checker x-item-disabled",
-                        "width": 0,
+                        "width": 30,
                         "height": 20
                     }, {
                         "type": "displayfield",
