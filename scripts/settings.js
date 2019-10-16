@@ -136,7 +136,7 @@ if (group.groupType == 'trial') {
                         "type": "toggle",
                         "cls": "zero-paddings",
                         "margins": "12 0 0 0",
-                        "value": true,
+                        "value": "true",
                         "name": "waf",
                         "height": 24
                     }]
