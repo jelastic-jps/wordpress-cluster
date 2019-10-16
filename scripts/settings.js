@@ -130,6 +130,8 @@ if (group.groupType == 'trial') {
                     },  {
                         "type": "tooltip",
                         "height": 24,
+                        "value": true,
+                        "name": "waf",
                         "text": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo",
                         "margins": "0 10 0 0"
                     }, {
