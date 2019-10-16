@@ -10,7 +10,7 @@ var cdnText = "Install Lightning-Fast Premium CDN with 130+ PoPs",
     lsText = "Install LiteSpeed High-Performance Web Server";
     muText = "Install WordPress Multisite Network";
     dbText = "Install MariaDB Galera Cluster";
-    wafText = "Web Application Firewwall";
+    wafText = "Web Application Firewall";
 var group = jelastic.billing.account.GetAccount(appid, session);
 
 var url = baseUrl + "/configs/settings.yaml";
@@ -133,11 +133,11 @@ if (group.groupType == 'trial') {
                     "cls": "x-grid3-row-unselected",
                     "items": [{
                         "type": "spacer",
-                        "width": 0
+                        "width": 20
                     }, {
                         "type": "displayfield",
                         "cls": "x-grid3-row-checker x-item-disabled",
-                        "width": 30,
+                        "width": 0,
                         "height": 20
                     }, {
                         "type": "displayfield",
