@@ -70,7 +70,7 @@ if (${settings.ls-addon:false}) {
       },   
       "/var/www/webroot/.cache": {
         readOnly: "false",
-        sourcePath: "/data/.cache",
+        sourcePath: "/data/cache",
         sourceNodeGroup: "storage"
       }
     }
@@ -111,7 +111,7 @@ if (!${settings.ls-addon:false}) {
       },
       "/var/www/webroot/.cache": {
         readOnly: "false",
-        sourcePath: "/data/.cache",
+        sourcePath: "/data/cache",
         sourceNodeGroup: "storage"
       },
       "/etc/nginx/conf.d/SITES_ENABLED": {
