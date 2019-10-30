@@ -1,0 +1,17 @@
+jpsType: update
+jpsVersion: '1.1'
+id: myisam2innodb
+name: WordPress MyISAM to InnoDB converter
+
+onInstall:
+  - forEach(nodes.sqldb):
+    - cmd[${nodes.cp.master.id}]: |-
+        rm -f /tmp/dump-node${@i.id}.sql
+        ~/bin/wp config set DB_HOST node${@i.id} --path=${SERVER_WEBROOT}
+        ~/bin/wp db export /tmp/dump-node${@i.id}.sql --path=${SERVER_WEBROOT}
+        
+  - cmd[${nodes.cp.master.id}]: |-
+      mv $(ls -S /tmp/dump* | head -n 1) /tmp/dump.sql
+      sed 's/ENGINE=MyISAM/ENGINE=InnoDB/g' /tmp/dump.sql > /tmp/dump-innodb.sql
+      ~/bin/wp db import /tmp/dump-innodb.sql --path=${SERVER_WEBROOT}
+      ~/bin/wp config set DB_HOST sqldb --path=${SERVER_WEBROOT}

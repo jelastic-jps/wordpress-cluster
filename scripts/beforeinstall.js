@@ -2,6 +2,15 @@ var resp = {
   result: 0,
   ssl: !!jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value,
   nodes: [{
+    nodeType: "storage",
+    cloudlets: 8,
+    nodeGroup: "storage",
+    displayName: "Storage"
+  }]
+}
+
+if (${settings.galera:false}) {
+  resp.nodes.push({
     nodeType: "mariadb-dockerized",
     tag: "10.3.16",
     count: 3,
@@ -13,12 +22,18 @@ var resp = {
       ON_ENV_INSTALL: "",
       JELASTIC_PORTS: "4567,4568,4444"
     }
-  }, {
-    nodeType: "storage",
-    cloudlets: 8,
-    nodeGroup: "storage",
-    displayName: "Storage"
-  }]
+  })
+}
+
+if (!${settings.galera:false}) {
+  resp.nodes.push({
+    nodeType: "mariadb-dockerized",
+    tag: "10.3.16",
+    count: 1,
+    cloudlets: 16,
+    nodeGroup: "sqldb",
+    displayName: "DB Server"
+  })
 }
 
 if (${settings.ls-addon:false}) {
@@ -40,7 +55,8 @@ if (${settings.ls-addon:false}) {
     displayName: "AppServer",
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true"
+      REDIS_ENABLED: "true",
+      WAF: "${settings.waf}"
     },
     volumes: [
       "/var/www/webroot/ROOT",
@@ -54,7 +70,7 @@ if (${settings.ls-addon:false}) {
       },   
       "/var/www/webroot/.cache": {
         readOnly: "false",
-        sourcePath: "/data/.cache",
+        sourcePath: "/data/cache",
         sourceNodeGroup: "storage"
       }
     }
