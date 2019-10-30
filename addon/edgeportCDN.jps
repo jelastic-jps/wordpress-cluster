@@ -2,7 +2,7 @@ jpsType: update
 jpsVersion: '1.1'
 name: Addon for EdgePort CDN
 description: Addon for EdgePort CDN
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-master/master
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-master/master
 
 onInstall:
   - install-edgeport-CDN
