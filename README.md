@@ -11,7 +11,7 @@ Upon the package installation, a new environment with the following topology wil
 * Either **[LiteSpeed ADC](https://docs.jelastic.com/litespeed-web-adc)** or **[NGINX](https://docs.jelastic.com/tcp-load-balancing)** load balancer is used for distributing the incoming traffic within a cluster  
 * **Web Application Firewall** will be enabled by the default if **[LiteSpeed Web Server](https://docs.jelastic.com/litespeed-web-server)** will be installed
 * The *WordPress* application itself is handled by either **LiteSpeed Web Server** or **[NGINX PHP](https://docs.jelastic.com/nginx-php)** servers with preconfigured [automatic horizontal scaling](https://docs.jelastic.com/automatic-horizontal-scaling) to handle load spikes  
-* **Redis** is high-performance storage used as a highspeed caching solution
+* **Redis** is high-performance RAM-allocated data structure store used as a highspeed caching solution
 * **[Shared Storage](https://docs.jelastic.com/shared-storage-container)** is mounted to all application server nodes for sharing common data  
 * Highly-available **[MariaDB Galera Cluster](https://github.com/jelastic-jps/mysql-cluster#mariadb-galera-cluster)** is used to store and operate user data   
 
