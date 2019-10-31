@@ -25,12 +25,12 @@ for (var i = 0, n = quota.length; i < n; i++) {
     quotaValue = quota[i].value;
 
     if (quotaName == maxNodes && quotaValue < minEnvNodes) {
-        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
+        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ". Min value is " + minEnvNodes + ".  Please upgrade your account.";
         continue;
     }
 
     if (quotaName == sameNodes && quotaValue < minEnvLayerNodes) {
-        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
+        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ". Min value is " + minEnvLayerNodes + ".  Please upgrade your account.";
         continue;
     }
 }
