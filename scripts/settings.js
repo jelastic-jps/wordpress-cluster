@@ -15,23 +15,24 @@ var group = jelastic.billing.account.GetAccount(appid, session);
 var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
 var isLS = jelastic.dev.apps.GetApp(lsAppid);
 
-var sameNodes = "environment.maxsamenodescount",
-var maxNodes = "environment.maxnodescount",
+var sameNodes = "environment.maxsamenodescount";
+var maxNodes = "environment.maxnodescount";
 var minEnvNodes = 7, minEnvLayerNodes = 3, quotaName, quotaValue,  quotaText = "", 
     quota = jelastic.billing.account.GetQuotas(maxNodes + ";" + sameNodes).array || [];
     
 for (var i = 0, n = quota.length; i < n; i++) {
-  quotaName = quota[i].quota.name;
-  quotaValue = quota[i].value;
+    quotaName = quota[i].quota.name;
+    quotaValue = quota[i].value;
 
-  if (quotaName == maxNodes && quotaValue >= minEnvNodes) {
-    quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
-    continue;
-  }
+    if (quotaName == maxNodes && quotaValue >= minEnvNodes) {
+        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
+        continue;
+    }
 
-  if (quotaName == sameNodes && quotaValue >= minEnvLayerNodes) {
-    quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
-  }
+    if (quotaName == sameNodes && quotaValue >= minEnvLayerNodes) {
+        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
+        continue;
+    }
 }
 
 var url = baseUrl + "/configs/settings.yaml";
