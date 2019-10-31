@@ -15,6 +15,26 @@ var group = jelastic.billing.account.GetAccount(appid, session);
 var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
 var isLS = jelastic.dev.apps.GetApp(lsAppid);
 
+var sameNodes = "environment.maxsamenodescount",
+var maxNodes = "environment.maxnodescount",
+var minEnvNodes = 7, minEnvLayerNodes = 3, quotaName, quotaValue,  quotaText = "", 
+    quota = jelastic.billing.account.GetQuotas(maxNodes + ";" + sameNodes).array || [];
+    
+for (var i = 0, n = quota.length; i < n; i++) {
+  quotaName = quota[i].quota.name;
+  quotaValue = quota[i].value;
+
+  if (quotaName == maxNodes && quotaValue >= minEnvNodes) {
+    quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
+    continue;
+  }
+
+  if (quotaName == sameNodes && quotaValue >= minEnvLayerNodes) {
+    quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
+    continue;
+  }
+}
+
 var url = baseUrl + "/configs/settings.yaml";
 var settings = toNative(new Yaml().load(new Transport().get(url)));
 var fields = settings.fields;
@@ -123,7 +143,7 @@ if (group.groupType == 'trial') {
         value: false
 
     });
-    
+
 } else {
 
     if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {
@@ -199,6 +219,13 @@ if (group.groupType == 'trial') {
         caption: muText,
         value: false
     });
+}
+
+if (quotaText) {
+    settings.fields.push(
+        {"type": "displayfield", "cls": "warning", "height": 30, "hideLabel": true, "markup": quotaText},
+        {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
+    );
 }
 
 return {
