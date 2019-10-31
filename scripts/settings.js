@@ -24,12 +24,12 @@ for (var i = 0, n = quota.length; i < n; i++) {
     quotaName = quota[i].quota.name;
     quotaValue = quota[i].value;
 
-    if (quotaName == maxNodes && quotaValue >= minEnvNodes) {
+    if (quotaName == maxNodes && quotaValue < minEnvNodes) {
         quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
         continue;
     }
 
-    if (quotaName == sameNodes && quotaValue >= minEnvLayerNodes) {
+    if (quotaName == sameNodes && quotaValue < minEnvLayerNodes) {
         quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
         continue;
     }
