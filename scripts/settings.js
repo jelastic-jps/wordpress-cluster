@@ -31,7 +31,6 @@ for (var i = 0, n = quota.length; i < n; i++) {
 
   if (quotaName == sameNodes && quotaValue >= minEnvLayerNodes) {
     quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ".  Please upgrade your account.";
-    continue;
   }
 }
 
