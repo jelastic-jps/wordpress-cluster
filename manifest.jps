@@ -75,13 +75,14 @@ onInstall:
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
   - if (!${settings.galera:false}):
-    - log: DataBase Setup
-    - setNodeDisplayName [sqldb]: DataBase Server  
-    - cmd [sqldb]: |-
-        wget ${baseUrl}/configs/sqldb/wordpress.cnf -O /etc/mysql/conf.d/wordpress.cnf &>> /var/log/run.log
-        wget https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/setupUser.sh -O ~/setupUser.sh &>> /var/log/run.log
-        bash ~/setupUser.sh ${globals.DB_USER} ${globals.DB_PASS} &>> /var/log/run.log
-      user: root
+    - log: Master-Master Replication Setup
+    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
+      settings:
+        scheme: master
+        db_user: "${globals.DB_USER}"
+        db_pass: "${globals.DB_PASS}"
+        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+      nodeGroup: sqldb
 
   - setupNode:
       nodeId: cp
