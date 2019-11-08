@@ -77,7 +77,8 @@ onInstall:
   - if (!${settings.galera:false}):
     - log: Master-Master Replication Setup
     - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
-      settings:
+      settings:        
+        path: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/
         scheme: master
         db_user: "${globals.DB_USER}"
         db_pass: "${globals.DB_PASS}"
