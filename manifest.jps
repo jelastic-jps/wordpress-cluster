@@ -53,12 +53,13 @@ onInstall:
   - setGlobals:
       DOMAIN: ${response.domain}         
 
-  - log: Auto Scaling Triggers
-  - script: "${baseUrl}/scripts/addTriggers.js"
-    nodeGroup: cp
-    resourceType: CPU
-    loadGrowth: ${settings.loadGrowth}
-    cleanOldTriggers: true
+  - if (${settings.is_trigger:true}):
+    - log: Auto Scaling Triggers
+    - script: "${baseUrl}/scripts/addTriggers.js"
+      nodeGroup: cp
+      resourceType: CPU
+      loadGrowth: ${settings.loadGrowth}
+      cleanOldTriggers: true
     
   - log: Set Node Display Name
   - setNodeDisplayName [bl]: Load balancer
