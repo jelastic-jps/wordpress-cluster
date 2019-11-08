@@ -33,8 +33,8 @@ if (!${settings.galera:false}) {
   resp.nodes.push({
     nodeType: "mariadb-dockerized",
     tag: "10.3.16",
-    count: 1,
-    cloudlets: ${settings.db_fixedCloudlets:16},
+    count: 2,
+    cloudlets: ${settings.db_fixedCloudlets:8},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
     diskLimit: ${settings.db_diskLimit:10000},
     nodeGroup: "sqldb",
