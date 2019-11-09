@@ -53,12 +53,13 @@ onInstall:
   - setGlobals:
       DOMAIN: ${response.domain}         
 
-  - log: Auto Scaling Triggers
-  - script: "${baseUrl}/scripts/addTriggers.js"
-    nodeGroup: cp
-    resourceType: CPU
-    loadGrowth: ${settings.loadGrowth}
-    cleanOldTriggers: true
+  - if (${settings.is_trigger:true}):
+    - log: Auto Scaling Triggers
+    - script: "${baseUrl}/scripts/addTriggers.js"
+      nodeGroup: cp
+      resourceType: CPU
+      loadGrowth: ${settings.loadGrowth}
+      cleanOldTriggers: true
     
   - log: Set Node Display Name
   - setNodeDisplayName [bl]: Load balancer
@@ -74,13 +75,15 @@ onInstall:
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
   - if (!${settings.galera:false}):
-    - log: DataBase Setup
-    - setNodeDisplayName [sqldb]: DataBase Server  
-    - cmd [sqldb]: |-
-        wget ${baseUrl}/configs/sqldb/wordpress.cnf -O /etc/mysql/conf.d/wordpress.cnf &>> /var/log/run.log
-        wget https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/setupUser.sh -O ~/setupUser.sh &>> /var/log/run.log
-        bash ~/setupUser.sh ${globals.DB_USER} ${globals.DB_PASS} &>> /var/log/run.log
-      user: root
+    - log: Master-Master Replication Setup
+    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
+      settings:        
+        path: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/
+        scheme: master
+        db_user: "${globals.DB_USER}"
+        db_pass: "${globals.DB_PASS}"
+        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+      nodeGroup: sqldb
 
   - setupNode:
       nodeId: cp
@@ -118,6 +121,8 @@ actions:
     - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
       nodeGroup: bl
       skipEmail: true
+      settings:
+        note: ${settings.noteCDN:wp100}
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
     - setGlobals:
         CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
