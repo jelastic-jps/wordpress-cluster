@@ -59,6 +59,7 @@ onInstall:
       resourceType: CPU
       loadGrowth: ${settings.loadGrowth}
       cleanOldTriggers: true
+      scaleDownLimit: ${nodes.cp.length}
     
   - log: Set Node Display Name
   - setNodeDisplayName [bl]: Load balancer
