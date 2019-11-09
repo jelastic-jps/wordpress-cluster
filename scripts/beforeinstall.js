@@ -5,7 +5,7 @@ var resp = {
     nodeType: "storage",
     cloudlets: ${settings.st_fixedCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
-    diskLimit: ${settings.st_diskLimit:10000},
+    diskLimit: ${settings.st_diskLimit:10},
     nodeGroup: "storage",
     displayName: "Storage"
   }]
@@ -18,7 +18,7 @@ if (${settings.galera:false}) {
     count: 3,
     cloudlets: ${settings.db_fixedCloudlets:8},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
-    diskLimit: ${settings.db_diskLimit:10000},
+    diskLimit: ${settings.db_diskLimit:10},
     nodeGroup: "sqldb",
     displayName: "Galera cluster",
     restartDelay: 5,
@@ -36,7 +36,7 @@ if (!${settings.galera:false}) {
     count: 2,
     cloudlets: ${settings.db_fixedCloudlets:8},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
-    diskLimit: ${settings.db_diskLimit:10000},
+    diskLimit: ${settings.db_diskLimit:10},
     nodeGroup: "sqldb",
     displayName: "DB Server"
   })
@@ -49,7 +49,7 @@ if (${settings.ls-addon:false}) {
     count: 1,
     cloudlets: ${settings.bl_fixedCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
-    diskLimit: ${settings.bl_diskLimit:10000},
+    diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
@@ -59,7 +59,7 @@ if (${settings.ls-addon:false}) {
     count: ${settings.cp_count:2},
     cloudlets: ${settings.cp_fixedCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
-    diskLimit: ${settings.cp_diskLimit:10000},
+    diskLimit: ${settings.cp_diskLimit:10},
     nodeGroup: "cp",
     scalingMode: "STATELESS",
     displayName: "AppServer",
@@ -94,7 +94,7 @@ if (!${settings.ls-addon:false}) {
     count: 1,
     cloudlets: ${settings.bl_fixedCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
-    diskLimit: ${settings.bl_diskLimit:10000},
+    diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
@@ -104,7 +104,7 @@ if (!${settings.ls-addon:false}) {
     count: ${settings.cp_count:2},
     cloudlets: ${settings.cp_fixedCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
-    diskLimit: ${settings.cp_diskLimit:10000},
+    diskLimit: ${settings.cp_diskLimit:10},
     nodeGroup: "cp",
     scalingMode: "STATELESS",
     displayName: "AppServer",
