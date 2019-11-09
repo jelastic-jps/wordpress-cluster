@@ -2,7 +2,7 @@
 //@req(nodeGroup, resourceType, cleanOldTriggers, loadGrowth)
 
 var scaleUpLoadPeriod = 1,
-    scaleDownLimit = 2,
+    scaleDownLimit = getParam("scaleDownLimit") || 2,
     scaleDownLoadPeriod = 5;
 
 var resp = jelastic.billing.account.GetQuotas('environment.maxsamenodescount');
