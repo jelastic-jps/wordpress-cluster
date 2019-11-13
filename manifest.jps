@@ -159,7 +159,12 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-
+    - log: Disabled remount
+    - cmd[${this.nodeId}]: |-
+        sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
+        service autofs restart
+      user: root
+  
     - log: Wordpress CLI Installation
     - install: ${baseUrl}/scripts/WP-CLI.jps?_r=${fn.random}
       settings:
