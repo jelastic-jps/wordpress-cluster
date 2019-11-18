@@ -7,7 +7,7 @@ categories:
 description: 
   text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
-logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster-enterprise.png
+logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster-kit.png
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
