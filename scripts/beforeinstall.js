@@ -14,7 +14,7 @@ var resp = {
 if (${settings.galera:false}) {
   resp.nodes.push({
     nodeType: "mariadb-dockerized",
-    tag: "10.3.16",
+    tag: "10.3.20",
     count: 3,
     flexibleCloudlets: ${settings.db_flexibleCloudlets:8},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
@@ -32,7 +32,7 @@ if (${settings.galera:false}) {
 if (!${settings.galera:false}) {
   resp.nodes.push({
     nodeType: "mariadb-dockerized",
-    tag: "10.3.16",
+    tag: "10.3.20",
     count: 2,
     flexibleCloudlets: ${settings.db_flexibleCloudlets:8},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
