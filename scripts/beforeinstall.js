@@ -22,6 +22,7 @@ if (${settings.galera:false}) {
     nodeGroup: "sqldb",
     displayName: "Galera cluster",
     restartDelay: 5,
+    skipNodeEmails: true,
     env: {
       ON_ENV_INSTALL: "",
       JELASTIC_PORTS: "4567,4568,4444"
@@ -38,6 +39,7 @@ if (!${settings.galera:false}) {
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
     diskLimit: ${settings.db_diskLimit:10},
     nodeGroup: "sqldb",
+    skipNodeEmails: true,
     displayName: "DB Server"
   })
 }
