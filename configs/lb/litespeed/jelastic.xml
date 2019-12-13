@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<virtualHostConfig>
+  <logging>
+    <accessLog>
+      <useServer>1</useServer>
+    </accessLog>
+  </logging>
+  <security>
+    <wpProtectAction>0</wpProtectAction>
+    <wpProtectLimit>10</wpProtectLimit>
+  </security>
+  <cache>
+    <storage>
+      <cacheStorePath>/tmp/lscache/vhosts/$VH_NAME</cacheStorePath>
+      <litemage>0</litemage>
+    </storage>
+    <cachePolicy>
+      <checkPublicCache>1</checkPublicCache>
+      <checkPrivateCache>1</checkPrivateCache>
+      <cacheStaticFile>15</cacheStaticFile>
+    </cachePolicy>
+  </cache>
+</virtualHostConfig>
