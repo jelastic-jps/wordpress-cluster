@@ -73,7 +73,7 @@ if (${settings.ls-addon:false}) {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true",
       WAF: "${settings.waf:false}",
-      WP_PROTECT: OFF
+      WP_PROTECT: "OFF"
     },
     volumes: [
       "/var/www/webroot/ROOT"
