@@ -54,7 +54,11 @@ if (${settings.ls-addon:false}) {
     diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
     scalingMode: "STATEFUL",
-    displayName: "Load balancer"
+    displayName: "Load balancer",
+    env: {
+      WP_PROTECT: ${settings.wp_protect:THROTTLE},
+      WP_PROTECT_LIMIT: 100
+    }
   }, {
     nodeType: "litespeedphp",
     tag: "5.4.1-php-7.3.7",
@@ -68,21 +72,16 @@ if (${settings.ls-addon:false}) {
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true",
-      WAF: "${settings.waf}"
+      WAF: "${settings.waf:false}",
+      WP_PROTECT: OFF
     },
     volumes: [
-      "/var/www/webroot/ROOT",
-      "/var/www/webroot/.cache"
+      "/var/www/webroot/ROOT"
     ],  
     volumeMounts: {
       "/var/www/webroot/ROOT": {
         readOnly: "false",
         sourcePath: "/data/ROOT",
-        sourceNodeGroup: "storage"
-      },   
-      "/var/www/webroot/.cache": {
-        readOnly: "false",
-        sourcePath: "/data/cache",
         sourceNodeGroup: "storage"
       }
     }
