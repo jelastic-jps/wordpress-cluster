@@ -12,5 +12,3 @@ table_definition_cache = 4K
 open_files_limit = 524290
 innodb_log_file_size = 64M
 local-infile=0
-low_priority_updates=1
-concurrent_insert=ALWAYS
