@@ -1,3 +1,5 @@
+var wpbfp = '${settings.wp_protect}' ? "THROTTLE" : "OFF"
+
 var resp = {
   result: 0,
   ssl: !!jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value,
@@ -47,7 +49,7 @@ if (!${settings.galera:false}) {
 if (${settings.ls-addon:false}) {
   resp.nodes.push({
     nodeType: "litespeedadc",
-    tag: "2.6",
+    tag: "2.5.1",
     count: 1,
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
@@ -56,7 +58,7 @@ if (${settings.ls-addon:false}) {
     scalingMode: "STATEFUL",
     displayName: "Load balancer",
     env: {
-      WP_PROTECT: ${settings.wp_protect:THROTTLE},
+      WP_PROTECT: wpbfp,
       WP_PROTECT_LIMIT: 100
     }
   }, {
