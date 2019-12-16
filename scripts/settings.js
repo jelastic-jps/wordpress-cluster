@@ -210,7 +210,7 @@ if (group.groupType == 'trial') {
                         "value": wpbfText,
                         "margins": "0 0 0 12"
                 }]   
-             }
+             }]
         });
     }
 
