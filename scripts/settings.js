@@ -11,7 +11,7 @@ var cdnText = "Install Lightning-Fast Premium CDN with 130+ PoPs",
     muText = "Install WordPress Multisite Network";
     dbText = "Install MariaDB Galera Cluster";
     wafText = "Web Application Firewall";
-    wpbfText = "WordPress Brute Force Attaks Protect";
+    wpbfText = "WordPress Brute Force Attack Protection";
 var group = jelastic.billing.account.GetAccount(appid, session);
 var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
 var isLS = jelastic.dev.apps.GetApp(lsAppid);
@@ -166,7 +166,7 @@ if (group.groupType == 'trial') {
                     "name": "wp_protect",
                     "caption": wpbfText,
                     "value": true,
-                    "tooltip": "WordPress Brute Force Attaks Protect"
+                    "tooltip": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>WordPress Brute Force Attack Protection</a>"
                 }],
                 "false": [{
                     "type": "compositefield",
