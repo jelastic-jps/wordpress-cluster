@@ -1,4 +1,4 @@
-var wpbfp = '${settings.wp_protect}' ? "THROTTLE" : "OFF"
+var wpbfp = '${settings.wp_protect}' == 'true' ? "THROTTLE" : "OFF";
 
 var resp = {
   result: 0,
