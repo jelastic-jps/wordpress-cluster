@@ -166,7 +166,7 @@ if (group.groupType == 'trial') {
                     "name": "wp_protect",
                     "caption": wpbfText,
                     "value": true,
-                    "tooltip": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>WordPress Brute Force Attack Protection</a>"
+                    "tooltip": "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
                 }],
                 "false": [{
                     "type": "compositefield",
