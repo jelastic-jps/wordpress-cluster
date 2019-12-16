@@ -11,6 +11,7 @@ var cdnText = "Install Lightning-Fast Premium CDN with 130+ PoPs",
     muText = "Install WordPress Multisite Network";
     dbText = "Install MariaDB Galera Cluster";
     wafText = "Web Application Firewall";
+    wpbfText = "WordPress Brute Force Attaks Protect";
 var group = jelastic.billing.account.GetAccount(appid, session);
 var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
 var isLS = jelastic.dev.apps.GetApp(lsAppid);
@@ -154,14 +155,20 @@ if (group.groupType == 'trial') {
             value: true,
             tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers",
             "showIf": {
-                "true": {
+                "true": [{
                     "type": "checkbox",
                     "name": "waf",
                     "caption": wafText,
                     "value": true,
                     "tooltip": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
-                },
-                "false": {
+                }, {
+                    "type": "checkbox",
+                    "name": "wp_protect",
+                    "caption": wpbfText,
+                    "value": true,
+                    "tooltip": "WordPress Brute Force Attaks Protect"
+                }],
+                "false": [{
                     "type": "compositefield",
                     "hideLabel": true,
                     "pack": "left",
@@ -182,7 +189,27 @@ if (group.groupType == 'trial') {
                         "value": wafText,
                         "margins": "0 0 0 12"
                     }]
-                }   
+                }, {
+                   "type": "compositefield",
+                    "hideLabel": true,
+                    "pack": "left",
+                    "name": "wp_protect",
+                    "value": false,
+                    "itemCls": "deploy-manager-grid",
+                    "cls": "x-grid3-row-unselected",
+                    "items": [{
+                        "type": "displayfield",
+                        "cls": "x-grid3-row-checker x-item-disabled",
+                        "margins": "0 0 0 -3",
+                        "width": 16,
+                        "height": 20
+                        
+                    }, {
+                        "type": "displayfield",
+                        "cls": "x-item-disabled",
+                        "value": wpbfText,
+                        "margins": "0 0 0 12"
+                }]   
              }
         });
     }
