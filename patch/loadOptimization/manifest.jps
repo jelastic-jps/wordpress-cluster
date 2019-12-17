@@ -27,7 +27,12 @@ onInstall:
   
   - log: DataBase optimization
   - forEach(nodes.sqldb):
+    - cmd[${@i.id}]: wget ${baseUrl}/configs/sqldb/wordpress.cnf -O /etc/mysql/conf.d/wordpress.cnf
     - cmd[${@i.id}]: |-
         wget ${baseUrl}/patch/loadOptimization/scripts/DB.sh -O ~/DB.sh;
         bash ~/DB.sh;
+      user: root
+
+  - log: Disabled WP Loggin User Cache
+  - cmd[nodes.cp.master.id]: cd /var/www/webroot/ROOT; wp lscache-admin set_option cache_priv false --path=${SERVER_WEBROOT} &>> /var/log/run.log;
   
