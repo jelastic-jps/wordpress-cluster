@@ -1,7 +1,8 @@
 jpsType: update
 jpsVersion: '1.1'
-name: Optimization for Load Perfomance Tests
-description: Optimization for Load Perfomance Tests
+id: wp-cluster-optimization
+name: Cluster Optimization for Load Perfomance Tests
+description: Cluster Optimization for Load Perfomance Tests
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
 baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
 
