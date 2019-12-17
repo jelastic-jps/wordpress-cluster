@@ -6,14 +6,21 @@ logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/im
 baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
 
 onInstall:
+
+    - log: Disable WP_PROTECT  via environment variable
+    - cmd[bl]: sed -i 's/^WP_PROTECT=.*/WP_PROTECT=OFF/g' /.jelenv;
+      user: root
+
     - log: LiteSpeed ADC optimization
     - cmd[bl]: |-
         wget ${baseUrl}/patch/loadOptimization/configs/LSADC_vhost.xml  -O /var/www/conf/jelastic.xml;
         wget ${baseUrl}/patch/loadOptimization/scripts/LSADC.sh -O ~/LSADC.sh;
         bash ~/LSADC.sh;
+
     - log: LiteSpeed WEB optimization
     - forEach(nodes.cp):
         cmd[${@i.id}]: |-
             wget ${baseUrl}/patch/loadOptimization/scripts/LSWEB.sh -O ~/LSWEB.sh;
             bash ~/LSWEB.sh;
     - log: DataBase optimization
+
