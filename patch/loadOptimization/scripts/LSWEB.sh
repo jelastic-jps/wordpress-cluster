@@ -5,8 +5,6 @@ DEFAULT_VIRTUALHOST_CONFIG="/var/www/webroot/vhconf.xml"
 PHPMYADMIN_VIRTUALHOST_CONFIG="/usr/share/phpMyAdmin/vhost.conf"
 ED_CMD="ed --inplace"
 
-[ -f /.jelenv ] && sed -i 's/^WP_PROTECT=.*/WP_PROTECT=OFF/g' /.jelenv
-
 cp -f "${DEFAULT_LSWS_CONFIG}" ${DEFAULT_LSWS_CONFIG}.backup.$(date +%d-%m-%Y.%H:%M:%S.%N) || exit 1
 cp -f "${DEFAULT_VIRTUALHOST_CONFIG}" ${DEFAULT_VIRTUALHOST_CONFIG}.backup.$(date +%d-%m-%Y.%H:%M:%S.%N) || exit 1
 [ -f "${PHPMYADMIN_VIRTUALHOST_CONFIG}" ] && { cp -f "${PHPMYADMIN_VIRTUALHOST_CONFIG}" ${PHPMYADMIN_VIRTUALHOST_CONFIG}.backup.$(date +%d-%m-%Y.%H:%M:%S.%N) || exit 1; }
