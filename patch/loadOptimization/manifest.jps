@@ -3,17 +3,17 @@ jpsVersion: '1.1'
 name: Optimization for Load Perfomance Tests
 description: Optimization for Load Perfomance Tests
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master/patch/loadOptimization
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
 
 onInstall:
     - log: LiteSpeed ADC optimization
     - cmd[bl]: |-
-        wget ${baseUrl}/configs/LSADC_vhost.xml  -O /var/www/conf/jelastic.xml;
-        wget ${baseUrl}/scripts/LSADC.sh -O ~/LSADC.sh;
+        wget ${baseUrl}/patch/loadOptimization/configs/LSADC_vhost.xml  -O /var/www/conf/jelastic.xml;
+        wget ${baseUrl}/patch/loadOptimization/scripts/LSADC.sh -O ~/LSADC.sh;
         bash ~/LSADC.sh;
     - log: LiteSpeed WEB optimization
     - forEach(nodes.cp):
         cmd[${@i.id}]: |-
-            wget ${baseUrl}/scripts/LSWEB.sh -O ~/LSWEB.sh;
+            wget ${baseUrl}/patch/loadOptimization/scripts/LSWEB.sh -O ~/LSWEB.sh;
             bash ~/LSWEB.sh;
     - log: DataBase optimization
