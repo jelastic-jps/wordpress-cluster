@@ -10,4 +10,4 @@ cp -f /etc/jelastic/redeploy.conf /etc/jelastic/redeploy.conf.$(date +%d-%m-%Y.%
 sed -i '/\/etc\/mysql\/conf.d/d' /etc/jelastic/redeploy.conf
 echo "/etc/mysql/conf.d" >> /etc/jelastic/redeploy.conf 
 
-sudo service mysql reload;
+sudo service mysql restart;
