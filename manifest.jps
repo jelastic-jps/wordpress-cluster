@@ -87,6 +87,9 @@ onInstall:
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
 
+  - setupLB:
+      nodeId: bl
+      
   - setupNode:
       nodeId: cp
 
@@ -153,7 +156,7 @@ actions:
         targetNodeID: ${nodes.cp.master.id}
 
   setupNode:
-    - log: OPTIMIZATION
+    - log: CP OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
       settings:
         targetGroup: cp
@@ -170,6 +173,14 @@ actions:
       settings:
         TARGET_NODES: ${this.nodeId}
 
+  setupLB:
+    - log: LB OPTIMIZATION
+    - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+      settings:
+        targetGroup: bl
+        targetNodes: ${this.nodeId}
+        optimization: wordpress
+        
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}

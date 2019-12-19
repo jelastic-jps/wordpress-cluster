@@ -166,6 +166,7 @@ if [ $pgcache == 'true' ] ; then
           $LSCWP_OPTION_SET optm_qs_rm true --path=${SERVER_WEBROOT} &>> $lOG
           $LSCWP_OPTION_SET optm_emoji_rm true --path=${SERVER_WEBROOT} &>> $lOG
           $LSCWP_OPTION_SET esi_enabled true --path=${SERVER_WEBROOT} &>> $lOG
+	  $LSCWP_OPTION_SET cache_priv false --path=${SERVER_WEBROOT} &>> $lOG
           ;;
   esac
 fi

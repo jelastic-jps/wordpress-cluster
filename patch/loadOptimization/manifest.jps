@@ -1,0 +1,36 @@
+jpsType: update
+jpsVersion: '1.1'
+id: wp-cluster-optimization
+name: Cluster Optimization for Load Perfomance Tests
+description: Cluster Optimization for Load Perfomance Tests
+logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+
+onInstall:
+
+  - log: LiteSpeed ADC optimization
+  - cmd[bl]: sed -i 's/^WP_PROTECT=.*/WP_PROTECT=OFF/g' /.jelenv;
+    user: root
+  
+  - cmd[bl]: |-
+      wget ${baseUrl}/patch/loadOptimization/configs/LSADC_vhost.xml  -O /var/www/conf/jelastic.xml;
+      wget ${baseUrl}/patch/loadOptimization/scripts/LSADC.sh -O ~/LSADC.sh;
+      bash ~/LSADC.sh;
+
+  - log: LiteSpeed WEB optimization
+  - forEach(nodes.cp):
+    - cmd[${@i.id}]: sed -i 's/^WP_PROTECT=.*/WP_PROTECT=OFF/g' /.jelenv;
+      user: root
+
+    - cmd[${@i.id}]: |-
+        wget ${baseUrl}/patch/loadOptimization/scripts/LSWEB.sh -O ~/LSWEB.sh;
+        bash ~/LSWEB.sh;
+        cd /var/www/webroot/ROOT; wp lscache-admin set_option cache_priv false --path=${SERVER_WEBROOT} &>> /var/log/run.log; wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+  
+  - log: DataBase optimization
+  - forEach(nodes.sqldb):
+    - cmd[${@i.id}]: wget ${baseUrl}/configs/sqldb/wordpress.cnf -O /etc/mysql/conf.d/wordpress.cnf
+    - cmd[${@i.id}]: |-
+        wget ${baseUrl}/patch/loadOptimization/scripts/DB.sh -O ~/DB.sh;
+        bash ~/DB.sh;
+      user: root
