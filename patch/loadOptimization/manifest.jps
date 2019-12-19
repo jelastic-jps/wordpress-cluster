@@ -8,7 +8,7 @@ baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
 
 onInstall:
   - log: Disabled WP Loggin User Cache
-  - cmd[nodes.cp.master.id]: cd /var/www/webroot/ROOT; wp lscache-admin set_option cache_priv false --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+  - cmd[${nodes.cp.master.id}]: cd /var/www/webroot/ROOT; wp lscache-admin set_option cache_priv false --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 
   - log: LiteSpeed ADC optimization
   - cmd[bl]: sed -i 's/^WP_PROTECT=.*/WP_PROTECT=OFF/g' /.jelenv;
