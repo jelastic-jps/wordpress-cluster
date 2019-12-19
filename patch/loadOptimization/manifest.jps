@@ -7,8 +7,6 @@ logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/im
 baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/master
 
 onInstall:
-  - log: Disabled WP Loggin User Cache
-  - cmd[${nodes.cp.master.id}]: cd /var/www/webroot/ROOT; wp lscache-admin set_option cache_priv false --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 
   - log: LiteSpeed ADC optimization
   - cmd[bl]: sed -i 's/^WP_PROTECT=.*/WP_PROTECT=OFF/g' /.jelenv;
@@ -27,7 +25,7 @@ onInstall:
     - cmd[${@i.id}]: |-
         wget ${baseUrl}/patch/loadOptimization/scripts/LSWEB.sh -O ~/LSWEB.sh;
         bash ~/LSWEB.sh;
-        cd /var/www/webroot/ROOT; wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+        cd /var/www/webroot/ROOT; wp lscache-admin set_option cache_priv false --path=${SERVER_WEBROOT} &>> /var/log/run.log; wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
   
   - log: DataBase optimization
   - forEach(nodes.sqldb):
