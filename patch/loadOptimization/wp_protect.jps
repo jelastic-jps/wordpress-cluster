@@ -6,8 +6,8 @@ description: WordPress Brute Force Attacks Configuration for Cluster
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
 
 globals:
-  WP_PROTECT_ACTION: 2
-  WP_PROTECT_LIMIT: 500
+  WP_PROTECT_ACTION: 3
+  WP_PROTECT_LIMIT: 50
 
 onInstall:  
   - log: WordPress Brute Force for LB layer
