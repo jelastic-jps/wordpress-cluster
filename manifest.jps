@@ -115,6 +115,7 @@ actions:
       skipEmail: true
       settings:
         customDomains: ${globals.DOMAIN}
+        fallbackToX1: true
 
   setupDomain:
     - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
