@@ -1,6 +1,7 @@
 Данный патч применяет оптимизации для установленных WP cluster на базе LiteSpeed
 Список оптимизаций:
 Данный патч оптимизирует след. настройки:
+
 **LiteSpeed ADC (Load Balancer)**
 
 - включает WordPress Brute Force Attaks Protection с параметрами 
