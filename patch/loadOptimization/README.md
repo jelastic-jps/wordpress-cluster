@@ -17,9 +17,10 @@ https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:cache:webadc
 https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:lslb:basic_config
 
 **LSWEB**
-отключает WordPress Brute Force Attaks Protection
-отключает GZIP сжатие
-обновляет LSCACHE плагин
+
+- отключает WordPress Brute Force Attaks Protection
+- отключает GZIP сжатие
+- обновляет LSCACHE плагин
 
 **DataBase**
-устанавливает параметр innodb_flush_log_at_trx_commit = 2*
+- устанавливает параметр innodb_flush_log_at_trx_commit = 2*
