@@ -9,7 +9,8 @@ var resp = {
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
-    displayName: "Storage"
+    displayName: "Storage",
+    count: 3
   }]
 }
 
@@ -79,14 +80,7 @@ if (${settings.ls-addon:false}) {
     },
     volumes: [
       "/var/www/webroot/ROOT"
-    ],  
-    volumeMounts: {
-      "/var/www/webroot/ROOT": {
-        readOnly: "false",
-        sourcePath: "/data/ROOT",
-        sourceNodeGroup: "storage"
-      }
-    }
+    ]  
   })
 }
 
@@ -119,24 +113,7 @@ if (!${settings.ls-addon:false}) {
       "/var/www/webroot/ROOT",
       "/var/www/webroot/.cache",
       "/etc/nginx/conf.d/SITES_ENABLED"
-    ],  
-    volumeMounts: {
-      "/var/www/webroot/ROOT": {
-        readOnly: "false",
-        sourcePath: "/data/ROOT",
-        sourceNodeGroup: "storage"
-      },
-      "/var/www/webroot/.cache": {
-        readOnly: "false",
-        sourcePath: "/data/.cache",
-        sourceNodeGroup: "storage"
-      },
-      "/etc/nginx/conf.d/SITES_ENABLED": {
-        readOnly: "false",
-        sourcePath: "/data/APP_CONFIGS",
-        sourceNodeGroup: "storage"
-      }
-    }
+    ]  
   })
 }
 
