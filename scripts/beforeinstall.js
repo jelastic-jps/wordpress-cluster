@@ -10,6 +10,7 @@ var resp = {
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
     displayName: "Storage",
+    cluster: true;
     count: 3
   }]
 }
