@@ -1,6 +1,6 @@
 type: install
-name: WordPress Cluster Kit
-id: wordpress-cluster
+name: WordPress Cluster Kit with GlusterFS (BETA)
+id: wordpress-cluster-with-glusterfs
 categories:
   - apps/clusters
   - apps/content-management
@@ -8,7 +8,7 @@ description:
   text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster-kit.png
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/glusterfs
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
@@ -70,7 +70,7 @@ onInstall:
 
   - if (${settings.galera:false}):
     - log: DB Galera  Setup
-    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
+    - install: https://raw.githubusercontent.com/sych74/mysql-cluster/master/scripts/galera.jps
       settings:
         db_user: "${globals.DB_USER}"
         db_pass: "${globals.DB_PASS}"
@@ -87,6 +87,8 @@ onInstall:
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
 
+  - mountGlusterFS      
+      
   - setupLB:
       nodeId: bl
       
@@ -156,18 +158,14 @@ actions:
         targetNodeID: ${nodes.cp.master.id}
 
   setupNode:
+ 
     - log: CP OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
       settings:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - log: Disabled remount
-    - cmd[${this.nodeId}]: |-
-        sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
-        service autofs restart
-      user: root
-  
+
     - log: Wordpress CLI Installation
     - install: ${baseUrl}/scripts/WP-CLI.jps?_r=${fn.random}
       settings:
@@ -180,6 +178,18 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
+        
+  mountGlusterFS:
+    - log: Mount GlusterFS
+    - api:
+      - method: jelastic.environment.file.AddMountPointByGroup
+        params:
+          nodeGroup: cp
+          sourceNodeId: ${nodes.storage.master.id}
+          sourcePath: /data/ROOT
+          path: /var/www/webroot/ROOT
+          sourceAddressType: NODE_GROUP
+ 
         
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
