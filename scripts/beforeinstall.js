@@ -5,6 +5,7 @@ var resp = {
   ssl: !!jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value,
   nodes: [{
     nodeType: "storage",
+    tag: "2.0-7.2",
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
