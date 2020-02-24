@@ -190,7 +190,7 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
-   - cmd[${this.nodeId}]: bash ~/LSADC.sh &>> /var/log/run.log;
+    - cmd[${this.nodeId}]: bash ~/LSADC.sh &>> /var/log/run.log;
         
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
