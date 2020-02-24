@@ -24,6 +24,7 @@ globals:
   WP_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
+  JPS_VERSION: 1.1.0
 
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
