@@ -171,7 +171,7 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: bash ~/LSWEB.sh &>> /var/log/run.log;
+    - cmd[${this.nodeId}]: bash /tmp/LSWEB.sh &>> /var/log/run.log;
     - log: Disabled remount
     - cmd[${this.nodeId}]: |-
         sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
@@ -190,7 +190,7 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: bash ~/LSADC.sh &>> /var/log/run.log;
+    - cmd[${this.nodeId}]: bash /tmp/LSADC.sh &>> /var/log/run.log;
         
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
