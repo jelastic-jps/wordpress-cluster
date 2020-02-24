@@ -24,7 +24,7 @@ globals:
   WP_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
-  JPS_VERSION: 1.1.0
+  JPS_VERSION: v1.1.0
 
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
@@ -32,6 +32,14 @@ onAfterScaleOut[nodeGroup:cp]:
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupNode:
         nodeId: ${@i.id}
+        
+onAfterRedeployContainer[cp]:
+  - setupNode:
+      nodeId: cp
+
+onAfterRedeployContainer[bl]:
+ - setupLB:
+      nodeId: bl
 
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${baseUrl}/scripts/setupCDN.jps
@@ -163,6 +171,7 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
+    - cmd[${this.nodeId}]: bash ~/LSWEB.sh &>> /var/log/run.log;
     - log: Disabled remount
     - cmd[${this.nodeId}]: |-
         sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
@@ -181,6 +190,7 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
+   - cmd[${this.nodeId}]: bash ~/LSADC.sh &>> /var/log/run.log;
         
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
