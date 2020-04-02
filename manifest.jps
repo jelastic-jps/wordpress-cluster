@@ -7,7 +7,7 @@ categories:
 description: 
   text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
-logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster-kit.png
+logo: /images/wp-cluster-kit.png
 baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v1.1.0
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
@@ -203,6 +203,25 @@ onInstall:
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
+addons:
+  - id: setup-WP-url
+    type: update
+    name: Site URL Configuration
+    description: Site URL Configuration.
+    logo: /images/wp-cluster-kit.png
+    settings:
+      fields:
+        - type: string
+          name: siteURL
+          caption: Site URL
+          required: true
+    buttons:
+      - caption: Setup Site URL
+        action: setup-site-URL
+        loadingText: Applying...
+        confirmText: Do you want to change Site URL?
+        successText:  Site URL for WordPress has been successfully changed!
+    
 actions:
 
   install-LE-addon:
@@ -212,11 +231,8 @@ actions:
       settings:
         customDomains: ${globals.DOMAIN}
 
-  setupDomain:
-    - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
-    - set:
-        domain: ${response.out}
-    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}
+  setup-site-URL:
+    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN ${settings.siteURL}
 
   install-edgeport-CDN:
     - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
