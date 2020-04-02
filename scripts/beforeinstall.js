@@ -112,6 +112,7 @@ if (!${settings.ls-addon:false}) {
     nodeGroup: "cp",
     scalingMode: "STATELESS",
     displayName: "AppServer",
+    addons: ["setup-site-url"],
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true"
