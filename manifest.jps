@@ -204,7 +204,7 @@ onInstall:
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
 addons:
-  - id: setup-WP-url
+  - id: setup-site-url
     type: update
     name: Site URL Configuration
     description: Site URL Configuration.
