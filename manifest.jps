@@ -267,6 +267,7 @@ actions:
     - install: ${baseUrl}/scripts/setupDomain.jps
       settings:
         domain: https://${response.out}
+        fallbackToX1: true
 
   setup-domain:
     - install: ${baseUrl}/scripts/setupDomain.jps
