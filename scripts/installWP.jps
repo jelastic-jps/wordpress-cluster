@@ -1,4 +1,5 @@
 jpsType: update
+id: wordpress-installation-addon
 name: WordPress Installation addon
 description: This package for WowrdPress configurations
 
@@ -10,7 +11,6 @@ globals:
   DB_USER: "${settings.db_user}"
   DB_PASS: "${settings.db_pass}"
   WP_URL: "${settings.wp_url}"
-  TARGET_NODE_ID: "${settings.targetNodeID}"
 
 onInstall:
   - installWP
@@ -20,7 +20,7 @@ onInstall:
 
 actions:
   installWP:
-    - cmd[${globals.TARGET_NODE_ID}]: |-
+    - cmd[${nodes.cp.master.id}]: |-
         wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* ${SERVER_WEBROOT}
         mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${globals.DB_HOST} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
         cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT}
@@ -30,12 +30,12 @@ actions:
         wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico
 
   setupWP:
-    - cmd[${globals.TARGET_NODE_ID}]: |-
-        wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
-        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1
+    - cmd[${nodes.cp.master.id}]: |-
+        wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
+        bash ~/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1
 
   nginxPurgeCache:
-    - cmd[${globals.TARGET_NODE_ID}]: |-
+    - cmd[${nodes.cp.master.id}]: |-
         cd ${SERVER_WEBROOT};
         wp plugin install ${baseUrl}../scripts/nginx-fastcgi-cache-purge.zip --path=${SERVER_WEBROOT}
         wp plugin activate nginx-fastcgi-cache-purge --path=${SERVER_WEBROOT}

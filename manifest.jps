@@ -146,7 +146,7 @@ onInstall:
       setGlobals:
         PROTOCOL: https
 
-  - script: ${baseUrl}/scripts/idna.js
+  - script: /scripts/idna.js
   - setGlobals:
       DOMAIN: ${response.domain}         
 
@@ -252,9 +252,8 @@ actions:
         SUCCESS: success-cdn
         EMAIL: cdn
     - cmd[${nodes.cp.master.id}]: |-
-        wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
         wget ${baseUrl}/scripts/checkCdnContent.txt?_r=${fn.random} -O ~/bin/checkCdnContent.txt &>> /var/log/run.log
-        bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${globals.CDN}
+        bash ~/setupWP.sh --edgeportCDN true --CDN_URL ${globals.CDN}
 
   configure-MU:
     - install: ${baseUrl}/addon/WPMU.jps
@@ -270,7 +269,6 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
-        targetNodeID: ${nodes.cp.master.id}
 
   setupCP:
     - log: CP OPTIMIZATION
@@ -286,11 +284,6 @@ actions:
         service autofs restart
       user: root
   
-    - log: Wordpress CLI Installation
-    - install: ${baseUrl}/scripts/WP-CLI.jps?_r=${fn.random}
-      settings:
-        TARGET_NODES: ${this.nodeId}
-
   setupLB:
     - log: LB OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
