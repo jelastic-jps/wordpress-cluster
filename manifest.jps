@@ -206,8 +206,8 @@ onInstall:
 addons:
   - id: setup-site-url
     type: update
-    name: Site URL Configuration
-    description: Site URL Configuration.
+    name: WordPress Site URL
+    description: WordPress Site URL Configuration.
     logo: /images/wp-cluster-kit.png
     settings:
       fields:
@@ -216,11 +216,12 @@ addons:
           caption: Site URL
           required: true
     buttons:
-      - caption: Setup Site URL
+      - caption: Site URL
+        settings: main
         action: setup-site-URL
         loadingText: Applying...
         confirmText: Do you want to change Site URL?
-        successText:  Site URL for WordPress has been successfully changed!
+        successText:  Site URL for WordPress has been successfully applyed!
     
 actions:
 
