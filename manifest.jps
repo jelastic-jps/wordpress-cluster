@@ -262,7 +262,7 @@ actions:
       settings:
         customDomains: ${globals.DOMAIN}
 
- setup-LE-domain:
+  setup-LE-domain:
     - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
     - install: ${baseUrl}/scripts/setupDomain.jps
       settings:
