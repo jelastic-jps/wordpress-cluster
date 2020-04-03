@@ -131,9 +131,7 @@ onAfterRedeployContainer[bl]:
 
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${baseUrl}/scripts/setupCDN.jps
-    settings:
-      PATH: ${baseUrl}
-
+ 
 onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setup-LE-domain
 
 onAfterClone: 
@@ -287,9 +285,7 @@ actions:
         CDN: ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
         SUCCESS: success-cdn
         EMAIL: cdn
-    - cmd[${nodes.cp.master.id}]: |-
-        wget ${baseUrl}/scripts/checkCdnContent.txt?_r=${fn.random} -O ~/bin/checkCdnContent.txt &>> /var/log/run.log
-        bash ~/setupWP.sh --edgeportCDN true --CDN_URL ${globals.CDN}
+    - install: /scripts/setupCDN.jps
 
   configure-MU:
     - install: ${baseUrl}/addon/WPMU.jps
