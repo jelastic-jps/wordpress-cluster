@@ -277,7 +277,7 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: [ -f /usr/local/sbin/optimization.sh ] && bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
+    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
     - log: Disabled remount
     - cmd[${this.nodeId}]: |-
         sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
