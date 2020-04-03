@@ -125,7 +125,7 @@ if [ $WPCACHE == 'w3tc' ] ; then
 elif [ $WPCACHE == 'lscwp' ] ; then
 	CDN_ENABLE_CMD="${WP} lscache-admin set_option cdn true"
 fi
-cat > ~/bin/checkCdnStatus.sh <<EOF
+cat > ~/checkCdnStatus.sh <<EOF
 #!/bin/bash
 while read -ru 4 CONTENT; do
   status=\$(curl \$1\$CONTENT -k -s -f -o /dev/null && echo "SUCCESS" || echo "ERROR")
@@ -135,16 +135,16 @@ while read -ru 4 CONTENT; do
     else
       exit
     fi
-done 4< ~/bin/checkCdnContent.txt
+done 4< ~/checkCdnContent.txt
 cd ${SERVER_WEBROOT}
 ${CDN_ENABLE_CMD} --path=${SERVER_WEBROOT} &>> /var/log/run.log
 ${CACHE_FLUSH}  &>> /var/log/run.log
 ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
 crontab -l | sed "/checkCdnStatus/d" | crontab -
 EOF
-chmod +x ~/bin/checkCdnStatus.sh
+chmod +x ~/checkCdnStatus.sh
 PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
-crontab -l | { cat; echo "* * * * * /bin/bash ~/bin/checkCdnStatus.sh ${PROTOCOL}://${CDN_URL}/"; } | crontab
+crontab -l | { cat; echo "* * * * * /bin/bash ~/checkCdnStatus.sh ${PROTOCOL}://${CDN_URL}/"; } | crontab
 }
 
 if [ $purge == 'true' ] ; then

@@ -6,4 +6,4 @@ globals:
   DOMAIN: ${settings.domain}
 
 onInstall:
-  - cmd[${nodes.cp.master.id}]: bash ~/setupDKAN.sh --DOMAIN ${globals.DOMAIN}
+  - cmd[${nodes.cp.master.id}]: bash ~/setupWP.sh --DOMAIN ${globals.DOMAIN}
