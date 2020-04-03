@@ -214,7 +214,11 @@ addons:
         - type: string
           name: siteURL
           caption: Site URL
+          default: ''
           required: true
+          regex: "^https?:\\/\\/.+$"
+          regexText: Incorrect Site URL.
+
     buttons:
       - caption: Site URL
         settings: main
