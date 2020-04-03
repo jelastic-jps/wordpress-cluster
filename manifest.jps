@@ -152,7 +152,7 @@ onInstall:
 
   - if (${settings.is_trigger:true}):
     - log: Auto Scaling Triggers
-    - script: "${baseUrl}/scripts/addTriggers.js"
+    - script: "/scripts/addTriggers.js"
       nodeGroup: cp
       resourceType: CPU
       loadGrowth: ${settings.loadGrowth}
@@ -208,7 +208,7 @@ addons:
     type: update
     name: WordPress Site URL
     description: WordPress Site URL Configuration.
-    logo: /images/wp-cluster-kit.png
+    logo: ${baseUrl}/images/wp-cluster-kit.png
     settings:
       fields:
         - type: string
