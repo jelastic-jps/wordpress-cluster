@@ -186,7 +186,7 @@ onInstall:
   - setupLB:
       nodeId: bl
       
-  - setupNode:
+  - setupCP:
       nodeId: cp
 
   - if (${settings.le-addon:false}):
@@ -272,7 +272,7 @@ actions:
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
         targetNodeID: ${nodes.cp.master.id}
 
-  setupNode:
+  setupCP:
     - log: CP OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
       settings:
