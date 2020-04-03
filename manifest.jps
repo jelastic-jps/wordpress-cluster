@@ -279,7 +279,7 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: bash ~/bin/LSWEB.sh &>> /var/log/run.log;
+    - cmd[${this.nodeId}]: bash /usr/local/sbin/lsweb-optimization.sh &>> /var/log/run.log;
     - log: Disabled remount
     - cmd[${this.nodeId}]: |-
         sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf

@@ -63,7 +63,7 @@ if (${settings.ls-addon:false}) {
     }
   }, {
     nodeType: "litespeedphp",
-    tag: "5.4.4-php-7.4.1",
+    tag: "5.4.6-php-7.4.3",
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
