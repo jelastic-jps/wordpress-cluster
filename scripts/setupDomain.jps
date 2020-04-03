@@ -1,0 +1,9 @@
+type: update
+id: setup-wordpress-domain
+name: Setup WordPress Domain
+
+globals:
+  DOMAIN: ${settings.domain}
+
+onInstall:
+  - cmd[${nodes.cp.master.id}]: bash ~/setupDKAN.sh --DOMAIN ${globals.DOMAIN}

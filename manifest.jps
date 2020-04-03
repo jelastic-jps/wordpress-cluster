@@ -113,7 +113,6 @@ globals:
   WP_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
-  JPS_VERSION: v1.1.0
 
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
@@ -134,6 +133,34 @@ onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${baseUrl}/scripts/setupCDN.jps
     settings:
       PATH: ${baseUrl}
+
+onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setup-LE-domain
+
+onAfterClone: 
+  - script: |
+        var resp = {result:0}
+        if (${event.response.env.sslstate}) {
+          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
+        }
+        return resp;
+ 
+  - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+    settings:
+      domain: ${globals.PROTOCOL}://${event.response.env.domain}
+
+onAfterMigrate:
+  - script: |
+        var resp = {result:0}
+        if (${event.response.env.sslstate}) {
+          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
+        }
+        return resp;
+ 
+  - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+    settings:
+      domain: ${globals.PROTOCOL}://${event.response.env.domain}
       
 onInstall:
 
@@ -172,6 +199,7 @@ onInstall:
         db_pass: "${globals.DB_PASS}"
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
+
   - if (!${settings.galera:false}):
     - log: Master-Master Replication Setup
     - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
@@ -199,7 +227,7 @@ onInstall:
     
   - if (${settings.le-addon:false}): 
       - install-LE-addon
-      - setupDomain
+      - setup-LE-domain
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
@@ -222,7 +250,7 @@ addons:
     buttons:
       - caption: Site URL
         settings: main
-        action: setup-site-URL
+        action: setup-domain
         loadingText: Applying...
         confirmText: Do you want to change Site URL?
         successText:  Site URL for WordPress has been successfully applyed!
@@ -236,8 +264,16 @@ actions:
       settings:
         customDomains: ${globals.DOMAIN}
 
-  setup-site-URL:
-    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN ${settings.siteURL}
+ setup-LE-domain:
+    - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
+    - install: ${baseUrl}/scripts/setupDomain.jps
+      settings:
+        domain: https://${response.out}
+
+  setup-domain:
+    - install: ${baseUrl}/scripts/setupDomain.jps
+      settings:
+        domain: ${settings.siteURL}
 
   install-edgeport-CDN:
     - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
