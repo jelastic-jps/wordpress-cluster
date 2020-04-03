@@ -261,13 +261,13 @@ actions:
       skipEmail: true
       settings:
         customDomains: ${globals.DOMAIN}
+        fallbackToX1: true
 
   setup-LE-domain:
     - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
     - install: ${baseUrl}/scripts/setupDomain.jps
       settings:
         domain: https://${response.out}
-        fallbackToX1: true
 
   setup-domain:
     - install: ${baseUrl}/scripts/setupDomain.jps
