@@ -26,8 +26,7 @@ if (${settings.galera:false}) {
     restartDelay: 5,
     skipNodeEmails: true,
     env: {
-      ON_ENV_INSTALL: "",
-      JELASTIC_PORTS: "4567,4568,4444"
+      ON_ENV_INSTALL: ""
     }
   })
 }
