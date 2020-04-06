@@ -48,7 +48,7 @@ if (!${settings.galera:false}) {
 if (${settings.ls-addon:false}) {
   resp.nodes.push({
     nodeType: "litespeedadc",
-    tag: "2.6",
+    tag: "2.7",
     count: 1,
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
