@@ -316,7 +316,7 @@ actions:
         sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
         service autofs restart
       user: root
-  
+
   setupLB:
     - log: LB OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
@@ -324,6 +324,7 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
+    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
         
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
