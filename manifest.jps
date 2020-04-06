@@ -7,14 +7,103 @@ categories:
 description: 
   text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
-logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster-kit.png
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+logo: /images/wp-cluster-kit.png
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v1.1.0
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
 
 skipNodeEmails: true
 nodes: definedInOnBeforeInstall
+
+settings:
+  fields:
+    - caption: Scaling Strategy
+      type: list
+      name: loadGrowth
+      default: slow
+      required: true
+      width: 225
+      tooltip: | 
+        Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes.
+        <p>Read more about <a href="https://docs.jelastic.com/automatic-horizontal-scaling">Automatic Horizontal Scaling</a></p>
+      values:        
+        - value: slow
+          caption: Low Load
+          tooltip: <h2>Low load scaling strategy</h2>add 1 new node when CPU > 70% <p>remove when CPU < 20%</p>
+        - value: medium
+          caption: Medium Load
+          tooltip: <h3>Medium load scaling strategy</h3>add 1 new node when CPU > 50% <p>remove when CPU < 20%</p>
+        - value: fast
+          caption: High Load
+          tooltip: <h3>High load scaling strategy</h3>add 2 new nodes when CPU > 30% <p>remove when CPU < 10%</p>
+  
+    - caption: Advanced Features
+      type: displayfield
+      name: displayfield
+      markup:
+ 
+    - caption: Install LiteSpeed High-Performance Web Server
+      type: checkbox
+      name: ls-addon
+      value: true
+      disabled: false
+      tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers"
+      showIf:
+        true:
+          - caption: WordPress Brute Force Attack Protection
+            type: checkbox
+            name: wp_protect
+            value: true
+            disabled: false
+            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
+
+          - caption: Web Application Firewall
+            type: checkbox
+            name: waf
+            value: true
+            disabled: false
+            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+
+        false:
+          - caption: WordPress Brute Force Attack Protection
+            type: checkbox
+            name: wp_protect
+            value: false
+            disabled: true
+            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
+        
+          - caption: Web Application Firewall
+            type: checkbox
+            name: waf
+            value: false
+            disabled: true
+            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+      
+    - caption: Install MariaDB Galera Cluster
+      type: checkbox
+      name: galera
+      value: true
+      disabled: false
+      tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
+      
+    - caption: Install Let's Encrypt SSL with Auto-Renewal
+      type: checkbox
+      name: le-addon
+      value: true
+      disabled: false
+
+    - caption: Install Lightning-Fast Premium CDN with 130+ PoPs
+      type: checkbox
+      name: cdn-addon
+      value: true
+      disabled: false
+
+    - caption: Install WordPress Multisite Network
+      type: checkbox
+      name: mu-addon
+      value: false
+      disabled: false
 
 globals:
   DB_USER: jelastic-${fn.random}
@@ -29,16 +118,48 @@ onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
     - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
-    - setupNode:
+    - setupCP:
         nodeId: ${@i.id}
+        
+onAfterRedeployContainer[cp]:
+  - setupCP:
+      nodeId: cp
+
+onAfterRedeployContainer[bl]:
+ - setupLB:
+      nodeId: bl
 
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${baseUrl}/scripts/setupCDN.jps
-    settings:
-      PATH: ${baseUrl}
-      
-onAfterBindSSL: setupDomain
+ 
+onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setup-LE-domain
 
+onAfterClone: 
+  - script: |
+        var resp = {result:0}
+        if (${event.response.env.sslstate}) {
+          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
+        }
+        return resp;
+ 
+  - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+    settings:
+      domain: ${globals.PROTOCOL}://${event.response.env.domain}
+
+onAfterMigrate:
+  - script: |
+        var resp = {result:0}
+        if (${event.response.env.sslstate}) {
+          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
+        }
+        return resp;
+ 
+  - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+    settings:
+      domain: ${globals.PROTOCOL}://${event.response.env.domain}
+      
 onInstall:
 
   - script: |
@@ -50,13 +171,13 @@ onInstall:
       setGlobals:
         PROTOCOL: https
 
-  - script: ${baseUrl}/scripts/idna.js
+  - script: /scripts/idna.js
   - setGlobals:
       DOMAIN: ${response.domain}         
 
   - if (${settings.is_trigger:true}):
     - log: Auto Scaling Triggers
-    - script: "${baseUrl}/scripts/addTriggers.js"
+    - script: "/scripts/addTriggers.js"
       nodeGroup: cp
       resourceType: CPU
       loadGrowth: ${settings.loadGrowth}
@@ -76,6 +197,7 @@ onInstall:
         db_pass: "${globals.DB_PASS}"
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
+
   - if (!${settings.galera:false}):
     - log: Master-Master Replication Setup
     - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
@@ -90,7 +212,7 @@ onInstall:
   - setupLB:
       nodeId: bl
       
-  - setupNode:
+  - setupCP:
       nodeId: cp
 
   - if (${settings.le-addon:false}):
@@ -103,10 +225,34 @@ onInstall:
     
   - if (${settings.le-addon:false}): 
       - install-LE-addon
-      - setupDomain
+      - setup-LE-domain
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
+addons:
+  - id: setup-site-url
+    type: update
+    name: WordPress Site URL
+    description: WordPress Site URL Configuration.
+    logo: ${baseUrl}/images/wp-cluster-kit.png
+    settings:
+      fields:
+        - type: string
+          name: siteURL
+          caption: Site URL
+          default: ''
+          required: true
+          regex: "^https?:\\/\\/.+$"
+          regexText: Incorrect Site URL.
+
+    buttons:
+      - caption: Site URL
+        settings: main
+        action: setup-domain
+        loadingText: Applying...
+        confirmText: Do you want to change Site URL?
+        successText:  Site URL for WordPress has been successfully applyed!
+    
 actions:
 
   install-LE-addon:
@@ -117,11 +263,16 @@ actions:
         customDomains: ${globals.DOMAIN}
         fallbackToX1: true
 
-  setupDomain:
+  setup-LE-domain:
     - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
-    - set:
-        domain: ${response.out}
-    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --DOMAIN https://${this.domain}
+    - install: ${baseUrl}/scripts/setupDomain.jps
+      settings:
+        domain: https://${response.out}
+
+  setup-domain:
+    - install: ${baseUrl}/scripts/setupDomain.jps
+      settings:
+        domain: ${settings.siteURL}
 
   install-edgeport-CDN:
     - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
@@ -135,10 +286,7 @@ actions:
         CDN: ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
         SUCCESS: success-cdn
         EMAIL: cdn
-    - cmd[${nodes.cp.master.id}]: |-
-        wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
-        wget ${baseUrl}/scripts/checkCdnContent.txt?_r=${fn.random} -O ~/bin/checkCdnContent.txt &>> /var/log/run.log
-        bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${globals.CDN}
+    - install: /scripts/setupCDN.jps
 
   configure-MU:
     - install: ${baseUrl}/addon/WPMU.jps
@@ -154,25 +302,20 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
-        targetNodeID: ${nodes.cp.master.id}
 
-  setupNode:
+  setupCP:
     - log: CP OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
       settings:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
+    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
     - log: Disabled remount
     - cmd[${this.nodeId}]: |-
         sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
         service autofs restart
       user: root
-  
-    - log: Wordpress CLI Installation
-    - install: ${baseUrl}/scripts/WP-CLI.jps?_r=${fn.random}
-      settings:
-        TARGET_NODES: ${this.nodeId}
 
   setupLB:
     - log: LB OPTIMIZATION
@@ -181,6 +324,7 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
+    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
         
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}

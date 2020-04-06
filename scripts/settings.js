@@ -4,14 +4,6 @@ import com.hivext.api.core.utils.Transport;
 
 var cdnAppid = "c05ffa5b45628a2a0c95467ebca8a0b4";
 var lsAppid = "9e6afcf310004ac84060f90ff41a5aba";
-var baseUrl = "https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master";
-var cdnText = "Install Lightning-Fast Premium CDN with 130+ PoPs",
-    sslText = "Install Let's Encrypt SSL with Auto-Renewal";
-    lsText = "Install LiteSpeed High-Performance Web Server";
-    muText = "Install WordPress Multisite Network";
-    dbText = "Install MariaDB Galera Cluster";
-    wafText = "Web Application Firewall";
-    wpbfText = "WordPress Brute Force Attack Protection";
 var group = jelastic.billing.account.GetAccount(appid, session);
 var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
 var isLS = jelastic.dev.apps.GetApp(lsAppid);
@@ -36,217 +28,55 @@ for (var i = 0, n = quota.length; i < n; i++) {
     }
 }
 
-var url = baseUrl + "/configs/settings.yaml";
-var settings = toNative(new Yaml().load(new Transport().get(url)));
-var fields = settings.fields;
+var settings = jps.settings;
+var fields = {};
+for (var i = 0, field; field = jps.settings.fields[i]; i++)
+  fields[field.name] = field;
+
 if (group.groupType == 'trial') {
+
+  fields["ls-addon"].value = false;
+  fields["wp_protect"].value = false;
+  fields["waf"].value = false;
+  fields["cdn-addon"].value = false;
+  fields["le-addon"].value = false;
+  
+  if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
+    fields["ls-addon"].disabled = true;
+    fields["wp_protect"].disabled = true;
+    fields["waf"].disabled = true;
+  } else {
+    fields["ls-addon"].hidden = true;
+    fields["wp_protect"].hidden = true;
+    fields["waf"].hidden = true;
+  }
+  
+  if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
+    fields["cdn-addon"].disabled = true;
+  } else {
+    fields["cdn-addon"].hidden = true;
+  }
     
-    fields.push({
-      "type": "displayfield",
-      "cls": "warning",
-      "height": 30,
-      "hideLabel": true,
-      "markup": "Not available for " + group.groupType + " account. Please upgrade your account."
-    })
- 
-    if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {
-        settings.fields.push({
-            "type": "compositefield",
-            "hideLabel": true,
-            "pack": "left",
-            "itemCls": "deploy-manager-grid",
-            "cls": "x-grid3-row-unselected",
-            "items": [{
-                "type": "spacer",
-                "width": 4
-            }, {
-                "type": "displayfield",
-                "cls": "x-grid3-row-checker x-item-disabled",
-                "width": 30,
-                "height": 20
-            }, {
-                "type": "displayfield",
-                "cls": "x-item-disabled",
-                "value": lsText
-            }]
-        });
-    }
-
-    settings.fields.push({
-        "type": "compositefield",
-        "hideLabel": true,
-        "pack": "left",
-        "itemCls": "deploy-manager-grid",
-        "cls": "x-grid3-row-unselected",
-        "items": [{
-            "type": "spacer",
-            "width": 4
-        }, {
-            "type": "displayfield",
-            "cls": "x-grid3-row-checker x-item-disabled",
-            "width": 30,
-            "height": 20
-        }, {
-            "type": "displayfield",
-            "cls": "x-item-disabled",
-            "value": dbText
-        }]
-    });
- 
-    if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
-        settings.fields.push({
-            "type": "compositefield",
-            "hideLabel": true,
-            "pack": "left",
-            "itemCls": "deploy-manager-grid",
-            "cls": "x-grid3-row-unselected",
-            "items": [{
-                "type": "spacer",
-                "width": 4
-            }, {
-                "type": "displayfield",
-                "cls": "x-grid3-row-checker x-item-disabled",
-                "width": 30,
-                "height": 20
-            }, {
-                "type": "displayfield",
-                "cls": "x-item-disabled",
-                "value": cdnText
-            }]
-        });
-    }
+  fields["displayfield"].markup = "Not available for " + group.groupType + " account. Please upgrade your account.";
+  fields["displayfield"].cls = "warning";
+  fields["displayfield"].hideLabel = true;
     
-    settings.fields.push({
-        "type": "compositefield",
-        "hideLabel": true,
-        "pack": "left",
-        "itemCls": "deploy-manager-grid",
-        "cls": "x-grid3-row-unselected",
-        "items": [{
-            "type": "spacer",
-            "width": 4
-        }, {
-            "type": "displayfield",
-            "cls": "x-grid3-row-checker x-item-disabled",
-            "width": 30,
-            "height": 20
-        }, {
-            "type": "displayfield",
-            "cls": "x-item-disabled",
-            "value": sslText
-        }]
-    });
-
-    settings.fields.push({
-        type: "checkbox",
-        name: "mu-addon",
-        caption: muText,
-        value: false
-
-    });
-
 } else {
+  
+  if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
+    fields["ls-addon"].value = true;
+  } else {
+    fields["ls-addon"].hidden = true;
+    fields["ls-addon"].value = false;
+  }
+  
+  if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
+     fields["cdn-addon"].value = true;
+  } else {
+    fields["cdn-addon"].hidden = true;
+    fields["cdn-addon"].value = false;
+  }
 
-    if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {
-        settings.fields.push({
-            type: "checkbox",
-            name: "ls-addon",
-            caption: lsText,
-            value: true,
-            tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers",
-            "showIf": {
-                "true": [{
-                    "type": "checkbox",
-                    "name": "waf",
-                    "caption": wafText,
-                    "value": true,
-                    "tooltip": "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
-                }, {
-                    "type": "checkbox",
-                    "name": "wp_protect",
-                    "caption": wpbfText,
-                    "value": true,
-                    "tooltip": "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
-                }],
-                "false": [{
-                    "type": "compositefield",
-                    "hideLabel": true,
-                    "pack": "left",
-                    "name": "waf",
-                    "value": false,
-                    "itemCls": "deploy-manager-grid",
-                    "cls": "x-grid3-row-unselected",
-                    "items": [{
-                        "type": "displayfield",
-                        "cls": "x-grid3-row-checker x-item-disabled",
-                        "margins": "0 0 0 -3",
-                        "width": 16,
-                        "height": 20
-                        
-                    }, {
-                        "type": "displayfield",
-                        "cls": "x-item-disabled",
-                        "value": wafText,
-                        "margins": "0 0 0 12"
-                    }]
-                }, {
-                   "type": "compositefield",
-                    "hideLabel": true,
-                    "pack": "left",
-                    "name": "wp_protect",
-                    "value": false,
-                    "itemCls": "deploy-manager-grid",
-                    "cls": "x-grid3-row-unselected",
-                    "items": [{
-                        "type": "displayfield",
-                        "cls": "x-grid3-row-checker x-item-disabled",
-                        "margins": "0 0 0 -3",
-                        "width": 16,
-                        "height": 20
-                        
-                    }, {
-                        "type": "displayfield",
-                        "cls": "x-item-disabled",
-                        "value": wpbfText,
-                        "margins": "0 0 0 12"
-                    }]   
-                }]
-            }
-        });
-    }
-
-    settings.fields.push({
-        type: "checkbox",
-        name: "galera",
-        caption: dbText,
-        value: true,
-        tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
-    });
-   
-    if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
-        settings.fields.push({
-            type: "checkbox",
-            name: "cdn-addon",
-            caption: cdnText,
-            value: true
-        });
-    }
-
-    var resp = jelastic.billing.account.GetQuotas('environment.externalip.enabled');
-    if (resp.result == 0 && resp.array[0].value) {
-        fields.push({
-            type: "checkbox",
-            name: "le-addon",
-            caption: sslText,
-            value: true
-        });
-    }
-    settings.fields.push({
-        type: "checkbox",
-        name: "mu-addon",
-        caption: muText,
-        value: false
-    });
 }
 
 if (quotaText) {
