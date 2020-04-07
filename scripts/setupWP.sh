@@ -120,19 +120,19 @@ else
 fi
 
 function generateCdnContent () {
-  [ -f ~/checkCdnContent.txt ] && rm -f ~/checkCdnContent.txt
-  base_url=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
-  wget ${base_url} -O /tmp/index.html
+  [ -f ~/checkCdnContent.txt ] && rm -f ~/checkCdnContent.txt;
+  base_url=$(${WP} option get siteurl --path=${SERVER_WEBROOT});
+  wget ${base_url} -O /tmp/index.html;
   cat /tmp/index.html | \
     sed 's/href=/\nhref=/g' | \
     grep href=\" | sed 's/.*href="//g;s/".*//g' | \
     grep ${base_url} | \
-    grep 'js\|css' > /tmp/fullListUrls
+    grep 'js\|css' > /tmp/fullListUrls;
 
   while read -a CONTENT; do
     status=$(curl $CONTENT -k -s -f -o /dev/null && echo "SUCCESS" || echo "ERROR")
     [ $status = "SUCCESS" ] && echo $CONTENT | grep / | cut -d/ -f4- >> ~/checkCdnContent.txt
-  done < /tmp/fullListUrl
+  done < /tmp/fullListUrls
 }
 
 function checkCdnStatus () {
