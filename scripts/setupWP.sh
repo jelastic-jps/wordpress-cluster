@@ -119,6 +119,22 @@ else
 	exit;
 fi
 
+function generateCdnContent () {
+  [ -f ~/checkCdnContent.txt ] && rm -f ~/checkCdnContent.txt
+  base_url=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
+  wget ${base_url} -O /tmp/index.html
+  cat /tmp/index.html | \
+    sed 's/href=/\nhref=/g' | \
+    grep href=\" | sed 's/.*href="//g;s/".*//g' | \
+    grep ${base_url} | \
+    grep 'js\|css' > /tmp/fullListUrls
+
+  while read -a CONTENT; do
+    status=$(curl $CONTENT -k -s -f -o /dev/null && echo "SUCCESS" || echo "ERROR")
+    [ $status = "SUCCESS" ] && echo $CONTENT | grep / | cut -d/ -f4- >> ~/checkCdnContent.txt
+  done < /tmp/fullListUrl
+}
+
 function checkCdnStatus () {
 if [ $WPCACHE == 'w3tc' ] ; then
 	CDN_ENABLE_CMD="${WP} w3-total-cache option set cdn.enabled true --type=boolean"
@@ -198,6 +214,7 @@ if [ $edgeportCDN == 'true' ] ; then
           $W3TC_OPTION_SET cdn.mirror.domain ${CDN_URL} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
       lscwp)
+    generateCdnContent
 	  checkCdnStatus;
 	  CDN_ORI=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
 	  PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
