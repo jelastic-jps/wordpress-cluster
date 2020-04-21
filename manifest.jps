@@ -215,6 +215,8 @@ onInstall:
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
 
+  - mountStorage
+      
   - setupLB:
       nodeId: bl
       
@@ -225,7 +227,7 @@ onInstall:
       - setGlobals:
           PROTOCOL: https
 
-  - install-wordpress:
+  - install-wordpress
   
   - if (${settings.mu-addon:false}): configure-MU
     
