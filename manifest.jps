@@ -87,6 +87,12 @@ settings:
       disabled: false
       tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
       
+    - caption: Install GlusterFS Cluster
+      type: checkbox
+      name: glusterfs
+      value: true
+      disabled: false
+       
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
@@ -310,12 +316,7 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
-    - log: Disabled remount
-    - cmd[${this.nodeId}]: |-
-        sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
-        service autofs restart
-      user: root
+    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
 
   setupLB:
     - log: LB OPTIMIZATION
@@ -324,8 +325,19 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
-        
+    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+
+  mountStorage:
+    - log: Mount Storage
+    - api:
+      - method: jelastic.environment.file.AddMountPointByGroup
+        params:
+          nodeGroup: cp
+          sourceNodeId: ${nodes.storage.master.id}
+          sourcePath: /data/ROOT
+          path: /var/www/webroot/ROOT
+          sourceAddressType: NODE_GROUP
+    
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
