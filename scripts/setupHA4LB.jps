@@ -4,7 +4,7 @@ id: setup-ha4lb
 
 onInstall:
 
-  - script[bl]: /scripts/firewallRules.js?_r=${fn.random}
+  - script[bl]: firewallRules.js?_r=${fn.random}
     ports: '1447'
     name: LSADC-HA
 
