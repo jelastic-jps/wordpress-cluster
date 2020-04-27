@@ -4,8 +4,12 @@ id: setup-ha4lb
 
 onInstall:
 
+  - script[bl]: /scripts/firewallRules.js?_r=${fn.random}
+    ports: '1447'
+    name: LSADC-HA
+
   - resetReplClusters
-  - forEach(i:nodes.sqldb):
+  - forEach(i:nodes.bl):
     - setupInstance:
         id: "${@i.id}"
         ip: "${@i.address}"
@@ -31,6 +35,6 @@ actions:
   setupInstance:
     cmd[${this.id}]: |-
       /usr/bin/xmlstarlet ed --inplace -s "haConfig"  -t elem -n "replication" "/var/www/conf/ha_config.xml" 2>/dev/null;
-      /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "serverAddr" -v "${this.ip}" "/var/www/conf/ha_config.xml" 2>/dev/null;
+      /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "serverAddr" -v "${this.ip}:1447" "/var/www/conf/ha_config.xml" 2>/dev/null;
       /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "isFileCached" -v "1" "/var/www/conf/ha_config.xml" 2>/dev/null;
 
