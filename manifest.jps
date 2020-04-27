@@ -152,6 +152,9 @@ onAfterClone:
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
+      
+  - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
 
 onAfterMigrate:
   - script: |
@@ -165,6 +168,9 @@ onAfterMigrate:
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
+      
+  - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
       
 onInstall:
 
@@ -217,7 +223,7 @@ onInstall:
 
   - mountStorage
       
-  - setupLB:
+  - setupBL:
       nodeId: bl
       
   - setupCP:
@@ -320,7 +326,7 @@ actions:
         optimization: wordpress
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
 
-  setupLB:
+  setupBL:
     - log: LB OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
       settings:
@@ -328,6 +334,7 @@ actions:
         targetNodes: ${this.nodeId}
         optimization: wordpress
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+    - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
 
   mountStorage:
     - log: Mount Storage
