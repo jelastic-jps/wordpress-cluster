@@ -1,0 +1,35 @@
+jpsType: update
+name: Setup HA for Load Balancer
+id: setup-ha4lb
+
+onInstall:
+
+  - resetReplClusters
+  - forEach(i:nodes.sqldb):
+    - setupInstance:
+        id: "${@i.id}"
+  - setupReplClusters
+
+actions:
+  resetReplClusters:
+    cmd[bl]: /usr/bin/xmlstarlet ed --inplace -d "haConfig/replication" "/var/www/conf/ha_config.xml" 2>/dev/null;
+
+  setupReplClusters:
+      script:
+      - var resp = jelastic.env.control.GetEnvInfo('${env.envName}', session);
+      - if (resp.result != 0) return resp;
+      - var nodes = [];
+      - for (var i = 0, n = resp.nodes; i < n.length; i++)
+      - "  n[i].nodeGroup == nodeGroup ? nodes.push(n[i].address + ':1447') : 0"
+      - 'resp = {result:0, onAfterReturn: {}};'
+      - resp.onAfterReturn['cmd['+ nodeGroup +']'] = '/usr/bin/xmlstarlet ed --inplace -s "haConfig/replication" -t elem -n "replCluster"
+        -v "'+ nodes.join(',') +'" "/var/www/conf/ha_config.xml" 2>/dev/null;'
+      - return resp;
+      nodeGroup: bl
+  
+  setupInstance:
+    cmd[${this.id}]: |-
+      /usr/bin/xmlstarlet ed --inplace -s "haConfig"  -t elem -n "replication" "/var/www/conf/ha_config.xml" 2>/dev/null;
+      /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "serverAddr" -v "${this.id.address}" "/var/www/conf/ha_config.xml" 2>/dev/null;
+      /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "isFileCached" -v "1" "/var/www/conf/ha_config.xml" 2>/dev/null;
+
