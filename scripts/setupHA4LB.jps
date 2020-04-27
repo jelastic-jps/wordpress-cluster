@@ -17,7 +17,9 @@ onInstall:
 
 actions:
   resetReplClusters:
-    cmd[bl]: /usr/bin/xmlstarlet ed --inplace -d "haConfig/replication" "/var/www/conf/ha_config.xml" 2>/dev/null;
+    cmd[bl]: |-
+      echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >  /var/www/conf/ha_config.xml;
+      echo "<haConfig/>" >>  /var/www/conf/ha_config.xml;
 
   setupReplClusters:
       script:
