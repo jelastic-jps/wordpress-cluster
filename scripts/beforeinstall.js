@@ -104,7 +104,7 @@ if (${settings.ls-addon:false}) {
 
 if (!${settings.ls-addon:false}) {
   resp.nodes.push({
-    nodeType: "nginx-dockerized",
+    nodeType: "nginx",
     tag: "1.16.1",
     count: 1,
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
@@ -114,8 +114,8 @@ if (!${settings.ls-addon:false}) {
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
   }, {
-    nodeType: "nginxphp-dockerized",
-    tag: "1.16.1-php-7.4.1",
+    nodeType: "nginxphp",
+    tag: "1.16.1-php-7.4.4",
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
