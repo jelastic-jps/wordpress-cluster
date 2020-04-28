@@ -326,7 +326,7 @@ actions:
         targetNodes: ${this.nodeId}
         optimization: wordpress
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-    - cmd[${this.nodeId}]: sudo jem passwd set -p ${globals.LS_ADMIN_PASS}
+    - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
 
   setupBL:
     - log: LB OPTIMIZATION
@@ -337,7 +337,7 @@ actions:
         optimization: wordpress
     - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-    - cmd[${this.nodeId}]: sudo jem passwd set -p ${globals.LS_ADMIN_PASS}
+    - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
 
   mountStorage:
     - log: Mount Storage
