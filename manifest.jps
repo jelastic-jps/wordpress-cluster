@@ -121,9 +121,14 @@ globals:
   SUCCESS: success
   EMAIL: default
 
+onAfterScaleOut[nodeGroup:bl]:
+  forEach(event.response.nodes):
+    - setNodeDisplayName [${@i.id}]: Load balancer
+    - setupBL:
+        nodeId: ${@i.id}
+  
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
-    - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
@@ -133,7 +138,7 @@ onAfterRedeployContainer[cp]:
       nodeId: cp
 
 onAfterRedeployContainer[bl]:
- - setupLB:
+ - setupBL:
       nodeId: bl
 
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:

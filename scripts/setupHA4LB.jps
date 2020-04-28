@@ -4,16 +4,19 @@ id: setup-ha4lb
 
 onInstall:
 
-  - script[bl]: firewallRules.js?_r=${fn.random}
-    ports: '1447'
-    name: LSADC-HA
+  - if ('${nodes.bl.master.nodeType}' == 'litespeedadc' && nodes.bl.length > 1):
+    - script[bl]: firewallRules.js?_r=${fn.random}
+      ports: '1447'
+      name: LSADC-HA
 
-  - resetReplClusters
-  - forEach(i:nodes.bl):
-    - setupInstance:
-        id: "${@i.id}"
-        ip: "${@i.address}"
-  - setupReplClusters
+    - resetReplClusters
+    - forEach(i:nodes.bl):
+      - setupInstance:
+          id: "${@i.id}"
+          ip: "${@i.address}"
+    - setupReplClusters
+
+  - if ('${nodes.bl.master.nodeType}' == 'litespeedadc' && nodes.bl.length == 1): resetReplClusters
 
 actions:
   resetReplClusters:
