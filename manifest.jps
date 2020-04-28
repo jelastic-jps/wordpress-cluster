@@ -232,6 +232,9 @@ onInstall:
   - setupBL:
       nodeId: bl
       
+  - cmd[bl]: jem balancer rebuildCommon
+    user: root
+      
   - setupCP:
       nodeId: cp
 
