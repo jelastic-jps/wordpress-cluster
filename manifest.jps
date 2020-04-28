@@ -87,6 +87,12 @@ settings:
       disabled: false
       tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
       
+    - caption: Install GlusterFS Cluster
+      type: checkbox
+      name: glusterfs
+      value: true
+      disabled: false
+       
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
@@ -111,12 +117,18 @@ globals:
   DB_HOST: sqldb
   PROTOCOL: http
   WP_ADMIN_PASS: ${fn.password(10)}
+  LS_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
 
+onAfterScaleOut[nodeGroup:bl]:
+  forEach(event.response.nodes):
+    - setNodeDisplayName [${@i.id}]: Load balancer
+    - setupBL:
+        nodeId: ${@i.id}
+  
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
-    - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
@@ -126,7 +138,7 @@ onAfterRedeployContainer[cp]:
       nodeId: cp
 
 onAfterRedeployContainer[bl]:
- - setupLB:
+ - setupBL:
       nodeId: bl
 
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
@@ -146,6 +158,9 @@ onAfterClone:
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
+      
+  - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
 
 onAfterMigrate:
   - script: |
@@ -159,6 +174,9 @@ onAfterMigrate:
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
+      
+  - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
       
 onInstall:
 
@@ -209,8 +227,13 @@ onInstall:
         custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
       nodeGroup: sqldb
 
-  - setupLB:
+  - mountStorage
+      
+  - setupBL:
       nodeId: bl
+      
+  - cmd[bl]: jem balancer rebuildCommon
+    user: root
       
   - setupCP:
       nodeId: cp
@@ -219,7 +242,7 @@ onInstall:
       - setGlobals:
           PROTOCOL: https
 
-  - install-wordpress:
+  - install-wordpress
   
   - if (${settings.mu-addon:false}): configure-MU
     
@@ -310,24 +333,35 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
-    - log: Disabled remount
-    - cmd[${this.nodeId}]: |-
-        sed -i "s/^timeout.*/timeout = 0/" /etc/autofs.conf
-        service autofs restart
+    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+    - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
       user: root
 
-  setupLB:
+  setupBL:
     - log: LB OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
       settings:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: bash /usr/local/sbin/optimization.sh &>> /var/log/run.log;
-        
+    - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+    - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
+      user: root
+
+  mountStorage:
+    - log: Mount Storage
+    - api:
+      - method: jelastic.environment.file.AddMountPointByGroup
+        params:
+          nodeGroup: cp
+          sourceNodeId: ${nodes.storage.master.id}
+          sourcePath: /data/ROOT
+          path: /var/www/webroot/ROOT
+          sourceAddressType: NODE_GROUP
+    
 success:
-  email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
+  email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
 
 startPage: ${globals.PROTOCOL}://${env.domain}/

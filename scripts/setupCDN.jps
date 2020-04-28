@@ -6,5 +6,5 @@ description: This script for Edgeport CDN configurations
 onInstall:
   - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
   - cmd[${nodes.cp.master.id}]: |-
-      wget ${baseUrl}/checkCdnContent.txt?_r=${fn.random} -O ~/checkCdnContent.txt &>> /var/log/run.log
+      wget ${baseUrl}/setupWP.sh?_r=${fn.random} -O ~/setupMG.sh &>> /var/log/run.log
       bash ~/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net

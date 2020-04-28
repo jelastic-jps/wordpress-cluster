@@ -40,6 +40,8 @@ if (group.groupType == 'trial') {
   fields["waf"].value = false;
   fields["cdn-addon"].value = false;
   fields["le-addon"].value = false;
+  fields["glusterfs"].value = false;
+  fields["glusterfs"].disabled = true;
   
   if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
     fields["ls-addon"].disabled = true;
@@ -76,7 +78,6 @@ if (group.groupType == 'trial') {
     fields["cdn-addon"].hidden = true;
     fields["cdn-addon"].value = false;
   }
-
 }
 
 if (quotaText) {

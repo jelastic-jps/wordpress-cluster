@@ -3,14 +3,33 @@ var wpbfp = '${settings.wp_protect}' == 'true' ? "THROTTLE" : "OFF";
 var resp = {
   result: 0,
   ssl: !!jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value,
-  nodes: [{
+  nodes: []
+}
+
+if (${settings.glusterfs:false}) {
+  resp.nodes.push({
     nodeType: "storage",
+    count: 3,
+    tag: "2.0-7.2",
+    cluster: true,
+    flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
+    fixedCloudlets: ${settings.st_fixedCloudlets:1},
+    diskLimit: ${settings.st_diskLimit:100},
+    nodeGroup: "storage",
+    displayName: "GlusterFS"
+  })
+}
+
+if (!${settings.glusterfs:false}) {
+  resp.nodes.push({
+    nodeType: "storage",
+    count: 1,
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
     displayName: "Storage"
-  }]
+  })
 }
 
 if (${settings.galera:false}) {
@@ -18,7 +37,7 @@ if (${settings.galera:false}) {
     nodeType: "mariadb-dockerized",
     tag: "10.4.12",
     count: 3,
-    flexibleCloudlets: ${settings.db_flexibleCloudlets:8},
+    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
     diskLimit: ${settings.db_diskLimit:10},
     nodeGroup: "sqldb",
@@ -36,7 +55,7 @@ if (!${settings.galera:false}) {
     nodeType: "mariadb-dockerized",
     tag: "10.4.12",
     count: 2,
-    flexibleCloudlets: ${settings.db_flexibleCloudlets:8},
+    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
     diskLimit: ${settings.db_diskLimit:10},
     nodeGroup: "sqldb",
@@ -49,7 +68,7 @@ if (${settings.ls-addon:false}) {
   resp.nodes.push({
     nodeType: "litespeedadc",
     tag: "2.7",
-    count: 1,
+    count: 2,
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     diskLimit: ${settings.bl_diskLimit:10},
@@ -79,20 +98,13 @@ if (${settings.ls-addon:false}) {
     },
     volumes: [
       "/var/www/webroot/ROOT"
-    ],  
-    volumeMounts: {
-      "/var/www/webroot/ROOT": {
-        readOnly: "false",
-        sourcePath: "/data/ROOT",
-        sourceNodeGroup: "storage"
-      }
-    }
+    ]
   })
 }
 
 if (!${settings.ls-addon:false}) {
   resp.nodes.push({
-    nodeType: "nginx-dockerized",
+    nodeType: "nginx",
     tag: "1.16.1",
     count: 1,
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
@@ -102,8 +114,8 @@ if (!${settings.ls-addon:false}) {
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
   }, {
-    nodeType: "nginxphp-dockerized",
-    tag: "1.16.1-php-7.4.1",
+    nodeType: "nginxphp",
+    tag: "1.16.1-php-7.4.4",
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
@@ -118,26 +130,8 @@ if (!${settings.ls-addon:false}) {
     },
     volumes: [
       "/var/www/webroot/ROOT",
-      "/var/www/webroot/.cache",
-      "/etc/nginx/conf.d/SITES_ENABLED"
-    ],  
-    volumeMounts: {
-      "/var/www/webroot/ROOT": {
-        readOnly: "false",
-        sourcePath: "/data/ROOT",
-        sourceNodeGroup: "storage"
-      },
-      "/var/www/webroot/.cache": {
-        readOnly: "false",
-        sourcePath: "/data/.cache",
-        sourceNodeGroup: "storage"
-      },
-      "/etc/nginx/conf.d/SITES_ENABLED": {
-        readOnly: "false",
-        sourcePath: "/data/APP_CONFIGS",
-        sourceNodeGroup: "storage"
-      }
-    }
+      "/var/www/webroot/.cache"
+    ]
   })
 }
 

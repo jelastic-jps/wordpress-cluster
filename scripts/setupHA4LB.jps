@@ -1,0 +1,45 @@
+jpsType: update
+name: Setup HA for Load Balancer
+id: setup-ha4lb
+
+onInstall:
+
+  - if ('${nodes.bl.master.nodeType}' == 'litespeedadc' && nodes.bl.length > 1):
+    - script[bl]: firewallRules.js?_r=${fn.random}
+      ports: '1447'
+      name: LSADC-HA
+
+    - resetReplClusters
+    - forEach(i:nodes.bl):
+      - setupInstance:
+          id: "${@i.id}"
+          ip: "${@i.address}"
+    - setupReplClusters
+
+  - if ('${nodes.bl.master.nodeType}' == 'litespeedadc' && nodes.bl.length == 1): resetReplClusters
+
+actions:
+  resetReplClusters:
+    cmd[bl]: |-
+      echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >  /var/www/conf/ha_config.xml;
+      echo "<haConfig/>" >>  /var/www/conf/ha_config.xml;
+
+  setupReplClusters:
+      script:
+      - var resp = jelastic.env.control.GetEnvInfo('${env.envName}', session);
+      - if (resp.result != 0) return resp;
+      - var nodes = [];
+      - for (var i = 0, n = resp.nodes; i < n.length; i++)
+      - "  n[i].nodeGroup == nodeGroup ? nodes.push(n[i].address + ':1447') : 0"
+      - 'resp = {result:0, onAfterReturn: {}};'
+      - resp.onAfterReturn['cmd['+ nodeGroup +']'] = '/usr/bin/xmlstarlet ed --inplace -s "haConfig/replication" -t elem -n "replCluster"
+        -v "'+ nodes.join(',') +'" "/var/www/conf/ha_config.xml" 2>/dev/null;'
+      - return resp;
+      nodeGroup: bl
+  
+  setupInstance:
+    cmd[${this.id}]: |-
+      /usr/bin/xmlstarlet ed --inplace -s "haConfig"  -t elem -n "replication" "/var/www/conf/ha_config.xml" 2>/dev/null;
+      /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "serverAddr" -v "${this.ip}:1447" "/var/www/conf/ha_config.xml" 2>/dev/null;
+      /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "isFileCached" -v "1" "/var/www/conf/ha_config.xml" 2>/dev/null;
+
