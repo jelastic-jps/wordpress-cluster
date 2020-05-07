@@ -99,7 +99,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 W3TC_OPTION_SET="${WP} w3-total-cache option set"
-LSCWP_OPTION_SET="${WP} lscache-admin set_option"
+LSCWP_OPTION_SET="${WP} litespeed-option set"
 lOG="/var/log/run.log"
 
 COMPUTE_TYPE=$(grep "COMPUTE_TYPE=" /etc/jelastic/metainf.conf | cut -d"=" -f2)
@@ -108,7 +108,7 @@ cd ${SERVER_WEBROOT};
 
 if [[ ${COMPUTE_TYPE} == *"llsmp"* || ${COMPUTE_TYPE} == *"litespeed"* ]] ; then
 	${WP} plugin install litespeed-cache --activate --path=${SERVER_WEBROOT}
-	CACHE_FLUSH="${WP} lscache-purge all --path=${SERVER_WEBROOT}; rm -rf /var/www/webroot/.cache/vhosts/Jelastic/* "
+	CACHE_FLUSH="${WP} litespeed-purge all --path=${SERVER_WEBROOT}; rm -rf /var/www/webroot/.cache/vhosts/Jelastic/* "
         WPCACHE='lscwp';
 elif [[ ${COMPUTE_TYPE} == *"lemp"* || ${COMPUTE_TYPE} == *"nginx"* ]] ; then
 	${WP} plugin install w3-total-cache --activate --path=${SERVER_WEBROOT}
@@ -123,7 +123,7 @@ function checkCdnStatus () {
 if [ $WPCACHE == 'w3tc' ] ; then
 	CDN_ENABLE_CMD="${WP} w3-total-cache option set cdn.enabled true --type=boolean"
 elif [ $WPCACHE == 'lscwp' ] ; then
-	CDN_ENABLE_CMD="${WP} lscache-admin set_option cdn true"
+	CDN_ENABLE_CMD="${WP} litespeed-option set cdn true"
 fi
 cat > ~/bin/checkCdnStatus.sh <<EOF
 #!/bin/bash
@@ -192,18 +192,18 @@ if [ $edgeportCDN == 'true' ] ; then
   if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then 
     case $WPCACHE in
       w3tc)
-	  checkCdnStatus;
-	  $W3TC_OPTION_SET cdn.enabled false --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          checkCdnStatus;
+          $W3TC_OPTION_SET cdn.enabled false --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET cdn.engine mirror --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET cdn.mirror.domain ${CDN_URL} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
       lscwp)
-	  checkCdnStatus;
-	  CDN_ORI=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
-	  PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
-          $LSCWP_OPTION_SET cdn false --path=${SERVER_WEBROOT} &>> /var/log/run.log
-	  $LSCWP_OPTION_SET litespeed-cache-cdn_mapping[url][0] ${PROTOCOL}://${CDN_URL}/ --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET cdn_ori "//${CDN_ORI}/" --path=${SERVER_WEBROOT} &>> /var/log/run.log
+        checkCdnStatus;
+        CDN_ORI=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
+        PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
+        $LSCWP_OPTION_SET cdn false --path=${SERVER_WEBROOT} &>> /var/log/run.log
+        $LSCWP_OPTION_SET cdn-mapping[url][0] ${PROTOCOL}://${CDN_URL}/ --path=${SERVER_WEBROOT} &>> /var/log/run.log
+        $LSCWP_OPTION_SET cdn_ori "//${CDN_ORI}/" --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
     esac
   fi
