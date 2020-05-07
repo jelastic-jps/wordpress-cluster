@@ -36,7 +36,7 @@ if (!${settings.glusterfs:false}) {
 
 resp.nodes.push({
   nodeType: "mariadb-dockerized",
-  tag: ${settings.sqldb_tag:"10.4.12"},
+  tag: "10.4.12",
   flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
   fixedCloudlets: ${settings.db_fixedCloudlets:1},
   diskLimit: ${settings.db_diskLimit:10},
