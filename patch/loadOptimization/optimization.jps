@@ -3,8 +3,8 @@ jpsVersion: '1.1'
 id: wp-cluster-optimization
 name: WordPress Cluster Load Performance Optimization
 description: Increase WordPress performance for the Clusters based on LiteSpeed Software with optimization of load distribution and caching, and database fine tuning.
-logo: https://raw.githubusercontent.com/vlobzakov/wordpress-cluster/master/images/patch-logo.png
-baseUrl: https://raw.githubusercontent.com/vlobzakov/wordpress-cluster/master
+logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/patch-logo.png
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
 
 globals:
   WP_PROTECT_ACTION: 3
