@@ -181,9 +181,9 @@ if [ $objectcache == 'true' ] ; then
           ;;
     lscwp)
           $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET object_kind true --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET object_host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET object_port 6379 --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object-kind 1 --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object-port 6379 --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
   esac
 fi
