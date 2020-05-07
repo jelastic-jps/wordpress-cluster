@@ -180,10 +180,10 @@ if [ $objectcache == 'true' ] ; then
           $W3TC_OPTION_SET objectcache.redis.password ${REDIS_PASS} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
     lscwp)
-          $LSCWP_OPTION_SET cache_object true --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET cache_object_kind true --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET cache_object_host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET cache_object_port 6379 --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object_kind true --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object_host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object_port 6379 --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
   esac
 fi
@@ -203,7 +203,7 @@ if [ $edgeportCDN == 'true' ] ; then
         PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
         $LSCWP_OPTION_SET cdn false --path=${SERVER_WEBROOT} &>> /var/log/run.log
         $LSCWP_OPTION_SET cdn-mapping[url][0] ${PROTOCOL}://${CDN_URL}/ --path=${SERVER_WEBROOT} &>> /var/log/run.log
-        $LSCWP_OPTION_SET cdn_ori "//${CDN_ORI}/" --path=${SERVER_WEBROOT} &>> /var/log/run.log
+        $LSCWP_OPTION_SET cdn-ori "//${CDN_ORI}/" --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
     esac
   fi
