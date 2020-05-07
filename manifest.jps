@@ -207,26 +207,6 @@ onInstall:
   - setNodeDisplayName [cp]: AppServer
   - setNodeDisplayName [storage]: Storage  
 
-  - if (${settings.galera:false}):
-    - log: DB Galera  Setup
-    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
-      settings:
-        db_user: "${globals.DB_USER}"
-        db_pass: "${globals.DB_PASS}"
-        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-      nodeGroup: sqldb
-
-  - if (!${settings.galera:false}):
-    - log: Master-Master Replication Setup
-    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
-      settings:        
-        path: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/
-        scheme: master
-        db_user: "${globals.DB_USER}"
-        db_pass: "${globals.DB_PASS}"
-        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-      nodeGroup: sqldb
-
   - mountStorage
       
   - setupBL:
