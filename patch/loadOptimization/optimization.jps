@@ -1,27 +1,45 @@
 jpsType: update
 jpsVersion: '1.1'
 id: wp-cluster-optimization
-name: Cluster Optimization for Load Perfomance Tests
-description: Cluster Optimization for Load Perfomance Tests
-logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
+name: WordPress Cluster Load Performance Optimization
+description: Increase WordPress performance for the Clusters based on LiteSpeed Software with optimization of load distribution and caching, and database fine tuning.
+logo: https://raw.githubusercontent.com/vlobzakov/wordpress-cluster/master/images/patch-logo.png
+baseUrl: https://raw.githubusercontent.com/vlobzakov/wordpress-cluster/master
 
-onInstall:  
+globals:
+  WP_PROTECT_ACTION: 3
+  WP_PROTECT_LIMIT: 100
+
+onInstall:
+  - log: LiteSpeed ADC optimization
   - cmd[bl]: |-
-      /usr/bin/xmlstarlet ed --inplace -u "loadBalancerConfig/loadBalancerList/loadBalancer[name = "*"]/strategy" -v "3" "/var/www/conf/lslbd_config.xml";
-      /usr/bin/xmlstarlet ed --inplace -u "loadBalancerConfig/loadBalancerList/loadBalancer[name = "*"]/workerGroupList/workerGroup/pingInterval" -v "1" "/var/www/conf/lslbd_config.xml";
-      /usr/bin/xmlstarlet ed --inplace -u "loadBalancerConfig/loadBalancerList/loadBalancer[name = "*"]/workerGroupList/workerGroup[name = "*"]/maxConns" -v "150" "/var/www/conf/lslbd_config.xml";
-      sudo jem service restart;
+      sed -i 's/^WP_PROTECT=.*/WP_PROTECT=DENY/g' /.jelenv;
+      sed -i 's/^WP_PROTECT_LIMIT=.*/WP_PROTECT_LIMIT=${globals.WP_PROTECT_LIMIT}/g' /.jelenv;
+    user: root
+    
+  - cmd[bl]: |-
+      wget ${baseUrl}/patch/loadOptimization/configs/LSADC_vhost.xml  -O /var/www/conf/jelastic.xml;
+      wget ${baseUrl}/patch/loadOptimization/scripts/LSADC.sh -O ~/LSADC.sh;
+      bash ~/LSADC.sh;
 
-  - log: LScache optimization
+  - log: LiteSpeed WEB optimization
   - cmd[${nodes.cp.master.id}]: |-
       wp plugin update litespeed-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-      wp lscache-admin set_option esi_enabled false --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-  - log: LiteSpeed WEB optimization 
+  
   - forEach(nodes.cp):
+    - cmd[${@i.id}]: sed -i 's/^WP_PROTECT=.*/WP_PROTECT=OFF/g' /.jelenv;
+      user: root
+
     - cmd[${@i.id}]: |-
-         /usr/bin/xmlstarlet ed --inplace -u "httpServerConfig/tuning/enableGzipCompress" -v "0" /var/www/conf/httpd_config.xml;
-         #/usr/bin/xmlstarlet ed --inplace -u "httpServerConfig/autoFix503" -v "0" "/var/www/conf/httpd_config.xml";
-         sudo jem service restart;
-         wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-         wp lscache-purge all --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-           
+        wget ${baseUrl}/patch/loadOptimization/scripts/LSWEB.sh -O ~/LSWEB.sh;
+        bash ~/LSWEB.sh;
+        cd /var/www/webroot/ROOT; wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+        cd /var/www/webroot/ROOT; wp lscache-purge all --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+  
+  - log: DataBase optimization
+  - forEach(nodes.sqldb):
+    - cmd[${@i.id}]: wget ${baseUrl}/configs/sqldb/wordpress.cnf -O /etc/mysql/conf.d/wordpress.cnf
+    - cmd[${@i.id}]: |-
+        wget ${baseUrl}/patch/loadOptimization/scripts/DB.sh -O ~/DB.sh;
+        bash ~/DB.sh;
+      user: root
