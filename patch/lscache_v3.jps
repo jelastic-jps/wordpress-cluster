@@ -1,0 +1,15 @@
+jpsType: update
+jpsVersion: '1.1'
+id: wp-lscacher-v3
+name: Patch for LSCACHE V3
+description: Patch for LSCACHE V3
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+
+onInstall:
+  - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
+  - setGlobals:
+      CDN: ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
+  - cmd[${nodes.cp.master.id}]: |-
+      wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+      bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1 --edgeportCDN true --CDN_URL ${globals.CDN}
+      
