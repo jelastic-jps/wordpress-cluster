@@ -8,7 +8,7 @@ description:
   text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.png
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
@@ -206,26 +206,6 @@ onInstall:
   - setNodeDisplayName [bl]: Load balancer
   - setNodeDisplayName [cp]: AppServer
   - setNodeDisplayName [storage]: Storage  
-
-  - if (${settings.galera:false}):
-    - log: DB Galera  Setup
-    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/galera.jps
-      settings:
-        db_user: "${globals.DB_USER}"
-        db_pass: "${globals.DB_PASS}"
-        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-      nodeGroup: sqldb
-
-  - if (!${settings.galera:false}):
-    - log: Master-Master Replication Setup
-    - install: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/scripts/ms-mm-configuration.jps
-      settings:        
-        path: https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/master/
-        scheme: master
-        db_user: "${globals.DB_USER}"
-        db_pass: "${globals.DB_PASS}"
-        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-      nodeGroup: sqldb
 
   - mountStorage
       

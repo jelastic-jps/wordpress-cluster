@@ -1,4 +1,6 @@
 var wpbfp = '${settings.wp_protect}' == 'true' ? "THROTTLE" : "OFF";
+var db_cluster = '${settings.galera}' == 'true' ? "galera" : "master";
+var db_count = '${settings.galera}' == 'true' ? 3 : 2;
 
 var resp = {
   result: 0,
@@ -10,7 +12,7 @@ if (${settings.glusterfs:false}) {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
-    tag: "2.0-7.2",
+    tag: ${settings.storage_tag:"2.0-7.2"},
     cluster: true,
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
@@ -32,42 +34,28 @@ if (!${settings.glusterfs:false}) {
   })
 }
 
-if (${settings.galera:false}) {
-  resp.nodes.push({
-    nodeType: "mariadb-dockerized",
-    tag: "10.4.12",
-    count: 3,
-    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
-    fixedCloudlets: ${settings.db_fixedCloudlets:1},
-    diskLimit: ${settings.db_diskLimit:10},
-    nodeGroup: "sqldb",
-    displayName: "Galera cluster",
-    restartDelay: 5,
-    skipNodeEmails: true,
-    env: {
-      ON_ENV_INSTALL: ""
-    }
-  })
-}
-
-if (!${settings.galera:false}) {
-  resp.nodes.push({
-    nodeType: "mariadb-dockerized",
-    tag: "10.4.12",
-    count: 2,
-    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
-    fixedCloudlets: ${settings.db_fixedCloudlets:1},
-    diskLimit: ${settings.db_diskLimit:10},
-    nodeGroup: "sqldb",
-    skipNodeEmails: true,
-    displayName: "DB Server"
-  })
-}
+resp.nodes.push({
+  nodeType: "mariadb-dockerized",
+  tag: ${settings.sqldb_tag:"10.4.12"},
+  flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+  fixedCloudlets: ${settings.db_fixedCloudlets:1},
+  diskLimit: ${settings.db_diskLimit:10},
+  count: db_count,
+  nodeGroup: "sqldb",
+  restartDelay: 5,
+  skipNodeEmails: true,
+  cluster: {
+    scheme: db_cluster,
+    db_user: "${globals.DB_USER}",
+    db_pass: "${globals.DB_PASS}",
+    is_proxysql: false
+  }
+});
 
 if (${settings.ls-addon:false}) {
   resp.nodes.push({
     nodeType: "litespeedadc",
-    tag: "2.7",
+    tag: ${settings.bl_tag:"2.7"},
     count: 2,
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
@@ -81,7 +69,7 @@ if (${settings.ls-addon:false}) {
     }
   }, {
     nodeType: "litespeedphp",
-    tag: "5.4.6-php-7.4.3",
+    tag: ${settings.cp_tag:"5.4.6-php-7.4.3"},
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
@@ -105,7 +93,7 @@ if (${settings.ls-addon:false}) {
 if (!${settings.ls-addon:false}) {
   resp.nodes.push({
     nodeType: "nginx",
-    tag: "1.16.1",
+    tag: ${settings.bl_tag:"1.16.1"},
     count: 1,
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
@@ -115,7 +103,7 @@ if (!${settings.ls-addon:false}) {
     displayName: "Load balancer"
   }, {
     nodeType: "nginxphp",
-    tag: "1.16.1-php-7.4.4",
+    tag: ${settings.cp_tag:"1.16.1-php-7.4.4"},
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
