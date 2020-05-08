@@ -117,3 +117,8 @@ return {
     result: 0,
     settings: settings
 };
+
+function err(e, text, cur, override){
+  var m = (e.quota.description || e.quota.name) + " - " + e.value + ", " + text + " - " + cur + ". ";
+  if (override) markup = m; else markup += m;
+}
