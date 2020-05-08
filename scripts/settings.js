@@ -111,9 +111,13 @@ if (!prod) {
   fields["ls-addon"].value = false;
   fields["loadGrowth"].disabled = true;
   fields["galera"].disabled = true;
+  fields["galera"].value = false;
   fields["glusterfs"].disabled = true;
+  fields["glusterfs"].value = false;
   fields["le-addon"].disabled = true;
+  fields["le-addon"].value = false;
   fields["cdn-addon"].disabled = true;
+  fields["cdn-addon"].value = false;
   fields["mu-addon"].disabled = true;
   fields["displayfield"].markup = "Advanced features are not available.Please upgrade your account.";
   fields["displayfield"].cls = "warning";
