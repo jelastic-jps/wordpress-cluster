@@ -134,7 +134,7 @@ if (!prod) {
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
   fields["displayfield"].height = 25;
-  fields["bl_count"].markup = "Topology is not available. " + markup + "Please upgrade your account.";
+  fields["bl_count"].markup = "WordPress cluster is not available. " + markup + "Please upgrade your account.";
   fields["bl_count"].cls = "warning";
   fields["bl_count"].hidden = false;
   fields["bl_count"].height = 30;
