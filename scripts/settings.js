@@ -125,7 +125,7 @@ if (!prod) {
   fields["displayfield"].height =  10;
   fields["bl_count"].markup = "Topology is not available. " + markup + "Please upgrade your account.";
   fields["bl_count"].cls = "warning";
-  fields["bl_count"].hidden: false
+  fields["bl_count"].hidden = false;
   fields["bl_count"].height =  50;
   settings.fields.push(
     {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
