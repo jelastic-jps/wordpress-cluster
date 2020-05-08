@@ -107,9 +107,21 @@ if (group.groupType == 'trial') {
 }
 
 if (!prod) {
-  fields["displayfield"].markup = "Topology is not available. " + markup + "Please upgrade your account..";
+  fields["ls-addon"].disabled = true;
+  fields["wp_protect"].disabled = true;
+  fields["waf"].disabled = true;
+  fields["loadGrowth"].disabled = true;
+  fields["galera"].disabled = true;
+  fields["glusterfs"].disabled = true;
+  fields["le-addon"].disabled = true;
+  fields["cdn-addon"].disabled = true;
+  fields["mu-addon"].disabled = true;
+  fields["displayfield"].markup = "Advanced features are not available.Please upgrade your account.";
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
+  fields["bl_count"].markup = "Topology is not available. " + markup + "Please upgrade your account.";
+  fields["bl_count"].cls = "warning";
+  fields["bl_count"].hideLabel = true;
   settings.fields.push(
     {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
   );
