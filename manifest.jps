@@ -112,6 +112,13 @@ settings:
       value: false
       disabled: false
 
+    - type: displayfield
+      hideLabel: true
+      hidden: true
+      name: bl_count   
+      value: 2
+      markup:
+      
 globals:
   DB_USER: jelastic-${fn.random}
   DB_PASS: ${fn.password(10)}
@@ -213,7 +220,9 @@ onInstall:
   - setupBL:
       nodeId: bl
       
-  - cmd[bl]: jem balancer rebuildCommon
+  - cmd[bl]: |-
+      jem balancer clear;
+      jem balancer rebuildCommon;
     user: root
       
   - setupCP:
