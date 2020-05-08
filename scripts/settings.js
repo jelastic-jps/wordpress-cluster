@@ -108,8 +108,7 @@ if (group.groupType == 'trial') {
 
 if (!prod) {
   fields["ls-addon"].disabled = true;
-  fields["wp_protect"].disabled = true;
-  fields["waf"].disabled = true;
+  fields["ls-addon"].value = false;
   fields["loadGrowth"].disabled = true;
   fields["galera"].disabled = true;
   fields["glusterfs"].disabled = true;
