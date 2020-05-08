@@ -122,9 +122,11 @@ if (!prod) {
   fields["displayfield"].markup = "Advanced features are not available.Please upgrade your account.";
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
+  fields["displayfield"].height =  50;
   fields["bl_count"].markup = "Topology is not available. " + markup + "Please upgrade your account.";
   fields["bl_count"].cls = "warning";
   fields["bl_count"].hideLabel = true;
+  fields["bl_count"].height =  50;
   settings.fields.push(
     {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
   );
