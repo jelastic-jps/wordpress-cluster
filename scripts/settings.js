@@ -119,7 +119,7 @@ if (!prod) {
   fields["cdn-addon"].disabled = true;
   fields["cdn-addon"].value = false;
   fields["mu-addon"].disabled = true;
-  fields["displayfield"].markup = "Advanced features are not available.Please upgrade your account.";
+  fields["displayfield"].markup = "Advanced features are not available. Please upgrade your account.";
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
   fields["displayfield"].height =  50;
