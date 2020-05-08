@@ -122,7 +122,7 @@ if (!prod) {
   fields["displayfield"].markup = "Advanced features are not available. Please upgrade your account.";
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
-  fields["displayfield"].height = 20;
+  fields["displayfield"].height = 25;
   fields["bl_count"].markup = "Topology is not available. " + markup + "Please upgrade your account.";
   fields["bl_count"].cls = "warning";
   fields["bl_count"].hidden = false;
