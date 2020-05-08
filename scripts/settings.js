@@ -107,10 +107,12 @@ if (group.groupType == 'trial') {
 }
 
 if (!prod) {
-    settings.fields.push(
-        {"type": "displayfield", "cls": "warning", "height": 30, "hideLabel": true, "markup": quotaText},
-        {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
-    );
+  fields["displayfield"].markup = "Topology is not available. " + markup + "Please upgrade your account..";
+  fields["displayfield"].cls = "warning";
+  fields["displayfield"].hideLabel = true;
+  settings.fields.push(
+    {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
+  );
 }
 
 return {
