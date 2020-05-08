@@ -44,13 +44,23 @@ for (var i = 0; i < quotas.length; i++){
       fields["glusterfs"].disabled = true;
       fields["galera"].value = false;
       fields["galera"].disabled = true;
-      fields["bl_count"].value = 1;      
+      fields["bl_count"].value = 1;
+      fields["displayfield"].markup = "Some advanced features are not available. Please upgrade your account.";
+      fields["displayfield"].cls = "warning";
+      fields["displayfield"].hideLabel = true;
+      fields["displayfield"].height = 25;
+      
     }
 
     if (n == perEnv && nodesPerEnvWO_GlusterFS  == q.value){
       fields["glusterfs"].value = false;
       fields["glusterfs"].disabled = true;
-      fields["bl_count"].value = 1;      
+      fields["bl_count"].value = 1;
+      fields["displayfield"].markup = "Some advanced features are not available. Please upgrade your account.";
+      fields["displayfield"].cls = "warning";
+      fields["displayfield"].hideLabel = true;
+      fields["displayfield"].height = 25;
+      
     }
 
     if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
@@ -88,6 +98,7 @@ if (group.groupType == 'trial') {
   fields["displayfield"].markup = "Not available for " + group.groupType + " account. Please upgrade your account.";
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
+  fields["displayfield"].height = 25;
     
 } else {
   
