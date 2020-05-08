@@ -112,6 +112,12 @@ settings:
       value: false
       disabled: false
 
+    - type: displayfield
+      hideLabel: true
+      hidden: true
+      name: bl_count   
+      value: 2
+      
 globals:
   DB_USER: jelastic-${fn.random}
   DB_PASS: ${fn.password(10)}

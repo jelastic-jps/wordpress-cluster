@@ -8,30 +8,62 @@ var group = jelastic.billing.account.GetAccount(appid, session);
 var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
 var isLS = jelastic.dev.apps.GetApp(lsAppid);
 
-var sameNodes = "environment.maxsamenodescount";
-var maxNodes = "environment.maxnodescount";
-var minEnvNodes = 7, minEnvLayerNodes = 3, quotaName, quotaValue,  quotaText = "", 
-    quota = jelastic.billing.account.GetQuotas(maxNodes + ";" + sameNodes).array || [];
-    
-for (var i = 0, n = quota.length; i < n; i++) {
-    quotaName = quota[i].quota.name;
-    quotaValue = quota[i].value;
-
-    if (quotaName == maxNodes && quotaValue < minEnvNodes) {
-        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ". Min value is " + minEnvNodes + ".  Please upgrade your account.";
-        continue;
-    }
-
-    if (quotaName == sameNodes && quotaValue < minEnvLayerNodes) {
-        quotaText = "Quota limits: " + quotaName + " = " + quotaValue + ". Min value is " + minEnvLayerNodes + ".  Please upgrade your account.";
-        continue;
-    }
-}
+//checking quotas
+var perEnv = "environment.maxnodescount",
+      maxEnvs = "environment.maxcount",
+      perNodeGroup = "environment.maxsamenodescount",
+      maxCloudletsPerRec = "environment.maxcloudletsperrec",
+var envsCount = jelastic.env.control.GetEnvs({lazy: true}).infos.length,
+      nodesPerEnvWO_Bl = 9,
+      nodesPerEnvWO_GlusterFS = 7,
+      nodesPerEnvMin = 6,
+      maxCloudlets = 16,
+      markup = "", cur = null, text = "used", prod = true;
 
 var settings = jps.settings;
 var fields = {};
 for (var i = 0, field; field = jps.settings.fields[i]; i++)
   fields[field.name] = field;
+
+var quotas = jelastic.billing.account.GetQuotas(perEnv + ";"+maxEnvs+";" + perNodeGroup + ";" + maxCloudletsPerRec ).array;
+var group = jelastic.billing.account.GetAccount(appid, session);
+for (var i = 0; i < quotas.length; i++){
+    var q = quotas[i], n = toNative(q.quota.name);
+
+    if (n == maxEnvs && envsCount >= q.value){
+        err(q, "already used", envsCount, true);
+        prod =  false; break;
+    }
+
+    if (n == maxCloudletsPerRec && maxCloudlets > q.value){
+        err(q, "required", maxCloudlets, true);
+        prod  = false; 
+    }
+    
+    if (n == perEnv && nodesPerEnvMin > q.value){
+        if (!markup) err(q, "required", nodesPerEnvMin, true);
+        prod = false;
+    }
+
+    if (n == perEnv && nodesPerEnvMin  == q.value){
+      fields["glusterfs"].value = false;
+      fields["glusterfs"].disabled = true;
+      fields["galera"].value = false;
+      fields["galera"].disabled = true;
+      fields["bl_count"].value = 1;      
+    }
+
+    if (n == perEnv && nodesPerEnvWO_GlusterFS  == q.value){
+      fields["glusterfs"].value = false;
+      fields["glusterfs"].disabled = true;
+      fields["bl_count"].value = 1;      
+    }
+
+    if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
+      fields["bl_count"].value = 1;      
+    }    
+  
+}
 
 if (group.groupType == 'trial') {
 
@@ -80,7 +112,7 @@ if (group.groupType == 'trial') {
   }
 }
 
-if (quotaText) {
+if (!prod) {
     settings.fields.push(
         {"type": "displayfield", "cls": "warning", "height": 30, "hideLabel": true, "markup": quotaText},
         {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
