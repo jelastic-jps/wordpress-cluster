@@ -13,8 +13,7 @@ var perEnv = "environment.maxnodescount",
       maxEnvs = "environment.maxcount",
       perNodeGroup = "environment.maxsamenodescount",
       maxCloudletsPerRec = "environment.maxcloudletsperrec";
-var envsCount = jelastic.env.control.GetEnvs({lazy: true}).infos.length,
-      nodesPerEnvWO_Bl = 9,
+var nodesPerEnvWO_Bl = 9,
       nodesPerEnvWO_GlusterFS = 7,
       nodesPerEnvMin = 6,
       maxCloudlets = 16,
@@ -29,11 +28,6 @@ var quotas = jelastic.billing.account.GetQuotas(perEnv + ";"+maxEnvs+";" + perNo
 var group = jelastic.billing.account.GetAccount(appid, session);
 for (var i = 0; i < quotas.length; i++){
     var q = quotas[i], n = toNative(q.quota.name);
-
-    if (n == maxEnvs && envsCount >= q.value){
-        err(q, "already used", envsCount, true);
-        prod =  false; break;
-    }
 
     if (n == maxCloudletsPerRec && maxCloudlets > q.value){
         err(q, "required", maxCloudlets, true);
