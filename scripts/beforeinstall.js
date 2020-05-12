@@ -18,6 +18,7 @@ if (${settings.glusterfs:false}) {
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
+    isRedeploySupport: false,
     displayName: "GlusterFS"
   })
 }
@@ -30,6 +31,7 @@ if (!${settings.glusterfs:false}) {
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
+    isRedeploySupport: false,
     displayName: "Storage"
   })
 }
@@ -42,6 +44,7 @@ resp.nodes.push({
   diskLimit: ${settings.db_diskLimit:10},
   count: db_count,
   nodeGroup: "sqldb",
+  isRedeploySupport: false,
   restartDelay: 5,
   skipNodeEmails: true,
   cluster: {
