@@ -66,6 +66,7 @@ if (${settings.ls-addon:false}) {
     nodeGroup: "bl",
     scalingMode: "STATEFUL",
     displayName: "Load balancer",
+    addons: ["setup-site-url"],
     env: {
       WP_PROTECT: wpbfp,
       WP_PROTECT_LIMIT: 100
@@ -102,6 +103,7 @@ if (!${settings.ls-addon:false}) {
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
+    addons: ["setup-site-url"],
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
   }, {
