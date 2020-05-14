@@ -41,7 +41,7 @@ for (var i = 0; i < quotas.length; i++){
     }
 
    if (n == perNodeGroup && nodesPerGroupMin > q.value){
-        if (!markup) err(q, "required", nodesPerEnvMin, true);
+        if (!markup) err(q, "required", nodesPerGroupMin, true);
         prod = false;
     }
     
