@@ -18,6 +18,7 @@ if (${settings.glusterfs:false}) {
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
+    restartDelay: 10,
     isRedeploySupport: false,
     displayName: "GlusterFS"
   })
@@ -45,7 +46,7 @@ resp.nodes.push({
   count: db_count,
   nodeGroup: "sqldb",
   isRedeploySupport: false,
-  restartDelay: 5,
+  restartDelay: 10,
   skipNodeEmails: true,
   cluster: {
     scheme: db_cluster,
@@ -64,6 +65,7 @@ if (${settings.ls-addon:false}) {
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
+    restartDelay: 10,
     scalingMode: "STATEFUL",
     displayName: "Load balancer",
     addons: ["setup-site-url"],
@@ -79,6 +81,7 @@ if (${settings.ls-addon:false}) {
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
     diskLimit: ${settings.cp_diskLimit:10},
     nodeGroup: "cp",
+    restartDelay: 10,
     scalingMode: "STATELESS",
     displayName: "AppServer",
     addons: ["setup-site-url"],
@@ -103,6 +106,7 @@ if (!${settings.ls-addon:false}) {
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
+    restartDelay: 10,
     addons: ["setup-site-url"],
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
@@ -114,6 +118,7 @@ if (!${settings.ls-addon:false}) {
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
     diskLimit: ${settings.cp_diskLimit:10},
     nodeGroup: "cp",
+    restartDelay: 10,
     scalingMode: "STATELESS",
     displayName: "AppServer",
     addons: ["setup-site-url"],
