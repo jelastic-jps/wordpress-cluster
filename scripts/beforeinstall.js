@@ -18,6 +18,7 @@ if (${settings.glusterfs:false}) {
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
+    isRedeploySupport: false,
     displayName: "GlusterFS"
   })
 }
@@ -30,6 +31,7 @@ if (!${settings.glusterfs:false}) {
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
+    isRedeploySupport: false,
     displayName: "Storage"
   })
 }
@@ -42,6 +44,7 @@ resp.nodes.push({
   diskLimit: ${settings.db_diskLimit:10},
   count: db_count,
   nodeGroup: "sqldb",
+  isRedeploySupport: false,
   restartDelay: 5,
   skipNodeEmails: true,
   cluster: {
@@ -63,6 +66,7 @@ if (${settings.ls-addon:false}) {
     nodeGroup: "bl",
     scalingMode: "STATEFUL",
     displayName: "Load balancer",
+    addons: ["setup-site-url"],
     env: {
       WP_PROTECT: wpbfp,
       WP_PROTECT_LIMIT: 100
@@ -99,6 +103,7 @@ if (!${settings.ls-addon:false}) {
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
+    addons: ["setup-site-url"],
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
   }, {
