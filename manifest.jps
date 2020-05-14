@@ -170,9 +170,8 @@ onAfterClone:
   - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
 
-  - installAddon: 
+  - installAddon [bl, cp]: 
     envName: ${event.response.env.envName}
-    nodeGroup: bl, cp
       id: setup-site-url
     
 onAfterMigrate:
