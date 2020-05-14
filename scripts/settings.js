@@ -16,6 +16,7 @@ var perEnv = "environment.maxnodescount",
 var nodesPerEnvWO_Bl = 9,
       nodesPerEnvWO_GlusterFS = 7,
       nodesPerEnvMin = 6,
+      nodesPerGroupMin = 2,
       maxCloudlets = 16,
       markup = "", cur = null, text = "used", prod = true;
 
@@ -39,6 +40,11 @@ for (var i = 0; i < quotas.length; i++){
         prod = false;
     }
 
+   if (n == perNodeGroup && nodesPerGroupMin > q.value){
+        if (!markup) err(q, "required", nodesPerEnvMin, true);
+        prod = false;
+    }
+    
     if (n == perEnv && nodesPerEnvMin  == q.value){
       fields["glusterfs"].value = false;
       fields["glusterfs"].disabled = true;
@@ -66,7 +72,18 @@ for (var i = 0; i < quotas.length; i++){
     if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
       fields["bl_count"].value = 1;      
     }    
-  
+ 
+    if (n == perNodeGroup && nodesPerGroupMin  == q.value){
+      fields["glusterfs"].value = false;
+      fields["glusterfs"].disabled = true;
+      fields["galera"].value = false;
+      fields["galera"].disabled = true;
+      fields["displayfield"].markup = "Some advanced features are not available. Please upgrade your account.";
+      fields["displayfield"].cls = "warning";
+      fields["displayfield"].hideLabel = true;
+      fields["displayfield"].height = 25;
+    }
+ 
 }
 
 if (group.groupType == 'trial') {
