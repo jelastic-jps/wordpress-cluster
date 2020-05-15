@@ -53,7 +53,7 @@ resp.nodes.push({
     db_user: "${globals.DB_USER}",
     db_pass: "${globals.DB_PASS}",
     is_proxysql: false,
-    custom_conf: "${baseUrl}../configs/sqldb/wordpress.cnf"
+    custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
   }
 });
 
