@@ -59,6 +59,8 @@ resp.nodes.push({
   env: {
     ON_ENV_INSTALL: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/v2.0.0/addons/auto-clustering/auto-cluster.jps",
     SCHEME: db_cluster,
+    DB_USER: "${globals.DB_USER}",
+    DB_PASS: "${globals.DB_PASS}",
     IS_PROXYSQL: false
   }  
 });
