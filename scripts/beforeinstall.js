@@ -50,11 +50,17 @@ resp.nodes.push({
   skipNodeEmails: true,
   cluster: {
     scheme: db_cluster,
+    jps: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/v2.0.0/addons/auto-clustering/auto-cluster.jps"
     db_user: "${globals.DB_USER}",
     db_pass: "${globals.DB_PASS}",
     is_proxysql: false,
     custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-  }
+  },
+  env: {
+    ON_ENV_INSTALL: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/v2.0.0/addons/auto-clustering/auto-cluster.jps"
+    SCHEME: db_cluster
+    IS_PROXYSQL: false
+  }  
 });
 
 if (${settings.ls-addon:false}) {
