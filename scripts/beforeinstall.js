@@ -8,7 +8,7 @@ var resp = {
   nodes: []
 }
 
-if (${settings.glusterfs:false}) {
+if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
