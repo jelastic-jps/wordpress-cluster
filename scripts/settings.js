@@ -96,12 +96,8 @@ if (group.groupType == 'trial') {
   
   if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
     fields["ls-addon"].disabled = true;
-    fields["wp_protect"].disabled = true;
-    fields["waf"].disabled = true;
   } else {
     fields["ls-addon"].hidden = true;
-    fields["wp_protect"].hidden = true;
-    fields["waf"].hidden = true;
   }
   
   if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
