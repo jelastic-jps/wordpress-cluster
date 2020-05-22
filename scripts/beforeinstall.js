@@ -63,7 +63,7 @@ resp.nodes.push({
   }  
 });
 
-if (${settings.ls-addon:false}) {
+if ('${settings.ls-addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
     tag: ${settings.bl_tag:"2.7"},
@@ -102,9 +102,7 @@ if (${settings.ls-addon:false}) {
       "/var/www/webroot/ROOT"
     ]
   })
-}
-
-if (!${settings.ls-addon:false}) {
+} else {
   resp.nodes.push({
     nodeType: "nginx",
     tag: ${settings.bl_tag:"1.16.1"},
