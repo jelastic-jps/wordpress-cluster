@@ -89,8 +89,6 @@ for (var i = 0; i < quotas.length; i++){
 if (group.groupType == 'trial') {
 
   fields["ls-addon"].value = false;
-  fields["wp_protect"].value = false;
-  fields["waf"].value = false;
   fields["cdn-addon"].value = false;
   fields["le-addon"].value = false;
   fields["glusterfs"].value = false;
@@ -98,12 +96,8 @@ if (group.groupType == 'trial') {
   
   if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
     fields["ls-addon"].disabled = true;
-    fields["wp_protect"].disabled = true;
-    fields["waf"].disabled = true;
   } else {
     fields["ls-addon"].hidden = true;
-    fields["wp_protect"].hidden = true;
-    fields["waf"].hidden = true;
   }
   
   if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {

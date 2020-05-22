@@ -8,7 +8,7 @@ var resp = {
   nodes: []
 }
 
-if (${settings.glusterfs:false}) {
+if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
@@ -22,9 +22,7 @@ if (${settings.glusterfs:false}) {
     isRedeploySupport: false,
     displayName: "GlusterFS"
   })
-}
-
-if (!${settings.glusterfs:false}) {
+} else {
   resp.nodes.push({
     nodeType: "storage",
     count: 1,
@@ -65,7 +63,7 @@ resp.nodes.push({
   }  
 });
 
-if (${settings.ls-addon:false}) {
+if ('${settings.ls-addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
     tag: ${settings.bl_tag:"2.7"},
@@ -104,9 +102,7 @@ if (${settings.ls-addon:false}) {
       "/var/www/webroot/ROOT"
     ]
   })
-}
-
-if (!${settings.ls-addon:false}) {
+} else {
   resp.nodes.push({
     nodeType: "nginx",
     tag: ${settings.bl_tag:"1.16.1"},
