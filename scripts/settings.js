@@ -89,8 +89,6 @@ for (var i = 0; i < quotas.length; i++){
 if (group.groupType == 'trial') {
 
   fields["ls-addon"].value = false;
-  fields["wp_protect"].value = false;
-  fields["waf"].value = false;
   fields["cdn-addon"].value = false;
   fields["le-addon"].value = false;
   fields["glusterfs"].value = false;
