@@ -22,9 +22,7 @@ if (${settings.glusterfs:false}) {
     isRedeploySupport: false,
     displayName: "GlusterFS"
   })
-}
-
-if (!${settings.glusterfs:false}) {
+} else {
   resp.nodes.push({
     nodeType: "storage",
     count: 1,
