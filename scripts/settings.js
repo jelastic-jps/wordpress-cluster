@@ -69,6 +69,17 @@ for (var i = 0; i < quotas.length; i++){
       
     }
 
+    if (n == perEnv && q.value == 8){
+      fields["glusterfs"].value = false;
+      fields["glusterfs"].disabled = true;
+      fields["bl_count"].value = 2;
+      fields["displayfield"].markup = "Some advanced features are not available. Please upgrade your account.";
+      fields["displayfield"].cls = "warning";
+      fields["displayfield"].hideLabel = true;
+      fields["displayfield"].height = 25;
+    }
+    
+    
     if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
       fields["bl_count"].value = 1;      
     }    
