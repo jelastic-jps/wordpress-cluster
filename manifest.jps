@@ -120,6 +120,7 @@ settings:
       markup:
       
 globals:
+  PATH: ${baseUrl}
   DB_USER: jelastic-${fn.random}
   DB_PASS: ${fn.password(10)}
   DB_HOST: sqldb
@@ -150,7 +151,7 @@ onAfterRedeployContainer[bl]:
       nodeId: bl
 
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
-  - install: ${baseUrl}/scripts/setupCDN.jps
+  - install: ${globals.PATH}/scripts/setupCDN.jps
  
 onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setup-LE-domain
 
@@ -162,12 +163,12 @@ onAfterClone:
         }
         return resp;
  
-  - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
       
-  - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
     
 onAfterMigrate:
@@ -178,12 +179,12 @@ onAfterMigrate:
         }
         return resp;
  
-  - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
       
-  - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
       
 onInstall:
@@ -247,7 +248,7 @@ addons:
     type: update
     name: WordPress Site URL
     description: WordPress Site URL Configuration.
-    logo: ${baseUrl}/images/wp-cluster-kit.png
+    logo: ${globals.PATH}/images/wp-cluster-kit.png
     settings:
       fields:
         - type: string
@@ -284,12 +285,12 @@ actions:
 
   setup-LE-domain:
     - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
-    - install: ${baseUrl}/scripts/setupDomain.jps
+    - install: ${globals.PATH}/scripts/setupDomain.jps
       settings:
         domain: https://${response.out}
 
   setup-domain:
-    - install: ${baseUrl}/scripts/setupDomain.jps
+    - install: ${globals.PATH}/scripts/setupDomain.jps
       settings:
         domain: ${settings.siteURL}
 
@@ -308,7 +309,7 @@ actions:
     - install: /scripts/setupCDN.jps
 
   configure-MU:
-    - install: ${baseUrl}/addon/WPMU.jps
+    - install: ${globals.PATH}/addon/WPMU.jps
       settings:
         mode: subdir
 
