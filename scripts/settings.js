@@ -97,14 +97,13 @@ for (var i = 0; i < quotas.length; i++){
  
 }
 
-if (group.groupType == 'trial') {
-
-  fields["ls-addon"].value = false;
-  fields["cdn-addon"].value = false;
-  fields["le-addon"].value = false;
-  fields["glusterfs"].value = false;
-  fields["glusterfs"].disabled = true;
+if (!prod || group.groupType == 'trial') {
   
+  for (var i = 0; i < fields.length; i++) {
+    fields[i].disabled = true;
+    fields[i].value = false;
+  }
+
   if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
     fields["ls-addon"].disabled = true;
   } else {
@@ -116,12 +115,22 @@ if (group.groupType == 'trial') {
   } else {
     fields["cdn-addon"].hidden = true;
   }
-    
-  fields["displayfield"].markup = "Not available for " + group.groupType + " account. Please upgrade your account.";
+
+  if (group.groupType == 'trial') {
+    fields["displayfield"].markup = "Not available for " + group.groupType + " account. Please upgrade your account.";
+  } else {
+    fields["displayfield"].markup = "Advanced features are not available. Please upgrade your account.";
+    fields["bl_count"].hidden = false;
+    fields["bl_count"].cls = "warning";
+    fields["bl_count"].height = 30;
+  }
+  
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
   fields["displayfield"].height = 25;
-    
+  settings.fields.push(
+    {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
+  );
 } else {
   
   if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
@@ -137,32 +146,6 @@ if (group.groupType == 'trial') {
     fields["cdn-addon"].hidden = true;
     fields["cdn-addon"].value = false;
   }
-}
-
-if (!prod) {
-  fields["ls-addon"].disabled = true;
-  fields["ls-addon"].value = false;
-  fields["loadGrowth"].disabled = true;
-  fields["galera"].disabled = true;
-  fields["galera"].value = false;
-  fields["glusterfs"].disabled = true;
-  fields["glusterfs"].value = false;
-  fields["le-addon"].disabled = true;
-  fields["le-addon"].value = false;
-  fields["cdn-addon"].disabled = true;
-  fields["cdn-addon"].value = false;
-  fields["mu-addon"].disabled = true;
-  fields["displayfield"].markup = "Advanced features are not available. Please upgrade your account.";
-  fields["displayfield"].cls = "warning";
-  fields["displayfield"].hideLabel = true;
-  fields["displayfield"].height = 25;
-  fields["bl_count"].markup = "WordPress cluster is not available. " + markup + "Please upgrade your account.";
-  fields["bl_count"].cls = "warning";
-  fields["bl_count"].hidden = false;
-  fields["bl_count"].height = 30;
-  settings.fields.push(
-    {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
-  );
 }
 
 return {
