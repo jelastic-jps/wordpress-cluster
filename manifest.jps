@@ -284,7 +284,7 @@ actions:
         fallbackToX1: true
 
   setup-LE-domain:
-    - cmd[bl]: source /opt/letsencrypt/settings && echo $domain
+    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
     - install: ${globals.PATH}/scripts/setupDomain.jps
       settings:
         domain: https://${response.out}
