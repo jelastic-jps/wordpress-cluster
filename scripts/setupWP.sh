@@ -120,19 +120,11 @@ else
 fi
 
 function generateCdnContent () {
-  [ -f ~/checkCdnContent.txt ] && rm -f ~/checkCdnContent.txt;
-  base_url=$(${WP} option get siteurl --path=${SERVER_WEBROOT});
-  wget ${base_url} -O /tmp/index.html;
-  cat /tmp/index.html | \
-    sed 's/href=/\nhref=/g' | \
-    grep href=\" | sed 's/.*href="//g;s/".*//g' | \
-    grep ${base_url} | \
-    grep 'js\|css' > /tmp/fullListUrls;
-
-  while read -a CONTENT; do
-    status=$(curl $CONTENT -k -s -f -o /dev/null && echo "SUCCESS" || echo "ERROR")
-    [ $status = "SUCCESS" ] && echo $CONTENT | grep / | cut -d/ -f4- >> ~/checkCdnContent.txt
-  done < /tmp/fullListUrls
+    echo "wp-content/themes/twentynineteen/style.css" > ~/checkCdnContent.txt;
+    echo "wp-includes/css/dist/block-library/style.min.css" >> ~/checkCdnContent.txt;
+    echo "wp-includes/css/dist/block-library/theme.min.css" >> ~/checkCdnContent.txt;
+    echo "wp-includes/js/wp-embed.min.js" >> ~/checkCdnContent.txt;
+    echo "wp-content/themes/twentynineteen/print.css" >> ~/checkCdnContent.txt;
 }
 
 function checkCdnStatus () {
@@ -208,13 +200,14 @@ if [ $edgeportCDN == 'true' ] ; then
   if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then 
     case $WPCACHE in
       w3tc)
+          generateCdnContent;
           checkCdnStatus;
           $W3TC_OPTION_SET cdn.enabled false --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET cdn.engine mirror --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET cdn.mirror.domain ${CDN_URL} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
       lscwp)
-          generateCdnContent
+          generateCdnContent;
           checkCdnStatus;
           CDN_ORI=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
           PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
