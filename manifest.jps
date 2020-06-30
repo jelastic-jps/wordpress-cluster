@@ -143,7 +143,27 @@ onAfterScaleOut[nodeGroup:cp]:
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
-        
+ 
+onBeforeScaleOut[nodeGroup:sqldb]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for database cluster.
+
+onBeforeScaleIn[nodeGroup:sqldb]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for database cluster.
+
+onBeforeScaleOut[nodeGroup:storage]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for storage.
+
+onBeforeScaleIn[nodeGroup:storage]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for storage.
+
 onAfterRedeployContainer[cp]:
   - setupCP:
       nodeId: cp
