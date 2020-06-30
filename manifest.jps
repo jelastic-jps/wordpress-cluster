@@ -131,10 +131,12 @@ globals:
   EMAIL: default
 
 onAfterScaleOut[nodeGroup:bl]:
-  forEach(event.response.nodes):
-    - setNodeDisplayName [${@i.id}]: Load balancer
-    - setupBL:
-        nodeId: ${@i.id}
+  - forEach(event.response.nodes):
+      - setNodeDisplayName [${@i.id}]: Load balancer
+      - setupBL:
+          nodeId: ${@i.id}
+  - forEach(nodes.bl): 
+      sudo jem service restart
   
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
