@@ -331,7 +331,7 @@ actions:
         targetNodes: ${this.nodeId}
         optimization: wordpress
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-    - if (/litespeed/.test("${nodes.cp.nodeType}"):
+    - if (/litespeed/.test("${nodes.cp.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
 
@@ -344,7 +344,7 @@ actions:
         optimization: wordpress
     - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-    - if (/litespeed/.test("${nodes.bl.nodeType}"):
+    - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
 
