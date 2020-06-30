@@ -144,22 +144,22 @@ onAfterScaleOut[nodeGroup:cp]:
     - setupCP:
         nodeId: ${@i.id}
  
-onBeforeScaleOut[nodeGroup:sqldb]:
+onBeforeAddNode[sqldb]:
   stopEvent:
     type: warning
     message: Scaling is not supported for database cluster.
 
-onBeforeScaleIn[nodeGroup:sqldb]:
+onBeforeRemoveNode[sqldb]:
   stopEvent:
     type: warning
     message: Scaling is not supported for database cluster.
 
-onBeforeScaleOut[nodeGroup:storage]:
+onBeforeAddNode[storage]:
   stopEvent:
     type: warning
     message: Scaling is not supported for storage.
 
-onBeforeScaleIn[nodeGroup:storage]:
+onBeforeRemoveNode[storage]:
   stopEvent:
     type: warning
     message: Scaling is not supported for storage.
