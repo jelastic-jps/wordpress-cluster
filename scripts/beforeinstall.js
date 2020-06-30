@@ -20,7 +20,11 @@ if ('${settings.glusterfs:false}' == 'true') {
     nodeGroup: "storage",
     restartDelay: 10,
     isRedeploySupport: false,
-    displayName: "GlusterFS"
+    displayName: "GlusterFS",
+    validation: {
+      minCount: 3,
+      maxCount: 3
+    }
   })
 } else {
   resp.nodes.push({
@@ -31,7 +35,11 @@ if ('${settings.glusterfs:false}' == 'true') {
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
     isRedeploySupport: false,
-    displayName: "Storage"
+    displayName: "Storage",
+    validation: {
+      minCount: 1,
+      maxCount: 1
+    }
   })
 }
 
@@ -46,6 +54,10 @@ resp.nodes.push({
   isRedeploySupport: false,
   restartDelay: 10,
   skipNodeEmails: true,
+  validation: {
+    minCount: db_count,
+    maxCount: db_count
+  },
   cluster: {
     scheme: db_cluster,
     jps: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/v2.0.0/addons/auto-clustering/auto-cluster.jps",
