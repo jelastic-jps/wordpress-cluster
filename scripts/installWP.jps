@@ -39,3 +39,4 @@ actions:
         cd ${SERVER_WEBROOT};
         wp plugin install ${baseUrl}../scripts/nginx-fastcgi-cache-purge.zip --path=${SERVER_WEBROOT}
         wp plugin activate nginx-fastcgi-cache-purge --path=${SERVER_WEBROOT}
+        wp option update permalink_structure '/%postname%' --path=${SERVER_WEBROOT}
