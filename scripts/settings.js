@@ -54,8 +54,7 @@ for (var i = 0; i < quotas.length; i++){
       fields["displayfield"].markup = "Some advanced features are not available. Please upgrade your account.";
       fields["displayfield"].cls = "warning";
       fields["displayfield"].hideLabel = true;
-      fields["displayfield"].height = 25;
-      
+      fields["displayfield"].height = 25;      
     }
 
     if (n == perEnv && nodesPerEnvWO_GlusterFS  == q.value){
@@ -65,8 +64,7 @@ for (var i = 0; i < quotas.length; i++){
       fields["displayfield"].markup = "Some advanced features are not available. Please upgrade your account.";
       fields["displayfield"].cls = "warning";
       fields["displayfield"].hideLabel = true;
-      fields["displayfield"].height = 25;
-      
+      fields["displayfield"].height = 25;      
     }
 
     if (n == perEnv && q.value == 8){
@@ -78,7 +76,6 @@ for (var i = 0; i < quotas.length; i++){
       fields["displayfield"].hideLabel = true;
       fields["displayfield"].height = 25;
     }
-    
     
     if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
       fields["bl_count"].value = 1;      
@@ -94,52 +91,30 @@ for (var i = 0; i < quotas.length; i++){
       fields["displayfield"].hideLabel = true;
       fields["displayfield"].height = 25;
     }
- 
+
+    if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
+      fields["ls-addon"].hidden = false;
+    } else {
+      fields["ls-addon"].hidden = true;
+      fields["ls-addon"].value = false;
+      fields["ls-addon"].showIf = null;
+    }
+  
+    if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
+      fields["cdn-addon"].disabled = true;
+    } else {
+      fields["cdn-addon"].hidden = true;
+      fields["cdn-addon"].value = false;
+    }
+    
+    var resp = jelastic.billing.account.GetQuotas('environment.externalip.enabled');
+    if (resp.result == 0 && resp.array[0].value) {
+      fields["le-addon"].disabled = false;
+      fields["le-addon"].value = true;
+    }    
 }
 
-if (group.groupType == 'trial') {
-
-  fields["ls-addon"].value = false;
-  fields["cdn-addon"].value = false;
-  fields["le-addon"].value = false;
-  fields["glusterfs"].value = false;
-  fields["glusterfs"].disabled = true;
-  
-  if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
-    fields["ls-addon"].disabled = true;
-  } else {
-    fields["ls-addon"].hidden = true;
-  }
-  
-  if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
-    fields["cdn-addon"].disabled = true;
-  } else {
-    fields["cdn-addon"].hidden = true;
-  }
-    
-  fields["displayfield"].markup = "Not available for " + group.groupType + " account. Please upgrade your account.";
-  fields["displayfield"].cls = "warning";
-  fields["displayfield"].hideLabel = true;
-  fields["displayfield"].height = 25;
-    
-} else {
-  
-  if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
-    fields["ls-addon"].value = true;
-  } else {
-    fields["ls-addon"].hidden = true;
-    fields["ls-addon"].value = false;
-  }
-  
-  if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
-     fields["cdn-addon"].value = true;
-  } else {
-    fields["cdn-addon"].hidden = true;
-    fields["cdn-addon"].value = false;
-  }
-}
-
-if (!prod) {
+if (!prod || group.groupType == 'trial') {
   fields["ls-addon"].disabled = true;
   fields["ls-addon"].value = false;
   fields["loadGrowth"].disabled = true;
@@ -152,14 +127,18 @@ if (!prod) {
   fields["cdn-addon"].disabled = true;
   fields["cdn-addon"].value = false;
   fields["mu-addon"].disabled = true;
-  fields["displayfield"].markup = "Advanced features are not available. Please upgrade your account.";
+  fields["displayfield"].markup = "Advanced features are not available.";
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
   fields["displayfield"].height = 25;
   fields["bl_count"].markup = "WordPress cluster is not available. " + markup + "Please upgrade your account.";
+  if (group.groupType == 'trial')
+    fields["bl_count"].markup = "WordPress cluster is not available for " + group.groupType + ". Please upgrade your account.";
   fields["bl_count"].cls = "warning";
   fields["bl_count"].hidden = false;
   fields["bl_count"].height = 30;
+  
+  
   settings.fields.push(
     {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
   );
