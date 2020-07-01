@@ -94,6 +94,7 @@ for (var i = 0; i < quotas.length; i++){
 
     if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
       fields["ls-addon"].hidden = false;
+      fields["ls-addon"].value = true;
     } else {
       fields["ls-addon"].hidden = true;
       fields["ls-addon"].value = false;
@@ -101,7 +102,8 @@ for (var i = 0; i < quotas.length; i++){
     }
   
     if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
-      fields["cdn-addon"].disabled = true;
+      fields["cdn-addon"].hidden = false;
+      fields["cdn-addon"].value = true;
     } else {
       fields["cdn-addon"].hidden = true;
       fields["cdn-addon"].value = false;
