@@ -131,17 +131,39 @@ globals:
   EMAIL: default
 
 onAfterScaleOut[nodeGroup:bl]:
-  forEach(event.response.nodes):
-    - setNodeDisplayName [${@i.id}]: Load balancer
-    - setupBL:
-        nodeId: ${@i.id}
+  - forEach(event.response.nodes):
+      - setNodeDisplayName [${@i.id}]: Load balancer
+      - setupBL:
+          nodeId: ${@i.id}
+  - forEach(nodes.bl): 
+      sudo jem service restart
   
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
-        
+ 
+onBeforeAddNode[sqldb]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for database cluster.
+
+onBeforeRemoveNode[sqldb]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for database cluster.
+
+onBeforeAddNode[storage]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for storage.
+
+onBeforeRemoveNode[storage]:
+  stopEvent:
+    type: warning
+    message: Scaling is not supported for storage.
+
 onAfterRedeployContainer[cp]:
   - setupCP:
       nodeId: cp
