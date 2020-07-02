@@ -97,8 +97,8 @@ settings:
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
-      value: true
-      disabled: false
+      value: false
+      disabled: true
 
     - caption: Install Lightning-Fast Premium CDN with 130+ PoPs
       type: checkbox
