@@ -301,6 +301,9 @@ actions:
     - install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
       nodeGroup: bl
       skipEmail: true
+      settings:
+        customDomains: ${globals.DOMAIN}
+        fallbackToX1: true
 
   setup-LE-domain:
     - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
