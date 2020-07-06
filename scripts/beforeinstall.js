@@ -59,14 +59,14 @@ resp.nodes.push({
   },
   cluster: {
     scheme: db_cluster,
-    jps: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/v2.0.0/addons/auto-clustering/auto-cluster.jps",
+    jps: "https://raw.githubusercontent.com/sych74/mysql-cluster/v2.1.0/addons/auto-clustering/auto-cluster.jps",
     db_user: "${globals.DB_USER}",
     db_pass: "${globals.DB_PASS}",
     is_proxysql: false,
     custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
   },
   env: {
-    ON_ENV_INSTALL: "https://raw.githubusercontent.com/jelastic-jps/mysql-cluster/v2.0.0/addons/auto-clustering/auto-cluster.jps",
+    ON_ENV_INSTALL: "https://raw.githubusercontent.com/sych74/mysql-cluster/v2.1.0/addons/auto-clustering/auto-cluster.jps",
     SCHEME: db_cluster,
     DB_USER: "${globals.DB_USER}",
     DB_PASS: "${globals.DB_PASS}",
