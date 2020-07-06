@@ -189,25 +189,25 @@ onAfterClone:
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
-      
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
+
+  - if (/litespeed/.test("${nodes.bl.nodeType}")):
+    - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+      envName: ${event.response.env.envName}
     
 onAfterMigrate:
   - script: |
         var resp = {result:0}
-        if (${event.response.env.sslstate}) {
+        if (${env.sslstate}) {
           resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
         }
         return resp;
  
   - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
     settings:
-      domain: ${globals.PROTOCOL}://${event.response.env.domain}
+      domain: ${globals.PROTOCOL}://${env.domain}
       
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
+  - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
       
 onInstall:
 
@@ -242,11 +242,12 @@ onInstall:
       
   - setupBL:
       nodeId: bl
-      
-  - cmd[bl]: |-
-      jem balancer clear;
-      jem balancer rebuildCommon;
-    user: root
+  
+  - if (/litespeed/.test("${nodes.cp.nodeType}")):
+    - cmd[bl]: |-
+        jem balancer clear;
+        jem balancer rebuildCommon;
+      user: root
       
   - setupCP:
       nodeId: cp
@@ -364,9 +365,9 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
     - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
 
