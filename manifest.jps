@@ -196,18 +196,16 @@ onAfterClone:
 onAfterMigrate:
   - script: |
         var resp = {result:0}
-        if (${event.response.env.sslstate}) {
+        if (${env.sslstate}) {
           resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
         }
         return resp;
  
   - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
     settings:
-      domain: ${globals.PROTOCOL}://${event.response.env.domain}
+      domain: ${globals.PROTOCOL}://${env.domain}
       
   - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
       
 onInstall:
 
