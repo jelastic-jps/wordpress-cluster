@@ -51,7 +51,6 @@ resp.nodes.push({
   diskLimit: ${settings.db_diskLimit:10},
   count: db_count,
   nodeGroup: "sqldb",
-  isRedeploySupport: false,
   restartDelay: 10,
   skipNodeEmails: true,
   validation: {
