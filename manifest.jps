@@ -189,9 +189,10 @@ onAfterClone:
     envName: ${event.response.env.envName}
     settings:
       domain: ${globals.PROTOCOL}://${event.response.env.domain}
-      
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
+
+  - if (/litespeed/.test("${nodes.bl.nodeType}")):
+    - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+      envName: ${event.response.env.envName}
     
 onAfterMigrate:
   - script: |
@@ -205,7 +206,8 @@ onAfterMigrate:
     settings:
       domain: ${globals.PROTOCOL}://${env.domain}
       
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+  - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
       
 onInstall:
 
@@ -362,9 +364,9 @@ actions:
         targetGroup: bl
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
     - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
 
