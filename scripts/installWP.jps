@@ -15,6 +15,7 @@ globals:
 onInstall:
   - installWP
   - setupWP
+  - permissionsWP
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
     - nginxPurgeCache
 
@@ -28,6 +29,11 @@ actions:
         wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O /var/www/webroot/ROOT/wp-jelastic.php
         sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /var/www/webroot/ROOT/wp-config.php
         wget ${baseUrl}../images/favicon.ico -O /var/www/webroot/ROOT/favicon.ico
+
+  permissionsWP:
+    - cmd[${nodes.storage.master.id}]: |-
+        find /data/ROOT/ -type d -exec chmod 755 {} \;
+        find /data/ROOT/ -type f -exec chmod 644 {} \;
 
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
