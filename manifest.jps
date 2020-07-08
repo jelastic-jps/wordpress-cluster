@@ -270,13 +270,13 @@ addons:
   - id: setup-site-url
     type: update
     name: WordPress Site Address (URL)
-    description: The Site Address (URL) setting is the address you want people to type in their browser to reach your WordPress blog.
+    description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
     logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
     settings:
       fields:
         - type: string
           name: siteURL
-          caption: Site URL
+          caption: Site Address (URL)
           default: ''
           required: true
           regex: "^https?:\\/\\/.+$"
