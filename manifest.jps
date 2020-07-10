@@ -378,9 +378,10 @@ actions:
         params:
           nodeGroup: cp
           sourceNodeId: ${nodes.storage.master.id}
-          sourcePath: /data/ROOT
+          sourcePath: /data
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
+          protocol: NFS4
     
 success:
   email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
