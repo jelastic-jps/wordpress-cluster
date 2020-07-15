@@ -378,7 +378,7 @@ actions:
         params:
           nodeGroup: cp
           sourceNodeId: ${nodes.storage.master.id}
-          sourcePath: /data
+          sourcePath: /data/ROOT
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
           protocol: NFS4
