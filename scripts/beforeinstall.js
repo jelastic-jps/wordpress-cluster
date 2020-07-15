@@ -59,7 +59,6 @@ resp.nodes.push({
   },
   cluster: {
     scheme: db_cluster,
-    jps: "https://raw.githubusercontent.com/sych74/mysql-cluster/v2.1.0/addons/auto-clustering/auto-cluster.jps",
     db_user: "${globals.DB_USER}",
     db_pass: "${globals.DB_PASS}",
     is_proxysql: false,
