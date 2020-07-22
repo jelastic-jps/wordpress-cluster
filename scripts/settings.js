@@ -109,11 +109,14 @@ for (var i = 0; i < quotas.length; i++){
       fields["cdn-addon"].value = false;
     }
     
-    var resp = jelastic.billing.account.GetQuotas('environment.externalip.enabled');
-    if (resp.result == 0 && resp.array[0].value) {
+    var extIP = jelastic.billing.account.GetQuotas('environment.externalip.enabled');
+    var extIPperEnv = jelastic.billing.account.GetQuotas('environment.externalip.maxcount');
+    var extIPperNode = jelastic.billing.account.GetQuotas('environment.externalip.maxcount.per.node');
+
+    if ((extIP.result == 0 && extIP.array[0].value) && (extIPperEnv.result == 0 && extIPperEnv.array[0].value >= 2) && (extIPperNode.result == 0 && extIPperNode.array[0].value >= 1)) {
       fields["le-addon"].disabled = false;
       fields["le-addon"].value = true;
-    }    
+    }
 }
 
 if (!prod || group.groupType == 'trial') {
