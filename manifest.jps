@@ -143,6 +143,8 @@ onAfterScaleOut[nodeGroup:cp]:
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
+    - addHSTS:  
+        nodeId: ${@i.id}
  
 onBeforeAddNode[sqldb]:
   stopEvent:
@@ -168,6 +170,7 @@ onAfterRedeployContainer[cp]:
   - setupCP:
       nodeId: cp
 
+      
 onAfterRedeployContainer[bl]:
  - setupBL:
       nodeId: bl
@@ -175,7 +178,10 @@ onAfterRedeployContainer[bl]:
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${globals.PATH}/scripts/setupCDN.jps
  
-onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setup-LE-domain
+onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: 
+  - setup-LE-domain
+  - addHSTS:  
+      nodeId: cp
 
 onAfterClone: 
   - script: |
@@ -239,7 +245,11 @@ onInstall:
   - setNodeDisplayName [storage]: Storage  
 
   - mountStorage
-      
+
+  - if (${settings.le-addon:false}):
+      - setGlobals:
+          PROTOCOL: https
+  
   - setupBL:
       nodeId: bl
   
@@ -248,21 +258,20 @@ onInstall:
         jem balancer clear;
         jem balancer rebuildCommon;
       user: root
-      
+
   - setupCP:
       nodeId: cp
 
-  - if (${settings.le-addon:false}):
-      - setGlobals:
-          PROTOCOL: https
-
   - install-wordpress
-  
+    
   - if (${settings.mu-addon:false}): configure-MU
     
   - if (${settings.le-addon:false}): 
       - install-LE-addon
       - setup-LE-domain
+      
+  - addHSTS:  
+      nodeId: cp
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
@@ -357,6 +366,16 @@ actions:
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
+        
+  addHSTS:
+    - if ('${globals.PROTOCOL}' == 'https'):
+      - if (nginxphp/.test("${nodes.cp.nodeType}")):
+          cmd[${this.nodeId}]: |-
+            sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
+            sudo jem service restart;
+      - if (litespeed/.test("${nodes.cp.nodeType}")):
+          cmd[${nodes.cp.master.id}]:
+            [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]] && sed -i '1s/^/Header always set Strict-Transport-Security "max-age=31536000"\n/' /var/www/webroot/ROOT/.htaccess
 
   setupBL:
     - log: LB OPTIMIZATION
@@ -378,7 +397,7 @@ actions:
         params:
           nodeGroup: cp
           sourceNodeId: ${nodes.storage.master.id}
-          sourcePath: /data/ROOT
+          sourcePath: /data
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
           protocol: NFS4
