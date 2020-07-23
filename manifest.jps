@@ -143,8 +143,6 @@ onAfterScaleOut[nodeGroup:cp]:
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
-    - addHSTS:  
-        nodeId: ${@i.id}
  
 onBeforeAddNode[sqldb]:
   stopEvent:
@@ -269,9 +267,8 @@ onInstall:
   - if (${settings.le-addon:false}): 
       - install-LE-addon
       - setup-LE-domain
-      
-  - addHSTS:  
-      nodeId: cp
+      - addHSTS:  
+          nodeId: cp
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
@@ -368,14 +365,14 @@ actions:
         user: root
         
   addHSTS:
-    - if ('${globals.PROTOCOL}' == 'https'):
-      - if (/nginxphp/.test("${nodes.cp.nodeType}")):
+       - if (/nginxphp/.test("${nodes.cp.nodeType}")):
           cmd[${this.nodeId}]: |-
             sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
             sudo jem service restart;
       - if (/litespeed/.test("${nodes.cp.nodeType}")):
           cmd[${nodes.cp.master.id}]:
             if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then sed -i '1s/^/Header always set Strict-Transport-Security "max-age=31536000"\n/' /var/www/webroot/ROOT/.htaccess; fi
+  
   setupBL:
     - log: LB OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
