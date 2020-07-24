@@ -371,7 +371,7 @@ actions:
           sudo jem service restart;
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
         cmd[${nodes.cp.master.id}]:
-          if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then sed -i '1s/^/Header always set Strict-Transport-Security "max-age=31536000"\n/' /var/www/webroot/ROOT/.htaccess; fi
+          if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
   
   setupBL:
     - log: LB OPTIMIZATION
