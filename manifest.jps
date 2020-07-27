@@ -104,6 +104,8 @@ onInstall:
   - if (${settings.le-addon:false}): 
       - install-LE-addon
       - setupDomain
+      - addHSTS:  
+          nodeId: cp
 
   - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
@@ -182,6 +184,15 @@ actions:
         targetNodes: ${this.nodeId}
         optimization: wordpress
         
+  addHSTS:
+    - if (/nginxphp/.test("${nodes.cp.nodeType}")):
+        cmd[${this.nodeId}]: |-
+          sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
+          sudo jem service restart;
+    - if (/litespeed/.test("${nodes.cp.nodeType}")):
+        cmd[${nodes.cp.master.id}]:
+          if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
+
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
