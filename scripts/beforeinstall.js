@@ -12,7 +12,7 @@ if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
-    cluster: true,
+    cluster: '${settings.is_storage_cluster:true}',
     tag: '${settings.storage_tag:2.0-7.6}',
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
@@ -29,7 +29,8 @@ if ('${settings.glusterfs:false}' == 'true') {
 } else {
   resp.nodes.push({
     nodeType: "storage",
-    count: 1,
+    count: '${settings.storage_nodes_count:1}',
+    cluster: '${settings.is_storage_cluster:false}',
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
@@ -37,8 +38,8 @@ if ('${settings.glusterfs:false}' == 'true') {
     isRedeploySupport: false,
     displayName: "Storage",
     validation: {
-      minCount: 1,
-      maxCount: 1
+      minCount: '${settings.storage_nodes_count:1}',
+      maxCount: '${settings.storage_nodes_count:1}'
     }
   })
 }
@@ -63,14 +64,7 @@ resp.nodes.push({
     db_pass: "${globals.DB_PASS}",
     is_proxysql: false,
     custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-  },
-  env: {
-    ON_ENV_INSTALL: "https://raw.githubusercontent.com/sych74/mysql-cluster/v2.1.0/addons/auto-clustering/auto-cluster.jps",
-    SCHEME: db_cluster,
-    DB_USER: "${globals.DB_USER}",
-    DB_PASS: "${globals.DB_PASS}",
-    IS_PROXYSQL: false
-  }  
+  }
 });
 
 if ('${settings.ls-addon:false}'== 'true') {
@@ -85,7 +79,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10,
     scalingMode: "STATEFUL",
     displayName: "Load balancer",
-    addons: ["setup-site-url"],
     env: {
       WP_PROTECT: wpbfp,
       WP_PROTECT_LIMIT: 100
@@ -101,7 +94,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10,
     scalingMode: "STATELESS",
     displayName: "AppServer",
-    addons: ["setup-site-url"],
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true",
@@ -122,7 +114,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
     restartDelay: 10,
-    addons: ["setup-site-url"],
     scalingMode: "STATEFUL",
     displayName: "Load balancer"
   }, {
@@ -136,14 +127,12 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10,
     scalingMode: "STATELESS",
     displayName: "AppServer",
-    addons: ["setup-site-url"],
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true"
     },
     volumes: [
-      "/var/www/webroot/ROOT",
-      "/var/www/webroot/.cache"
+      "/var/www/webroot/ROOT"
     ]
   })
 }
