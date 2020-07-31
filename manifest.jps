@@ -216,7 +216,7 @@ onAfterMigrate:
       
 onInstall:
 
-  - if ('${globals.is_install_wp}'):
+  - if ('${globals.is_install_wp}' == 'true'):
     - script: |
         return {
           result:0,
@@ -261,7 +261,7 @@ onInstall:
   - setupCP:
       nodeId: cp
 
-  - if ('${globals.is_install_wp}'):
+  - if ('${globals.is_install_wp}' == 'true'):
     - install-wordpress
     - if (${settings.mu-addon:false}): configure-MU
     - if (${settings.le-addon:false}): 
