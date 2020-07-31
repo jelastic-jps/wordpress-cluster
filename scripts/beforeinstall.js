@@ -60,8 +60,8 @@ resp.nodes.push({
   },
   cluster: ${settings.is_db_cluster:{
       scheme: db_cluster,
-      db_user: "${globals.DB_USER}",
-      db_pass: "${globals.DB_PASS}",
+      db_user: "${globals.db_user}",
+      db_pass: "${globals.db_pass}",
       is_proxysql: false,
       custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
     }
