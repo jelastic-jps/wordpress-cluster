@@ -20,7 +20,7 @@ if ('${settings.glusterfs:false}' == 'true') {
     nodeGroup: "storage",
     restartDelay: 10,
     isRedeploySupport: false,
-    displayName: "GlusterFS",
+    displayName: "Storage",
     validation: {
       minCount: 3,
       maxCount: 3
