@@ -330,7 +330,7 @@ actions:
         note: ${settings.noteCDN:}
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
     - setGlobals:
-        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
+        CDN_URL: ${globals.protocol}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
         CDN: ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
         SUCCESS: success-cdn
         EMAIL: cdn
@@ -344,12 +344,12 @@ actions:
   install-wordpress:
     - install: ${baseUrl}/scripts/installWP.jps
       settings:
-        db_host: ${globals.DB_HOST}
-        db_user: ${globals.DB_USER}
-        db_pass: ${globals.DB_PASS}
-        wp_admin_pass: ${globals.WP_ADMIN_PASS}
+        db_host: ${globals.db_host}
+        db_user: ${globals.db_user}
+        db_pass: ${globals.db_pass}
+        wp_admin_pass: ${globals.wp_admin_pass}
         wp_title: "Hello World"
-        wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
+        wp_url: ${globals.protocol}://${globals.domain}/
 
   setupCP:
     - log: CP OPTIMIZATION
@@ -360,7 +360,7 @@ actions:
         optimization: wordpress
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
-      - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
+      - cmd[${this.nodeId}]: jem passwd set -p ${globals.ls_admin_pass}
         user: root
         
   addHSTS:
@@ -382,7 +382,7 @@ actions:
     - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
     - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
-      - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
+      - cmd[${this.nodeId}]: jem passwd set -p ${globals.ls_admin_pass}
         user: root
 
   mountStorage:
