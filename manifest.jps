@@ -120,15 +120,16 @@ settings:
       markup:
       
 globals:
-  PATH: ${baseUrl}
-  DB_USER: jelastic-${fn.random}
-  DB_PASS: ${fn.password(10)}
-  DB_HOST: sqldb
-  PROTOCOL: http
-  WP_ADMIN_PASS: ${fn.password(10)}
-  LS_ADMIN_PASS: ${fn.password(10)}
-  SUCCESS: success
-  EMAIL: default
+  path: ${baseUrl}
+  db_user: jelastic-${fn.random}
+  db_pass: ${fn.password(10)}
+  db_host: sqldb
+  protocol: http
+  wp_admin_pass: ${fn.password(10)}
+  ls_admin_pass: ${fn.password(10)}
+  success: success
+  email: default
+  is_install_wp: ${settings.is_install_wp:true}
 
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
@@ -215,18 +216,20 @@ onAfterMigrate:
       
 onInstall:
 
-  - script: |
+  - if ('${globals.is_install_wp}'):
+    - script: |
         return {
           result:0,
           ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
         }
-  - if (${response.ssl}):
-      setGlobals:
-        PROTOCOL: https
+    - if (${response.ssl}):
+        setGlobals:
+          protocol: https
 
-  - script: /scripts/idna.js
-  - setGlobals:
-      DOMAIN: ${response.domain}         
+    - script: /scripts/idna.js
+    - setGlobals:
+        domain: ${response.domain}
+    - mountStorage
 
   - if (${settings.is_trigger:true}):
     - log: Auto Scaling Triggers
@@ -242,11 +245,9 @@ onInstall:
   - setNodeDisplayName [cp]: AppServer
   - setNodeDisplayName [storage]: Storage  
 
-  - mountStorage
-
   - if (${settings.le-addon:false}):
       - setGlobals:
-          PROTOCOL: https
+          protocol: https
   
   - setupBL:
       nodeId: bl
@@ -260,17 +261,15 @@ onInstall:
   - setupCP:
       nodeId: cp
 
-  - install-wordpress
-    
-  - if (${settings.mu-addon:false}): configure-MU
-    
-  - if (${settings.le-addon:false}): 
+  - if ('${globals.is_install_wp}'):
+    - install-wordpress
+    - if (${settings.mu-addon:false}): configure-MU
+    - if (${settings.le-addon:false}): 
       - install-LE-addon
       - setup-LE-domain
       - addHSTS:  
           nodeId: cp
-
-  - if (${settings.cdn-addon:false}): install-edgeport-CDN
+    - if (${settings.cdn-addon:false}): install-edgeport-CDN
   
 addons:
   - id: setup-site-url
