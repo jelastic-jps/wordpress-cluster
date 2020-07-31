@@ -167,12 +167,14 @@ onBeforeRemoveNode[storage]:
 onAfterRedeployContainer[cp]:
   - setupCP:
       nodeId: cp
-
-      
+   
 onAfterRedeployContainer[bl]:
  - setupBL:
       nodeId: bl
-
+      
+onAfterStart: 
+  cmd[cp]: sudo jem service restart
+  
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${globals.PATH}/scripts/setupCDN.jps
  
@@ -212,6 +214,8 @@ onAfterMigrate:
       
   - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+      
+  - cmd[cp]: sudo jem service restart
       
 onInstall:
 
