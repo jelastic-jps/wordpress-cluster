@@ -243,6 +243,7 @@ onInstall:
   - log: Set Node Display Name
   - setNodeDisplayName [bl]: Load balancer
   - setNodeDisplayName [cp]: AppServer
+  - setNodeDisplayName [sqldb]: Database
   - setNodeDisplayName [storage]: Storage  
 
   - if (${settings.le-addon:false}):
