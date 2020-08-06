@@ -309,7 +309,7 @@ actions:
       nodeGroup: bl
       skipEmail: true
       settings:
-        customDomains: ${globals.DOMAIN}
+        customDomains: ${globals.domain}
         fallbackToX1: true
 
   setup-LE-domain:
@@ -399,7 +399,7 @@ actions:
           protocol: NFS4
     
 success:
-  email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
-  text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
+  email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.email}.md?_r=${fn.random}
+  text: success/text/oneregion/${globals.success}.md?_r=${fn.random}
 
-startPage: ${globals.PROTOCOL}://${env.domain}/
+startPage: ${globals.protocol}://${env.domain}/
