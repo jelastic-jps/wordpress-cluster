@@ -8,7 +8,7 @@ description:
   text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster-kit.png
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+baseUrl: https://raw.githubusercontent.com/lazarenkoalexey/wordpress-cluster/master
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
@@ -24,9 +24,13 @@ globals:
   WP_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
+  
+onAfterScaleIn[nodeGroup:cp]:
+  - adjustTrigger
 
 onAfterScaleOut[nodeGroup:cp]:
-  forEach(event.response.nodes):
+  - adjustTrigger
+  - forEach(event.response.nodes):
     - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupNode:
@@ -193,6 +197,12 @@ actions:
         - cmd[${nodes.cp.master.id}]:
             if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
         - cmd[cp]: wp litespeed-purge all --path=/var/www/webroot/ROOT;
+   
+  adjustTrigger:
+    if (!${event.params.auto:false} && ${fn.compareEngine(1.9.2):} != -1):
+      - log: adjusting scaling trigger
+      - cpCount: ${nodes.cp.length}
+        script: /scripts/adjustScalingTrigger.js
 
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
