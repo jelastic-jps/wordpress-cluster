@@ -130,10 +130,10 @@ globals:
   SUCCESS: success
   EMAIL: default
   
-onAfterScaleIn[nodeGroup:cp]:
-  - adjustTrigger
+onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:bl]:
+  - updateTriggers
   - forEach(event.response.nodes):
       - setNodeDisplayName [${@i.id}]: Load balancer
       - setupBL:
@@ -395,11 +395,11 @@ actions:
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
         
-  adjustTrigger:
+  updateTriggers:
     if (!${event.params.auto:false} && ${fn.compareEngine(1.9.2):} != -1):
-      - log: adjusting scaling trigger
-      - cpCount: ${nodes.cp.length}
-        script: /scripts/adjustScalingTrigger.js
+      - log: update scaling trigger
+      - script: /scripts/updateTriggers.js
+        count: ${nodes.cp.length}
 
   mountStorage:
     - log: Mount Storage
