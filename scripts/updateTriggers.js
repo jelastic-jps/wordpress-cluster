@@ -26,17 +26,15 @@ for (var i = 0, n = triggers.length; i < n; i++) {
         for (var l = 0, m = triggerActions.length; l < m; l++) {
             customData = triggerActions[l].customData;
             
-            if (customData && customData.limit) {
-                if (triggers[i].name == scaleUp) upLimit = customData.limit;
+            if (triggers[i].name == scaleUp) upLimit = customData.limit;
 
-                if ((triggerActions[l].type == addNode && customData.limit < count) || triggerActions[l].type == removeNode) {
-                    triggers[i].actions[l].customData.limit = count;
+            if ((triggerActions[l].type == addNode && customData.limit < count) || triggerActions[l].type == removeNode) {
+                triggers[i].actions[l].customData.limit = count;
 
-                    triggersToEdit.push({
-                        scale: triggers[i].name.indexOf(UP) != -1 ? UP : DOWN,
-                        trigger: triggers[i]
-                    });
-                }
+                triggersToEdit.push({
+                    scale: triggers[i].name.indexOf(UP) != -1 ? UP : DOWN,
+                    trigger: triggers[i]
+                });
             }
         }
     }
