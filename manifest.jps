@@ -396,7 +396,7 @@ actions:
         user: root
         
   updateTriggers:
-    if (!${event.params.auto:false} && ${fn.compareEngine(1.9.2):} != -1):
+    if (!${event.params.auto:true}):
       - log: update scaling trigger
       - script: /scripts/updateTriggers.js
         count: ${nodes.cp.length}
