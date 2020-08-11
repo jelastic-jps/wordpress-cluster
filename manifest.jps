@@ -25,11 +25,10 @@ globals:
   SUCCESS: success
   EMAIL: default
   
-onAfterScaleIn[nodeGroup:cp]:
-  - adjustTrigger
+onAfterScaleIn[cp]: updateTriggers
 
-onAfterScaleOut[nodeGroup:cp]:
-  - adjustTrigger
+onAfterScaleOut[cp]:
+  - updateTriggers
   - forEach(event.response.nodes):
     - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
@@ -198,11 +197,11 @@ actions:
             if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
         - cmd[cp]: wp litespeed-purge all --path=/var/www/webroot/ROOT;
    
-  adjustTrigger:
+  updateTriggers:
     if (!${event.params.auto:false} && ${fn.compareEngine(1.9.2):} != -1):
-      - log: adjusting scaling trigger
-      - cpCount: ${nodes.cp.length}
-        script: /scripts/adjustScalingTrigger.js
+      - log: update scaling trigger
+      - script: /scripts/updateTriggers.js
+        count: ${nodes.cp.length}
 
 success:
   email: success/email/cluster/oneregion-${globals.EMAIL}.md?_r=${fn.random}
