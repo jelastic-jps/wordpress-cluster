@@ -1,6 +1,6 @@
-# Highly Available and Auto-Scalable WordPress Cluster
+# Highly Available and Auto-Scalable WordPress Cluster v2
 
-Out-of-the-box automated Enterprise WordPress Cluster solution for large businesses and mission-critical sites
+Out-of-the-box automated Enterprise WordPress Cluster solution v2 for large businesses and mission-critical sites
 
 
 ## WordPress Cluster Topology
