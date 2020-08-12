@@ -129,6 +129,8 @@ globals:
   LS_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
+  
+onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
@@ -139,7 +141,9 @@ onAfterScaleOut[nodeGroup:bl]:
       sudo jem service restart
   
 onAfterScaleOut[nodeGroup:cp]:
-  forEach(event.response.nodes):
+  - updateTriggers
+  - forEach(event.response.nodes):
+    - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
@@ -389,6 +393,12 @@ actions:
       - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
+        
+  updateTriggers:
+    if (!${event.params.auto:true}):
+      - log: update scaling trigger
+      - script: /scripts/updateTriggers.js
+        count: ${nodes.cp.length}
 
   mountStorage:
     - log: Mount Storage
