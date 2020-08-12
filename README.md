@@ -21,7 +21,7 @@ Upon the package installation, a new environment with the following topology wil
 
 
 <p align="left"> 
-<img src="images/single-cluster-topology-storage-scaling-v2.png" width="300">
+<img src="images/single-cluster-topology-storage-scaling-v2.png" width="500">
 </p>
 
 ## Deployment to the Cloud
