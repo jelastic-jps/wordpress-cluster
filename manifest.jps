@@ -133,7 +133,6 @@ globals:
 onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:bl]:
-  - updateTriggers
   - forEach(event.response.nodes):
       - setNodeDisplayName [${@i.id}]: Load balancer
       - setupBL:
