@@ -14,7 +14,7 @@ Upon the package installation, a new environment with the following topology wil
 * **Redis** is high-performance RAM-allocated data structure store used as a highspeed caching solution
 * Highly-available **[MariaDB Galera Cluster](https://github.com/jelastic-jps/mysql-cluster#mariadb-galera-cluster)** is used to store and operate user data   
 * **[Shared Storage](https://docs.jelastic.com/shared-storage-container)** cluster, ensuring high avaiablity with GlusterFS, is mounted to all application server nodes for sharing common data  
-* Traffic encryption is provided by Let's Encrypt Add-On[Let's Encrypt Add-On](https://jelastic.com/blog/free-ssl-certificates-with-lets-encrypt/)  with automatic issuing of trusted SSL certificate and Auto-Renewal.
+* Traffic encryption is provided by [Let's Encrypt Add-On](https://jelastic.com/blog/free-ssl-certificates-with-lets-encrypt/)  with automatic issuing of trusted SSL certificate and Auto-Renewal.
 * **[Premium CDN](https://jelastic.com/blog/enterprise-cdn-verizon-integration/)** integration in order to provide Lightning-fast static assets loading  
 
 
@@ -59,7 +59,7 @@ Once the deployment is finished, you’ll see an appropriate success pop-up with
 
 So now you can just click on the **Open in browser** button within the shown frame and start filling your highly available and reliable WP installation with the required content, being ready to handle as much users as your service requires.
 
-> **Note:** Keep in mind that you can't do redeploy from previous WordPress Cluster edition to the new version. So in case you have decided to move your site to the WordPress Cluster v2 you should migrate it  following the Tutorial ["How to Migrate a WordPress Site to Jelastic PaaS](https://jelastic.com/blog/migrate-wordpress-site/).
+> **Note:** Keep in mind that you can't do redeploy from previous WordPress Cluster edition to the new version. So in case you have decided to move your site to the WordPress Cluster v2 you should migrate it  following the Tutorial ["How to Migrate a WordPress Site to Jelastic PaaS](https://jelastic.com/blog/migrate-wordpress-site/) or any other one you prefer.
 
 ## WordPress Managed Hosting Business
 
