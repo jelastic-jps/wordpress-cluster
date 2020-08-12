@@ -141,7 +141,7 @@ onAfterScaleOut[nodeGroup:bl]:
       sudo jem service restart
   
 onAfterScaleOut[nodeGroup:cp]:
-  - adjustTrigger
+  - updateTriggers
   - forEach(event.response.nodes):
     - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
