@@ -229,7 +229,7 @@ onInstall:
     - script: /scripts/idna.js
     - setGlobals:
         domain: ${response.domain}
-    - mountStorage
+  - mountStorage
 
   - if (${settings.is_trigger:true}):
     - log: Auto Scaling Triggers
