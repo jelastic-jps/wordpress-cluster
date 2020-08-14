@@ -12,7 +12,7 @@ if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
-    cluster: '${settings.is_storage_cluster:true}',
+    cluster: true,
     tag: '${settings.storage_tag:2.0-7.6}',
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
