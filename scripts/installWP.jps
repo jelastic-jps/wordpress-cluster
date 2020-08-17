@@ -32,7 +32,7 @@ actions:
 
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
-        wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
+        wget https://raw.githubusercontent.com/sych74/wordpress-cluster/v3.0.0/scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
         bash ~/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1
 
   nginxPurgeCache:
