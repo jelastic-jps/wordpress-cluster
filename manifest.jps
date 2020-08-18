@@ -1,15 +1,15 @@
 type: install
 jpsVersion: '1.7.2'
-name: WordPress Cluster Kit
+name: WordPress Cluster Kit v2
 id: wordpress-cluster
 categories:
   - apps/clusters
   - apps/content-management
 description: 
-  text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
-  short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
+  text: WordPress Cluster Kit with highly available Load Balancer and Shared Storage with GlusterFS, database clustering, and scaling mode to create an optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
+  short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.png
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
@@ -129,6 +129,8 @@ globals:
   LS_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
+  
+onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
@@ -139,7 +141,9 @@ onAfterScaleOut[nodeGroup:bl]:
       sudo jem service restart
   
 onAfterScaleOut[nodeGroup:cp]:
-  forEach(event.response.nodes):
+  - updateTriggers
+  - forEach(event.response.nodes):
+    - log: App Servers Setup
     - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
@@ -251,21 +255,31 @@ onInstall:
   - if (${settings.le-addon:false}):
       - setGlobals:
           PROTOCOL: https
-  
-  - setupBL:
-      nodeId: bl
-  
+   
+  - log: Load Balancers and App servers optimization
+  - install:
+    - jps: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+      settings:
+        targetGroup: bl
+        targetNodes: bl
+        optimization: wordpress
+    - jps: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+      settings:
+        targetGroup: cp
+        targetNodes: cp
+        optimization: wordpress
+  - cmd[cp, bl]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+
   - if (/litespeed/.test("${nodes.cp.nodeType}")):
     - cmd[bl]: |-
         jem balancer clear;
         jem balancer rebuildCommon;
       user: root
 
-  - setupCP:
-      nodeId: cp
-
   - install-wordpress
-    
+ 
+ 
+ 
   - if (${settings.mu-addon:false}): configure-MU
     
   - if (${settings.le-addon:false}): 
@@ -389,6 +403,12 @@ actions:
       - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
+        
+  updateTriggers:
+    if (!${event.params.auto:true}):
+      - log: update scaling trigger
+      - script: /scripts/updateTriggers.js
+        count: ${nodes.cp.length}
 
   mountStorage:
     - log: Mount Storage
