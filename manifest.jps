@@ -255,30 +255,61 @@ onInstall:
   - if (${settings.le-addon:false}):
       - setGlobals:
           PROTOCOL: https
-  
-  - setupBL:
-      nodeId: bl
-  
+   
+  - log: Load Balancers and App servers optimization
+  - install:
+    - jps: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+      settings:
+        targetGroup: bl
+        targetNodes: bl
+        optimization: wordpress
+    - jps: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+      settings:
+        targetGroup: cp
+        targetNodes: cp
+        optimization: wordpress
+  - cmd[cp, bl]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+
   - if (/litespeed/.test("${nodes.cp.nodeType}")):
     - cmd[bl]: |-
         jem balancer clear;
         jem balancer rebuildCommon;
       user: root
 
-  - setupCP:
-      nodeId: cp
-
   - install-wordpress
-    
+ 
   - if (${settings.mu-addon:false}): configure-MU
-    
+
+  - script: |
+        var actions = [];
+        if (${settings.le-addon:false})
+          actions.push({
+            jps: "https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}?_r=${fn.random}",
+            nodeGroup: "bl",
+            skipEmail: "true",
+            settings: {
+              customDomains: "${globals.DOMAIN}",
+              fallbackToX1: "true"
+            }
+          });
+        if (${settings.cdn-addon:false})
+          actions.push({
+            jps: "https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}",
+            nodeGroup: "bl",
+            skipEmail: "true",
+            settings: {
+              note: "${settings.noteCDN:}"
+            }
+          });
+        return { result: 0, onAfterReturn: { install: actions } };
+ 
+  
   - if (${settings.le-addon:false}): 
-      - install-LE-addon
       - setup-LE-domain
       - addHSTS:  
           nodeId: cp
 
-  - if (${settings.cdn-addon:false}): install-edgeport-CDN
+  - if (${settings.cdn-addon:false}): setup-edgeport-CDN
   
 addons:
   - id: setup-site-url
@@ -312,14 +343,6 @@ addons:
     
 actions:
 
-  install-LE-addon:
-    - install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
-      nodeGroup: bl
-      skipEmail: true
-      settings:
-        customDomains: ${globals.DOMAIN}
-        fallbackToX1: true
-
   setup-LE-domain:
     - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
     - install: ${globals.PATH}/scripts/setupDomain.jps
@@ -331,12 +354,7 @@ actions:
       settings:
         domain: ${settings.siteURL}
 
-  install-edgeport-CDN:
-    - install: https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}
-      nodeGroup: bl
-      skipEmail: true
-      settings:
-        note: ${settings.noteCDN:}
+  setup-edgeport-CDN:
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
     - setGlobals:
         CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
