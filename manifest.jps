@@ -1,4 +1,5 @@
 type: install
+version: 1.7.2
 name: WordPress Cluster Kit
 id: wordpress-cluster
 categories:
