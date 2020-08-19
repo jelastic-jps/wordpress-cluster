@@ -280,7 +280,8 @@ onInstall:
  
   - if (${settings.mu-addon:false}): configure-MU
 
-  - script: |
+  - if (${settings.le-addon:false:false} || ${settings.cdn-addon:false}):
+    - script: |
         var actions = [];
         if (${settings.le-addon:false})
           actions.push({
@@ -302,8 +303,7 @@ onInstall:
             }
           });
         return { result: 0, onAfterReturn: { install: actions } };
- 
-  
+   
   - if (${settings.le-addon:false}): 
       - setup-LE-domain
       - addHSTS:  
