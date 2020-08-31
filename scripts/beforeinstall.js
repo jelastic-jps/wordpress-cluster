@@ -44,7 +44,10 @@ if (!${settings.galera:false}) {
     diskLimit: ${settings.db_diskLimit:10},
     nodeGroup: "sqldb",
     skipNodeEmails: true,
-    displayName: "DB Server"
+    displayName: "DB Server",
+    env: {
+      ON_ENV_INSTALL: ""
+    }
   })
 }
 
