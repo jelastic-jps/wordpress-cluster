@@ -25,6 +25,7 @@ if (${settings.galera:false}) {
     displayName: "Galera cluster",
     restartDelay: 5,
     skipNodeEmails: true,
+    cluster: false,
     env: {
       ON_ENV_INSTALL: "",
       JELASTIC_PORTS: "4567,4568,4444"
@@ -37,12 +38,16 @@ if (!${settings.galera:false}) {
     nodeType: "mariadb-dockerized",
     tag: "10.3.20",
     count: 2,
+    cluster: false,
     flexibleCloudlets: ${settings.db_flexibleCloudlets:8},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
     diskLimit: ${settings.db_diskLimit:10},
     nodeGroup: "sqldb",
     skipNodeEmails: true,
-    displayName: "DB Server"
+    displayName: "DB Server",
+    env: {
+      ON_ENV_INSTALL: ""
+    }
   })
 }
 
