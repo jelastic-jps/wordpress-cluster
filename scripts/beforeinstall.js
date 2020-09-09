@@ -91,7 +91,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeType: "litespeedadc",
     extip: true,
     tag: '${settings.bl_tag:2.7}',
-    count: ${settings.bl_count:2},
+    count: ${settings.bl_count:1},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     diskLimit: ${settings.bl_diskLimit:10},
@@ -128,7 +128,7 @@ if ('${settings.ls-addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "nginx",
     tag: '${settings.bl_tag:1.16.1}',
-    count: ${settings.bl_count:2},
+    count: ${settings.bl_count:1},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     diskLimit: ${settings.bl_diskLimit:10},
