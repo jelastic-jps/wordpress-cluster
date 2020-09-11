@@ -269,12 +269,13 @@ onInstall:
         targetNodes: cp
         optimization: wordpress
   - cmd[cp, bl]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-
   - if (/litespeed/.test("${nodes.cp.nodeType}")):
+    - cmd[cp, bl]: jem passwd set -p ${globals.LS_ADMIN_PASS}
+      user: root
+    - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
     - cmd[bl]: |-
         jem balancer clear;
         jem balancer rebuildCommon;
-      user: root
 
   - install-wordpress
  
