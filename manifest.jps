@@ -276,6 +276,7 @@ onInstall:
     - cmd[bl]: |-
         jem balancer clear;
         jem balancer rebuildCommon;
+      user: root
 
   - install-wordpress
  
