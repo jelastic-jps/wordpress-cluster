@@ -1,7 +1,7 @@
 type: install
 jpsVersion: '1.7.2'
-name: WordPress Cluster Kit
-id: wordpress-cluster
+name: WordPress Cluster Multiregion
+id: wordpress-cluster-multiregion
 categories:
   - apps/clusters
   - apps/content-management
@@ -398,8 +398,4 @@ actions:
           sourceAddressType: NODE_GROUP
           protocol: NFS4
     
-success:
-  email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.email}.md?_r=${fn.random}
-  text: success/text/oneregion/${globals.success}.md?_r=${fn.random}
 
-startPage: ${globals.protocol}://${env.domain}/
