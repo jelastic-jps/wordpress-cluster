@@ -1,7 +1,31 @@
 tags:
   litespeed:
+    litespeed:
+      digest: sha256:9b3f6d089b0fe0dd606715c6b5de66d1d3ad9a33502a3f428b68424d11a4c020
+      version: 5.4.9-php-7.4.9
   litespeedadc:
+    litespeedadc:
+      digest: sha256:b5835a1867731e1963a23d833bebd6f708dd9d6e280745294ec6c06199d368f2
+      version: "3.0"
   mariadb:
+    mariadb5:
+      digest: sha256:756014f61e0226fdfa32459c93c2aefabfae0dd47d4641cb82849cbc032cfa0f
+      version: 5.5.68
+    mariadb10:
+      digest: sha256:78227ca638d2341dd678f959edc660622bfb40cd174a7b7be08fe988c554193a
+      version: 10.3.24
+    mariadb104:
+      digest: sha256:ea2063b7a181d797143c974ad435e1f6d85a1844429bd9e4a4e1705c4d313175
+      version: 10.4.14
   nginxbalancer:
+    nginxbalancer:
+      digest: sha256:96fdbf83753ff881c54256f0d1fe19586c9c3e10588de5324da91f3eb1adfc84
+      version: 1.18.0
   nginxphp:
+    nginxphp:
+      digest: sha256:fe0cfae6ccdb9fa7f914a8f118e285d5eb89bf5a0b3f73367433dfe6de391d27
+      version: 1.18.0-php-7.4.9
   storage:
+    storage:
+      digest: sha256:d5e483bb656fa2abe006391852ce472e8bf94b000dad3afd54bfc28e662526f6
+      version: 2.0-7.7
