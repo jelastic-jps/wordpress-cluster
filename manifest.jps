@@ -168,19 +168,10 @@ onBeforeRemoveNode[storage]:
 onAfterRedeployContainer[cp]:
   - setupCP:
       nodeId: cp
-
-      
+    
 onAfterRedeployContainer[bl]:
  - setupBL:
       nodeId: bl
-
-onAfterInstallAddon [nodeGroup:bl, id:cdn]:
-  - install: ${globals.PATH}/scripts/setupCDN.jps
- 
-onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: 
-  - setup-LE-domain
-  - addHSTS:  
-      nodeId: cp
 
 onAfterClone: 
   - script: |
