@@ -46,7 +46,7 @@ settings:
  
     - caption: Install LiteSpeed High-Performance Web Server
       type: checkbox
-      name: ls-addon
+      name: ls_addon
       value: true
       disabled: false
       tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers"
