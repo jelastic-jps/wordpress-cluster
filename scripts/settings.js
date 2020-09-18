@@ -93,20 +93,20 @@ for (var i = 0; i < quotas.length; i++){
     }
 
     if (isLS.result == 0 || isLS.result == Response.PERMISSION_DENIED) {  
-      fields["ls-addon"].hidden = false;
-      fields["ls-addon"].value = true;
+      fields["ls_addon"].hidden = false;
+      fields["ls_addon"].value = true;
     } else {
-      fields["ls-addon"].hidden = true;
-      fields["ls-addon"].value = false;
-      fields["ls-addon"].showIf = null;
+      fields["ls_addon"].hidden = true;
+      fields["ls_addon"].value = false;
+      fields["ls_addon"].showIf = null;
     }
   
     if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
-      fields["cdn-addon"].hidden = false;
-      fields["cdn-addon"].value = true;
+      fields["cdn_addon"].hidden = false;
+      fields["cdn_addon"].value = true;
     } else {
-      fields["cdn-addon"].hidden = true;
-      fields["cdn-addon"].value = false;
+      fields["cdn_addon"].hidden = true;
+      fields["cdn_addon"].value = false;
     }
     
     var extIP = jelastic.billing.account.GetQuotas('environment.externalip.enabled');
@@ -114,24 +114,24 @@ for (var i = 0; i < quotas.length; i++){
     var extIPperNode = jelastic.billing.account.GetQuotas('environment.externalip.maxcount.per.node');
 
     if ((extIP.result == 0 && extIP.array[0].value) && (extIPperEnv.result == 0 && extIPperEnv.array[0].value >= 2) && (extIPperNode.result == 0 && extIPperNode.array[0].value >= 1)) {
-      fields["le-addon"].disabled = false;
-      fields["le-addon"].value = true;
+      fields["le_addon"].disabled = false;
+      fields["le_addon"].value = true;
     }
 }
 
 if (!prod || group.groupType == 'trial') {
-  fields["ls-addon"].disabled = true;
-  fields["ls-addon"].value = false;
+  fields["ls_addon"].disabled = true;
+  fields["ls_addon"].value = false;
   fields["loadGrowth"].disabled = true;
   fields["galera"].disabled = true;
   fields["galera"].value = false;
   fields["glusterfs"].disabled = true;
   fields["glusterfs"].value = false;
-  fields["le-addon"].disabled = true;
-  fields["le-addon"].value = false;
-  fields["cdn-addon"].disabled = true;
-  fields["cdn-addon"].value = false;
-  fields["mu-addon"].disabled = true;
+  fields["le_addon"].disabled = true;
+  fields["le_addon"].value = false;
+  fields["cdn_addon"].disabled = true;
+  fields["cdn_addon"].value = false;
+  fields["mu_addon"].disabled = true;
   fields["displayfield"].markup = "Advanced features are not available.";
   fields["displayfield"].cls = "warning";
   fields["displayfield"].hideLabel = true;
