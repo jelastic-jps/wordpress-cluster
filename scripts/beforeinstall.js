@@ -86,7 +86,7 @@ if ('${settings.is_db_cluster:true}' == 'true') {
   }) 
 }  
 
-if ('${settings.ls-addon:false}'== 'true') {
+if ('${settings.ls_addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
     extip: true,
