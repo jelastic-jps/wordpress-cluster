@@ -96,19 +96,19 @@ settings:
        
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
-      name: le-addon
+      name: le_addon
       value: false
       disabled: true
 
     - caption: Install Lightning-Fast Premium CDN with 130+ PoPs
       type: checkbox
-      name: cdn-addon
+      name: cdn_addon
       value: true
       disabled: false
 
     - caption: Install WordPress Multisite Network
       type: checkbox
-      name: mu-addon
+      name: mu_addon
       value: false
       disabled: false
 
@@ -237,7 +237,7 @@ onInstall:
   - setNodeDisplayName [sqldb]: Database
   - setNodeDisplayName [storage]: Storage  
 
-  - if (${settings.le-addon:false}):
+  - if (${settings.le_addon:false}):
       - setGlobals:
           protocol: https
   
@@ -255,13 +255,13 @@ onInstall:
 
   - if ('${globals.is_install_wp}' == 'true'):
     - install-wordpress
-    - if (${settings.mu-addon:false}): configure-MU
-    - if (${settings.le-addon:false}): 
+    - if (${settings.mu_addon:false}): configure-MU
+    - if (${settings.le_addon:false}): 
       - install-LE-addon
       - setup-LE-domain
       - addHSTS:  
           nodeId: cp
-    - if (${settings.cdn-addon:false}): install-edgeport-CDN
+    - if (${settings.cdn_addon:false}): install-edgeport-CDN
   
 addons:
   - id: setup-site-url
