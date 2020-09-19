@@ -23,7 +23,7 @@ tags:
       version: 1.18.0
   nginxphp:
     nginxphp:
-      digest: sha256:980da3532bbc69803226c9a4f8a4fe44741df4f2ff943915e6c457fb2728b9c7
+      digest: sha256:4ca99adac50551a5ac553061eed4a6e4ffac351eb81c77f309a88df0b0e50808
       version: 1.18.0-php-7.4.10
   storage:
     storage:
