@@ -1,7 +1,7 @@
 tags:
   litespeed:
     litespeed:
-      digest: sha256:56289df8b38a671cbba6f9db95e0813de910c32fa67a8e577d5a3bc29e209f1b
+      digest: sha256:5b3f3ef854cd0442f2810d20d86d7156d47bf5b83cad8181e979176507d23a15
       version: 5.4.9-php-7.4.9
   litespeedadc:
     litespeedadc:
