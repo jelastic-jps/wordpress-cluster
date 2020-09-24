@@ -8,7 +8,7 @@ categories:
 description: 
   text: WordPress Cluster Kit with highly available Load Balancer and Shared Storage with GlusterFS, database clustering, and scaling mode to create an optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
-logo: /images/wp-cluster-kit.png
+logo: /images/wp-cluster-kit.svg
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
@@ -93,24 +93,28 @@ settings:
       name: glusterfs
       value: true
       disabled: false
+      tooltip: "Shared Storage auto-clustering is based on GlusterFS software that provides a fault-tolerant distributed file system with automatic data synchronization across the cluster nodes."
        
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
       value: false
       disabled: true
+      tooltip: "Advanced integration with Let's Encrypt certificate authority that simplifies and automates the process of issuing, configuring and updating trusted custom SSL certificates."
 
     - caption: Install Lightning-Fast Premium CDN with 130+ PoPs
       type: checkbox
       name: cdn-addon
       value: true
       disabled: false
+      tooltip: "Jelastic CDN is an HTTP/3 premium content delivery network of 160+ Super PoPs (points of presence) with bandwidth capacity up to 115 Tbps, advanced caching and acceleration strategies based on best-in-class IP Anycast technology."
 
     - caption: Install WordPress Multisite Network
       type: checkbox
       name: mu-addon
       value: false
       disabled: false
+      tooltip: "Multisite is a type of WordPress installation that allows you to create and manage a network of multiple websites from a single WordPress dashboard. This lets you easily make changes and keep all of your websites updated from one place."
 
     - type: displayfield
       hideLabel: true
