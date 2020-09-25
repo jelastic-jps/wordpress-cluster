@@ -1,8 +1,8 @@
 tags:
   litespeed:
     litespeed:
-      digest: sha256:347b77ce8a59e755a08ac3e6d35b4429562e4908c3f15aa03cb919240adc1194
-      version: 5.4.9-php-7.4.9
+      digest: sha256:c14b43b8153eca4e43cba9121f1cd8dbe95b160a83e8e6c8d8900531930d502f
+      version: 5.4.9-php-7.4.10
   litespeedadc:
     litespeedadc:
       digest: sha256:6ce1605eb165cb6535cd7ade123ce50222edb5edde84700b8302a84381c3eddf
@@ -23,9 +23,9 @@ tags:
       version: 1.18.0
   nginxphp:
     nginxphp:
-      digest: sha256:18c1e317f2d94270adfc8e9c755069ddbb21967f22116b8b35991f6894647a41
+      digest: sha256:e369727a05bf67b5c93e19747b8c97b909113c074944db1197ff337ddb595bec
       version: 1.18.0-php-7.4.10
   storage:
     storage:
-      digest: sha256:d5e483bb656fa2abe006391852ce472e8bf94b000dad3afd54bfc28e662526f6
+      digest: sha256:42f0bc8e4e57dd61ee6d83d85d0670e811d551bbe36b8dc5df1090c51ea2c15d
       version: 2.0-7.7
