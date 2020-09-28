@@ -5,7 +5,7 @@ tags:
       version: 5.4.9-php-7.4.10
   litespeedadc:
     litespeedadc:
-      digest: sha256:f7f6c9de102f0a3128aecd38ec4fe01893cd6f21c3d4a141a97618454980650a
+      digest: sha256:36428fe1405ffcb728e026f4ef355819c7db08c73ecc9057682980c12158cb10
       version: "3.0"
   mariadb:
     mariadb5:
@@ -27,5 +27,5 @@ tags:
       version: 1.18.0-php-7.4.10
   storage:
     storage:
-      digest: sha256:42f0bc8e4e57dd61ee6d83d85d0670e811d551bbe36b8dc5df1090c51ea2c15d
-      version: 2.0-7.7
+      digest: sha256:843b00bca62bafc95c512977f683c6b32de72799f5314e5e37cf8853a360c5d7
+      version: 2.0-7.8
