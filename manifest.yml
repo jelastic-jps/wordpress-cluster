@@ -256,7 +256,7 @@ onInstall:
 
   - mountStorage
 
-  - if (${settings.le-addon:false}):
+  - if ('${settings.le-addon:false}'):
       - setGlobals:
           PROTOCOL: https
    
@@ -284,12 +284,12 @@ onInstall:
 
   - install-wordpress
  
-  - if (${settings.mu-addon:false}): configure-MU
+  - if ('${settings.mu-addon:false}'): configure-MU
 
-  - if (${settings.le-addon:false:false} || ${settings.cdn-addon:false}):
+  - if ('${settings.le-addon:false}' || '${settings.cdn-addon:false}'):
     - script: |
         var actions = [];
-        if (${settings.le-addon:false})
+        if ('${settings.le-addon:false}')
           actions.push({
             jps: "https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}?_r=${fn.random}",
             nodeGroup: "bl",
@@ -299,7 +299,7 @@ onInstall:
               fallbackToX1: "true"
             }
           });
-        if (${settings.cdn-addon:false})
+        if ('${settings.cdn-addon:false}')
           actions.push({
             jps: "https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}",
             nodeGroup: "bl",
@@ -310,12 +310,12 @@ onInstall:
           });
         return { result: 0, onAfterReturn: { install: actions } };
    
-  - if (${settings.le-addon:false}): 
+  - if ('${settings.le-addon:false}'): 
       - setup-LE-domain
       - addHSTS:  
           nodeId: cp
 
-  - if (${settings.cdn-addon:false}): setup-edgeport-CDN
+  - if ('${settings.cdn-addon:false}'): setup-edgeport-CDN
   
 addons:
   - id: setup-site-url
