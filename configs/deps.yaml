@@ -5,7 +5,7 @@ tags:
       version: 5.4.9-php-7.4.10
   litespeedadc:
     litespeedadc:
-      digest: sha256:1be11fab7e497041397db52df0a308e068ecec946d2cb692e229dd4f7fb03068
+      digest: sha256:f7f6c9de102f0a3128aecd38ec4fe01893cd6f21c3d4a141a97618454980650a
       version: "3.0"
   mariadb:
     mariadb5:
