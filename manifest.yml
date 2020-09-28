@@ -286,7 +286,7 @@ onInstall:
  
   - if ('${settings.mu-addon:false}'): configure-MU
 
-  - if ('${settings.le-addon:false'} || '${settings.cdn-addon:false}'):
+  - if ('${settings.le-addon:false}' || '${settings.cdn-addon:false}'):
     - script: |
         var actions = [];
         if ('${settings.le-addon:false}')
