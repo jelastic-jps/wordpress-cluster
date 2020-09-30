@@ -9,13 +9,13 @@ tags:
       version: "3.0"
   mariadb:
     mariadb5:
-      digest: sha256:3f5dd85a6511f397bc8c8a3d369ada26e1bc72da974bbb1586a8726307aaf468
+      digest: sha256:dab140921204201e5a00fb7be247b80694fdef4968318e280091ed445de6df48
       version: 5.5.68
     mariadb10:
-      digest: sha256:5573e04c53275ad676933da386b5f7cbe1772ec27f1e4bbd1250b7f5c46636aa
+      digest: sha256:26a0f9781686083eca49613da889fe0f043017856b58de025c3f67778b419f62
       version: 10.3.24
     mariadb104:
-      digest: sha256:591ef5e6e22d326075d0d0ad5ad6057e8c158a66f518b083120b20ad79338bfa
+      digest: sha256:04ce0b52c3b89eb2e775b49acd3cfc031abe5a6eda78ab8de2f6b0eb224bd7d9
       version: 10.4.14
   nginxbalancer:
     nginxbalancer:
