@@ -138,7 +138,6 @@ onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
-      - setNodeDisplayName [${@i.id}]: Load balancer
       - setupBL:
           nodeId: ${@i.id}
   - forEach(nodes.bl): 
@@ -148,7 +147,6 @@ onAfterScaleOut[nodeGroup:cp]:
   - updateTriggers
   - forEach(event.response.nodes):
     - log: App Servers Setup
-    - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
  
@@ -248,11 +246,6 @@ onInstall:
       loadGrowth: ${settings.loadGrowth}
       cleanOldTriggers: true
       scaleDownLimit: ${nodes.cp.length}
-    
-  - log: Set Node Display Name
-  - setNodeDisplayName [bl]: Load balancer
-  - setNodeDisplayName [cp]: AppServer
-  - setNodeDisplayName [storage]: Storage  
 
   - mountStorage
 

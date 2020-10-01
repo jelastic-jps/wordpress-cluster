@@ -20,7 +20,6 @@ if ('${settings.glusterfs:false}' == 'true') {
     nodeGroup: "storage",
     restartDelay: 10,
     isRedeploySupport: false,
-    displayName: "GlusterFS",
     validation: {
       minCount: 3,
       maxCount: 3
@@ -35,7 +34,6 @@ if ('${settings.glusterfs:false}' == 'true') {
     diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
     isRedeploySupport: false,
-    displayName: "Storage",
     validation: {
       minCount: 1,
       maxCount: 1
@@ -84,7 +82,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "bl",
     restartDelay: 10,
     scalingMode: "STATEFUL",
-    displayName: "Load balancer",
     addons: ["setup-site-url"],
     env: {
       WP_PROTECT: wpbfp,
@@ -100,7 +97,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "cp",
     restartDelay: 10,
     scalingMode: "STATELESS",
-    displayName: "AppServer",
     addons: ["setup-site-url"],
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
@@ -123,8 +119,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "bl",
     restartDelay: 10,
     addons: ["setup-site-url"],
-    scalingMode: "STATEFUL",
-    displayName: "Load balancer"
+    scalingMode: "STATEFUL"
   }, {
     nodeType: "nginxphp",
     tag: '${settings.cp_tag:1.16.1-php-7.4.4}',
@@ -135,7 +130,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "cp",
     restartDelay: 10,
     scalingMode: "STATELESS",
-    displayName: "AppServer",
     addons: ["setup-site-url"],
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
