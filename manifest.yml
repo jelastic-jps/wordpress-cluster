@@ -390,13 +390,15 @@ actions:
         user: root
         
   addHSTS:
-    - if (/nginxphp/.test("${nodes.cp.nodeType}")):
-        cmd[${this.nodeId}]: |-
-          sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
-          sudo jem service restart;
-    - if (/litespeed/.test("${nodes.cp.nodeType}")):
-        cmd[${nodes.cp.master.id}]:
-          if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
+    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $test
+    - if ('${response.out}' == 'false'):
+      - if (/nginxphp/.test("${nodes.cp.nodeType}")):
+          cmd[${this.nodeId}]: |-
+            sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
+            sudo jem service restart;
+      - if (/litespeed/.test("${nodes.cp.nodeType}")):
+          cmd[${nodes.cp.master.id}]:
+            if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
   
   setupBL:
     - log: LB OPTIMIZATION
