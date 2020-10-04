@@ -126,7 +126,7 @@ globals:
   db_host: sqldb
   protocol: http
   wp_admin_pass: ${fn.password(10)}
-  ls_admin_pass: ${settings.ls_admin_pass:fn.password(10)}
+  ls_admin_pass: ${settings.ls_admin_pass}
   success: success
   email: default
   is_install_wp: ${settings.is_install_wp:true}
