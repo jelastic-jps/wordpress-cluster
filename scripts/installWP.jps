@@ -26,7 +26,7 @@ actions:
         cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=/var/www/webroot/ROOT/
         cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=/var/www/webroot/ROOT/
         wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O /var/www/webroot/ROOT/wp-jelastic.php
-        cd /var/www/webroot/ROOT && sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /var/www/webroot/ROOT/wp-config.php
+        mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT
         wget ${baseUrl}../images/favicon.ico -O /var/www/webroot/ROOT/favicon.ico
         cd /var/www/webroot/ROOT && wp theme update --all --path=/var/www/webroot/ROOT/
 
