@@ -87,14 +87,7 @@ settings:
       value: true
       disabled: false
       tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
-      
-    - caption: Install GlusterFS Cluster (Beta)
-      type: checkbox
-      name: glusterfs
-      value: false
-      disabled: false
-      tooltip: "Shared Storage auto-clustering is based on GlusterFS software that provides a fault-tolerant distributed file system with automatic data synchronization across the cluster nodes."
-       
+             
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
@@ -108,6 +101,13 @@ settings:
       value: true
       disabled: false
       tooltip: "Jelastic CDN is an HTTP/3 premium content delivery network of 160+ Super PoPs (points of presence) with bandwidth capacity up to 115 Tbps, advanced caching and acceleration strategies based on best-in-class IP Anycast technology."
+
+    - caption: 'Install GlusterFS Cluster <div class="orange hint-btn fieldmark" style="width: auto; height: auto;"><div>beta</div></div>'
+      type: checkbox
+      name: glusterfs
+      value: false
+      disabled: false
+      tooltip: "Shared Storage auto-clustering is based on GlusterFS software that provides a fault-tolerant distributed file system with automatic data synchronization across the cluster nodes."
 
     - caption: Install WordPress Multisite Network
       type: checkbox
