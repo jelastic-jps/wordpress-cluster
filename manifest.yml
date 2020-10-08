@@ -88,10 +88,10 @@ settings:
       disabled: false
       tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
       
-    - caption: Install GlusterFS Cluster
+    - caption: Install GlusterFS Cluster (Beta)
       type: checkbox
       name: glusterfs
-      value: true
+      value: false
       disabled: false
       tooltip: "Shared Storage auto-clustering is based on GlusterFS software that provides a fault-tolerant distributed file system with automatic data synchronization across the cluster nodes."
        
