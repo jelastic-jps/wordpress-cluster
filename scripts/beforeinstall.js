@@ -13,7 +13,7 @@ if ('${settings.glusterfs:false}' == 'true') {
     nodeType: "storage",
     count: 3,
     cluster: true,
-    tag: '${settings.storage_tag:2.0-7.6}',
+    tag: '${settings.storage_tag:2.0-7.8}',
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
