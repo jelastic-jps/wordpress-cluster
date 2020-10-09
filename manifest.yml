@@ -87,14 +87,7 @@ settings:
       value: true
       disabled: false
       tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
-      
-    - caption: Install GlusterFS Cluster
-      type: checkbox
-      name: glusterfs
-      value: true
-      disabled: false
-      tooltip: "Shared Storage auto-clustering is based on GlusterFS software that provides a fault-tolerant distributed file system with automatic data synchronization across the cluster nodes."
-       
+             
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
@@ -108,6 +101,13 @@ settings:
       value: true
       disabled: false
       tooltip: "Jelastic CDN is an HTTP/3 premium content delivery network of 160+ Super PoPs (points of presence) with bandwidth capacity up to 115 Tbps, advanced caching and acceleration strategies based on best-in-class IP Anycast technology."
+
+    - caption: 'Install GlusterFS Cluster <div class="orange hint-btn fieldmark" style="width: auto; height: auto;"><div>beta</div></div>'
+      type: checkbox
+      name: glusterfs
+      value: false
+      disabled: false
+      tooltip: "Shared Storage auto-clustering is based on GlusterFS software that provides a fault-tolerant distributed file system with automatic data synchronization across the cluster nodes."
 
     - caption: Install WordPress Multisite Network
       type: checkbox
@@ -169,14 +169,6 @@ onBeforeRemoveNode[storage]:
   stopEvent:
     type: warning
     message: Scaling is not supported for storage.
-
-onAfterRedeployContainer[cp]:
-  - setupCP:
-      nodeId: cp
-   
-onAfterRedeployContainer[bl]:
- - setupBL:
-      nodeId: bl
       
 onAfterStart: 
   cmd[cp]: sudo jem service restart
@@ -390,13 +382,15 @@ actions:
         user: root
         
   addHSTS:
-    - if (/nginxphp/.test("${nodes.cp.nodeType}")):
-        cmd[${this.nodeId}]: |-
-          sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
-          sudo jem service restart;
-    - if (/litespeed/.test("${nodes.cp.nodeType}")):
-        cmd[${nodes.cp.master.id}]:
-          if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
+    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $test
+    - if ('${response.out}' == 'false'):
+      - if (/nginxphp/.test("${nodes.cp.nodeType}")):
+          cmd[${this.nodeId}]: |-
+            sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
+            sudo jem service restart;
+      - if (/litespeed/.test("${nodes.cp.nodeType}")):
+          cmd[${nodes.cp.master.id}]:
+            if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
   
   setupBL:
     - log: LB OPTIMIZATION
