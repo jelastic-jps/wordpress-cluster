@@ -63,7 +63,6 @@ resp.nodes.push({
     custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
   },
   env: {
-    ON_ENV_INSTALL: "https://raw.githubusercontent.com/sych74/mysql-cluster/v2.1.0/addons/auto-clustering/auto-cluster.jps",
     SCHEME: db_cluster,
     DB_USER: "${globals.DB_USER}",
     DB_PASS: "${globals.DB_PASS}",
