@@ -95,7 +95,7 @@ settings:
       disabled: true
       tooltip: "Advanced integration with Let's Encrypt certificate authority that simplifies and automates the process of issuing, configuring and updating trusted custom SSL certificates."
 
-    - caption: Install Lightning-Fast Premium CDN with 130+ PoPs
+    - caption: Install Lightning-Fast Premium CDN
       type: checkbox
       name: cdn-addon
       value: true
