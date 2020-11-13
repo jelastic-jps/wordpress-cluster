@@ -216,6 +216,7 @@ onAfterMigrate:
   - cmd[cp]: sudo jem service restart
       
 onInstall:
+  - setupLEwebroot
 
   - script: |
         return {
@@ -301,9 +302,7 @@ onInstall:
           nodeId: cp
 
   - if ('${settings.cdn-addon:false}' == 'true'): setup-edgeport-CDN
-  
-  - setupLEwebroot
-  
+   
 addons:
   - id: setup-site-url
     type: update
