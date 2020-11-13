@@ -302,6 +302,8 @@ onInstall:
 
   - if ('${settings.cdn-addon:false}' == 'true'): setup-edgeport-CDN
   
+  - setupLEwebroot
+  
 addons:
   - id: setup-site-url
     type: update
@@ -422,6 +424,13 @@ actions:
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
           protocol: NFS4
+          
+  setupLEwebroot:
+    - cmd[cp,bl]: |-
+        [ ! -d /var/lib/jelastic/keys/letsencrypt ] && mkdir -p /var/lib/jelastic/keys/letsencrypt;
+        echo "webroot=true" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "webrootPath=/var/www/webroot/ROOT" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
+      user: root
     
 success:
   email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
