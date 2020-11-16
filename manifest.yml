@@ -345,7 +345,7 @@ actions:
 
   setupCP:
     - log: CP OPTIMIZATION
-    - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+    - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
       settings:
         targetGroup: cp
         targetNodes: ${this.nodeId}
@@ -366,7 +366,7 @@ actions:
   
   setupBL:
     - log: LB OPTIMIZATION
-    - install: https://raw.githubusercontent.com/jelastic/templates/master/config.jps?_r=${fn.random}
+    - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
       settings:
         targetGroup: bl
         targetNodes: ${this.nodeId}
