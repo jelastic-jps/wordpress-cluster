@@ -13,7 +13,6 @@ if ('${settings.glusterfs:false}' == 'true') {
     nodeType: "storage",
     count: 3,
     cluster: true,
-    tag: '${settings.storage_tag:2.0-7.6}',
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
@@ -47,7 +46,6 @@ if ('${settings.glusterfs:false}' == 'true') {
 if ('${settings.is_db_cluster:true}' == 'true') {
   resp.nodes.push({
     nodeType: "mariadb-dockerized",
-    tag: '${settings.sqldb_tag:10.4.12}',
     flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
     diskLimit: ${settings.db_diskLimit:10},
@@ -70,7 +68,6 @@ if ('${settings.is_db_cluster:true}' == 'true') {
 } else {
   resp.nodes.push({
     nodeType: "mariadb-dockerized",
-    tag: '${settings.sqldb_tag:10.4.12}',
     flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
     diskLimit: ${settings.db_diskLimit:10},
@@ -90,7 +87,6 @@ if ('${settings.ls_addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
     extip: true,
-    tag: '${settings.bl_tag:2.7}',
     count: ${settings.bl_count:1},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
@@ -105,7 +101,6 @@ if ('${settings.ls_addon:false}'== 'true') {
     }
   }, {
     nodeType: "litespeedphp",
-    tag: '${settings.cp_tag:5.4.6-php-7.4.3}',
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
@@ -127,7 +122,6 @@ if ('${settings.ls_addon:false}'== 'true') {
 } else {
   resp.nodes.push({
     nodeType: "nginx",
-    tag: '${settings.bl_tag:1.16.1}',
     count: ${settings.bl_count:1},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
@@ -138,7 +132,6 @@ if ('${settings.ls_addon:false}'== 'true') {
     displayName: "Load balancer"
   }, {
     nodeType: "nginxphp",
-    tag: '${settings.cp_tag:1.16.1-php-7.4.4}',
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
