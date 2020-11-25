@@ -11,10 +11,9 @@ var resp = {
 if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
+    tag: "2.0-7.8",
     count: 3,
-    cluster: {
-      jps: 'https://raw.githubusercontent.com/SiryjVyiko/gluster_cluster/master/replication-logic.jps'
-    },
+    cluster: true,
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
@@ -29,6 +28,7 @@ if ('${settings.glusterfs:false}' == 'true') {
 } else {
   resp.nodes.push({
     nodeType: "storage",
+    tag: "2.0-7.8",
     count: 1,
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
@@ -44,6 +44,7 @@ if ('${settings.glusterfs:false}' == 'true') {
 
 resp.nodes.push({
   nodeType: "mariadb-dockerized",
+  tag: "10.4.16",
   flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
   fixedCloudlets: ${settings.db_fixedCloudlets:1},
   diskLimit: ${settings.db_diskLimit:10},
@@ -73,6 +74,7 @@ resp.nodes.push({
 if ('${settings.ls-addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
+    tag: "3.0.1",
     count: ${settings.bl_count:2},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
@@ -87,6 +89,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     }
   }, {
     nodeType: "litespeedphp",
+    tag: "5.4.10-php-7.4.10",
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
