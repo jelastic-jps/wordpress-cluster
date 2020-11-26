@@ -107,7 +107,7 @@ COMPUTE_TYPE=$(grep "COMPUTE_TYPE=" /etc/jelastic/metainf.conf | cut -d"=" -f2)
 cd ${SERVER_WEBROOT};
 
 if [[ ${COMPUTE_TYPE} == *"llsmp"* || ${COMPUTE_TYPE} == *"litespeed"* ]] ; then
-    ${WP} plugin install litespeed-cache --activate --path=${SERVER_WEBROOT}
+    ${WP} plugin install https://downloads.wordpress.org/plugin/litespeed-cache.3.5.1.zip --activate --path=${SERVER_WEBROOT}
     CACHE_FLUSH="${WP} litespeed-purge all --path=${SERVER_WEBROOT}; rm -rf /var/www/webroot/.cache/vhosts/Jelastic/* "
     WPCACHE='lscwp';
 elif [[ ${COMPUTE_TYPE} == *"lemp"* || ${COMPUTE_TYPE} == *"nginx"* ]] ; then
