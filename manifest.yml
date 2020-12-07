@@ -387,6 +387,6 @@ actions:
           sourcePath: /data
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
-          protocol: NFS4
+          protocol: NFS3
     
 
