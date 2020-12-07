@@ -105,7 +105,7 @@ settings:
     - caption: 'Install GlusterFS Cluster <div class="orange hint-btn fieldmark" style="width: auto; height: auto;"><div>beta</div></div>'
       type: checkbox
       name: glusterfs
-      value: true
+      value: false
       disabled: false
       tooltip: "Shared Storage auto-clustering is based on GlusterFS software that provides a fault-tolerant distributed file system with automatic data synchronization across the cluster nodes."
 
