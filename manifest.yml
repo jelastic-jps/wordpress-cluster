@@ -231,12 +231,6 @@ onInstall:
       cleanOldTriggers: true
       scaleDownLimit: ${nodes.cp.length}
     
-  - log: Set Node Display Name
-  - setNodeDisplayName [bl]: Load balancer
-  - setNodeDisplayName [cp]: AppServer
-  - setNodeDisplayName [sqldb]: Database
-  - setNodeDisplayName [storage]: Storage  
-
   - if (${settings.le_addon:false}):
       - setGlobals:
           protocol: https
@@ -262,36 +256,6 @@ onInstall:
       - addHSTS:  
           nodeId: cp
     - if (${settings.cdn_addon:false}): install-edgeport-CDN
-  
-addons:
-  - id: setup-site-url
-    type: update
-    name: WordPress Site Address (URL)
-    description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
-    logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
-    settings:
-      fields:
-        - type: string
-          name: siteURL
-          caption: Site Address (URL)
-          default: ''
-          required: true
-          regex: "^https?:\\/\\/.+$"
-          regexText: Incorrect Site URL.
-
-    buttons:
-      - caption: Site URL
-        settings: main
-        action: setup-domain
-        loadingText: Applying...
-        confirmText: Do you want to change Site URL?
-        successText:  Site URL for WordPress has been successfully applyed!
-        
-    env:
-      onAfterClone:
-        - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
-        - install [bl, cp]: ${response.jps}
-          envName: ${event.response.env.envName}
     
 actions:
 
@@ -342,6 +306,14 @@ actions:
         wp_admin_pass: ${globals.wp_admin_pass}
         wp_title: "Hello World"
         wp_url: ${globals.protocol}://${globals.domain}/
+        
+  glusterfsMount:
+    - cmd[${this}]: |-
+        yum install glusterfs-fuse -y &>> /var/log/run.log;
+        sed -i 's/[^[:space:]][^[:space:]]*/-fstype=glusterfs/2' /etc/autofs.jelastic &>> /var/log/run.log;
+        sed -i 's/\/data/\/jelastic/g' /etc/autofs.jelastic &>> /var/log/run.log;
+        service autofs restart;
+      user: root
 
   setupCP:
     - log: CP OPTIMIZATION
@@ -354,6 +326,7 @@ actions:
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.ls_admin_pass}
         user: root
+    - glusterfsMount: ${this.nodeId}
         
   addHSTS:
     - if (/nginxphp/.test("${nodes.cp.nodeType}")):
