@@ -133,7 +133,6 @@ globals:
 
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
-      - setNodeDisplayName [${@i.id}]: Load balancer
       - setupBL:
           nodeId: ${@i.id}
   - forEach(nodes.bl): 
@@ -141,7 +140,6 @@ onAfterScaleOut[nodeGroup:bl]:
   
 onAfterScaleOut[nodeGroup:cp]:
   forEach(event.response.nodes):
-    - setNodeDisplayName [${@i.id}]: AppServer
     - setupCP:
         nodeId: ${@i.id}
  
