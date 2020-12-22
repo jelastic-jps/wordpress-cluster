@@ -163,45 +163,6 @@ onBeforeRemoveNode[storage]:
     type: warning
     message: Scaling is not supported for storage.
 
-onAfterRedeployContainer[cp]:
-  - setupCP:
-      nodeId: cp
-    
-onAfterRedeployContainer[bl]:
- - setupBL:
-      nodeId: bl
-
-onAfterClone: 
-  - script: |
-        var resp = {result:0}
-        if (${event.response.env.sslstate}) {
-          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
-        }
-        return resp;
- 
-  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-    settings:
-      domain: ${globals.PROTOCOL}://${event.response.env.domain}
-
-  - if (/litespeed/.test("${nodes.bl.nodeType}")):
-    - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-      envName: ${event.response.env.envName}
-    
-onAfterMigrate:
-  - script: |
-        var resp = {result:0}
-        if (${env.sslstate}) {
-          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
-        }
-        return resp;
- 
-  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    settings:
-      domain: ${globals.PROTOCOL}://${env.domain}
-      
-  - if (/litespeed/.test("${nodes.bl.nodeType}")):
-      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
       
 onInstall:
 
