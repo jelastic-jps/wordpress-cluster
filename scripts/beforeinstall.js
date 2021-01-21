@@ -12,9 +12,6 @@ if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
-    cluster: {
-      jps: 'https://raw.githubusercontent.com/SiryjVyiko/gluster_cluster/master/replication-logic.jps'
-    },
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
