@@ -102,7 +102,7 @@ settings:
       disabled: false
       tooltip: "Jelastic CDN is an HTTP/3 premium content delivery network of 160+ Super PoPs (points of presence) with bandwidth capacity up to 115 Tbps, advanced caching and acceleration strategies based on best-in-class IP Anycast technology."
 
-    - caption: 'Install GlusterFS Cluster <div class="orange hint-btn fieldmark" style="width: auto; height: auto;"><div>beta</div></div>'
+    - caption: 'Install GlusterFS Cluster'
       type: checkbox
       name: glusterfs
       value: true
