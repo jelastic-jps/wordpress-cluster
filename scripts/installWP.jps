@@ -22,11 +22,10 @@ actions:
   installWP:
     - cmd[${nodes.cp.master.id}]: |-
         wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT/;
-        mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${globals.DB_HOST} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME}; sleep 5;"
-        cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=/var/www/webroot/ROOT/
+        mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${nodes.sqldb.master.ip} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
+        cd /var/www/webroot/ROOT && wp core config --dbhost=${nodes.sqldb.master.ip} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=/var/www/webroot/ROOT/
         cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=/var/www/webroot/ROOT/
-        wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O /var/www/webroot/ROOT/wp-jelastic.php
-        mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT
+        mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/${nodes.sqldb.master.ip}/${globals.DB_HOST}/g" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT;
         wget ${baseUrl}../images/favicon.ico -O /var/www/webroot/ROOT/favicon.ico
         cd /var/www/webroot/ROOT && wp theme update --all --path=/var/www/webroot/ROOT/
 
@@ -38,6 +37,9 @@ actions:
   nginxPurgeCache:
     - cmd[${nodes.cp.master.id}]: |-
         cd /var/www/webroot/ROOT/;
+        wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O /var/www/webroot/ROOT/wp-jelastic.php
+        mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT
         wp plugin install ${baseUrl}/nginx-fastcgi-cache-purge.zip --path=/var/www/webroot/ROOT/
         wp plugin activate nginx-fastcgi-cache-purge --path=/var/www/webroot/ROOT/
         wp option update permalink_structure '/%postname%' --path=/var/www/webroot/ROOT/
+ 
