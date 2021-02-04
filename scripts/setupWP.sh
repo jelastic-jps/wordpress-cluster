@@ -17,6 +17,7 @@ ARGUMENT_LIST=(
     "wpmu"
     "REDIS_HOST"
     "REDIS_PASS"
+    "REDIS_PORT"
     "CDN_URL"
     "CDN_ORI"
     "MODE"
@@ -64,6 +65,11 @@ while [[ $# -gt 0 ]]; do
 
         --REDIS_PASS)
             REDIS_PASS=$2
+            shift 2
+            ;;
+
+        --REDIS_PORT)
+            REDIS_PORT=$2
             shift 2
             ;;
 
@@ -184,14 +190,14 @@ if [ $objectcache == 'true' ] ; then
     w3tc)
           $W3TC_OPTION_SET objectcache.enabled true --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET objectcache.engine redis --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $W3TC_OPTION_SET objectcache.redis.servers ${REDIS_HOST}:6379 --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $W3TC_OPTION_SET objectcache.redis.servers ${REDIS_HOST}:${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET objectcache.redis.password ${REDIS_PASS} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
     lscwp)
           $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $LSCWP_OPTION_SET object-kind 1 --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET object-port 6379 --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object-port ${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
   esac
 fi
