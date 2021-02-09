@@ -33,7 +33,7 @@ actions:
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
         wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
-        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0
+        bash ~/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0
 
   nginxPurgeCache:
     - cmd[${nodes.cp.master.id}]: |-
