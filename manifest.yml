@@ -122,7 +122,10 @@ settings:
       name: bl_count   
       value: 2
       markup:
-      
+
+mixins:
+ - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
+
 globals:
   PATH: ${baseUrl}
   DB_USER: jelastic-${fn.random}
@@ -369,6 +372,7 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
+        version_wordpress: ${globals.version_wordpress}
 
   setupCP:
     - log: CP OPTIMIZATION
