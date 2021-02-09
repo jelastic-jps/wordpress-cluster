@@ -218,12 +218,12 @@ onAfterMigrate:
         }
         return resp;
  
-    - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+    - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
       settings:
         domain: ${globals.PROTOCOL}://${env.domain}
       
   - if (/litespeed/.test("${nodes.bl.nodeType}")):
-      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+      - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
       
   - cmd[cp]: sudo jem service restart
       
