@@ -201,17 +201,26 @@ onAfterClone:
     - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
       envName: ${event.response.env.envName}
     
+onBeforeMigrate:
+  - cmd[${nodes.cp.master.id}]: wp option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3;
+  - if (/${response.out}/.test(env.domain)):
+      cmd[${nodes.cp.master.id}]: echo true > ~/migrate
+  - else:
+      cmd[${nodes.cp.master.id}]: echo false > ~/migrate
+
 onAfterMigrate:
-  - script: |
+  - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
+  - if (/${response.out}/.test(true)):
+    - script: |
         var resp = {result:0}
         if (${env.sslstate}) {
           resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
         }
         return resp;
  
-  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    settings:
-      domain: ${globals.PROTOCOL}://${env.domain}
+    - install: ${baseUrl}/scripts/setupDomain.jps?_r=${fn.random}
+      settings:
+        domain: ${globals.PROTOCOL}://${env.domain}
       
   - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
