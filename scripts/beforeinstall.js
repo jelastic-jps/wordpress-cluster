@@ -113,10 +113,7 @@ if ('${settings.ls_addon:false}'== 'true') {
       REDIS_ENABLED: "true",
       WAF: "${settings.waf:false}",
       WP_PROTECT: "OFF"
-    },
-    volumes: [
-      "/var/www/webroot/ROOT"
-    ]
+    }
   })
 } else {
   resp.nodes.push({
@@ -142,10 +139,7 @@ if ('${settings.ls_addon:false}'== 'true') {
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true"
-    },
-    volumes: [
-      "/var/www/webroot/ROOT"
-    ]
+    }
   })
 }
 
