@@ -122,7 +122,10 @@ settings:
       name: bl_count   
       value: 2
       markup:
-      
+
+mixins:
+ - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
+
 globals:
   PATH: ${baseUrl}
   DB_USER: jelastic-${fn.random}
@@ -198,20 +201,29 @@ onAfterClone:
     - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
       envName: ${event.response.env.envName}
     
+onBeforeMigrate:
+  - cmd[${nodes.cp.master.id}]: wp option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3;
+  - if (/${response.out}/.test(env.domain)):
+      cmd[${nodes.cp.master.id}]: echo true > ~/migrate
+  - else:
+      cmd[${nodes.cp.master.id}]: echo false > ~/migrate
+
 onAfterMigrate:
-  - script: |
+  - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
+  - if (/${response.out}/.test(true)):
+    - script: |
         var resp = {result:0}
         if (${env.sslstate}) {
           resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
         }
         return resp;
  
-  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    settings:
-      domain: ${globals.PROTOCOL}://${env.domain}
+    - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
+      settings:
+        domain: ${globals.PROTOCOL}://${env.domain}
       
   - if (/litespeed/.test("${nodes.bl.nodeType}")):
-      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
+      - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
       
   - cmd[cp]: sudo jem service restart
       
@@ -227,8 +239,9 @@ onInstall:
         PROTOCOL: https
 
   - script: /scripts/idna.js
+    domains: ${env.domain}
   - setGlobals:
-      DOMAIN: ${response.domain}         
+      DOMAIN: ${response.domains}
 
   - if (${settings.is_trigger:true}):
     - log: Auto Scaling Triggers
@@ -368,6 +381,7 @@ actions:
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
+        version_wordpress: ${globals.version_wordpress}
 
   setupCP:
     - log: CP OPTIMIZATION
