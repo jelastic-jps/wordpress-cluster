@@ -12,6 +12,7 @@ if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
+    cluster: true,
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     diskLimit: ${settings.st_diskLimit:100},
@@ -128,7 +129,8 @@ if ('${settings.ls-addon:false}'== 'true') {
       REDIS_ENABLED: "true"
     },
     volumes: [
-      "/var/www/webroot/ROOT"
+      "/var/www/webroot/ROOT",
+      "/var/www/webroot/.cache"
     ]
   })
 }
