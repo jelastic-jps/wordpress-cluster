@@ -239,9 +239,8 @@ onInstall:
         PROTOCOL: https
 
   - script: /scripts/idna.js
-    domains: ${env.domain}
   - setGlobals:
-      DOMAIN: ${response.domains}
+      DOMAIN: ${response.domain}         
 
   - if (${settings.is_trigger:true}):
     - log: Auto Scaling Triggers
