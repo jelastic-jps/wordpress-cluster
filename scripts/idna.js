@@ -1,9 +1,6 @@
+// http://stackoverflow.com/questions/183485/can-anyone-recommend-a-good-free-javascript-for-punycode-to-unicode-conversion
 //Javascript Punycode converter derived from example in RFC3492.
 //This implementation is created by some@domain.name and released into public domain
-
-var domains = getParam("domains", ""),
-    parsed = [];
-
 var punycode = new function Punycode() {
     // This object converts to and from puny-code used in IDN
     //
@@ -94,7 +91,7 @@ var punycode = new function Punycode() {
         delta += Math.floor(delta / numpoints);
 
         for (k = 0; delta > (((base - tmin) * tmax) >> 1); k += base) {
-            delta = Math.floor(delta / ( base - tmin ));
+                delta = Math.floor(delta / ( base - tmin ));
         }
         return Math.floor(k + (base - tmin + 1) * delta / (delta + skew));
     }
@@ -151,24 +148,24 @@ var punycode = new function Punycode() {
             // if we increase i as we go, then subtract off its starting 
             // value at the end to obtain delta.
             for (oldi = i, w = 1, k = base; ; k += base) {
-                if (ic >= input_length) {
-                    throw RangeError ("punycode_bad_input(1)");
-                }
-                digit = decode_digit(input.charCodeAt(ic++));
+                    if (ic >= input_length) {
+                        throw RangeError ("punycode_bad_input(1)");
+                    }
+                    digit = decode_digit(input.charCodeAt(ic++));
 
-                if (digit >= base) {
-                    throw RangeError("punycode_bad_input(2)");
-                }
-                if (digit > Math.floor((maxint - i) / w)) {
-                    throw RangeError ("punycode_overflow(1)");
-                }
-                i += digit * w;
-                t = k <= bias ? tmin : k >= bias + tmax ? tmax : k - bias;
-                if (digit < t) { break; }
-                if (w > Math.floor(maxint / (base - t))) {
-                    throw RangeError("punycode_overflow(2)");
-                }
-                w *= (base - t);
+                    if (digit >= base) {
+                        throw RangeError("punycode_bad_input(2)");
+                    }
+                    if (digit > Math.floor((maxint - i) / w)) {
+                        throw RangeError ("punycode_overflow(1)");
+                    }
+                    i += digit * w;
+                    t = k <= bias ? tmin : k >= bias + tmax ? tmax : k - bias;
+                    if (digit < t) { break; }
+                    if (w > Math.floor(maxint / (base - t))) {
+                        throw RangeError("punycode_overflow(2)");
+                    }
+                    w *= (base - t);
             }
 
             out = output.length + 1;
@@ -323,10 +320,19 @@ var punycode = new function Punycode() {
     }
 }();
 
-domains = domains.split(',');
+var sEnvUrl = "${env.url}",
+    sConverted = sEnvUrl.split('.')[0],
+    sDomain,
+    sResp;
 
-for (var i = 0, n = domains.length; i < n; i++) {
-    parsed.push(punycode.ToASCII(domains[i].trim()));
+
+if (sConverted) {    
+    if (/[а-яА-ЯЁё]/.test(sConverted)) {
+        sDomain = sConverted.split('//')[1];
+        sConverted = punycode.ToASCII(sDomain);
+    }
 }
 
-return { result: 0, domains: parsed }
+sResp = sEnvUrl.replace(sDomain, sConverted).split('/')[2];
+
+return {result: 0, domain: sResp}
