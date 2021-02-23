@@ -285,7 +285,6 @@ actions:
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.ls_admin_pass}
         user: root
-    - glusterfsMount: ${this.nodeId}
         
   addHSTS:
     - if (/nginxphp/.test("${nodes.cp.nodeType}")):
