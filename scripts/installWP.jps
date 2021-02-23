@@ -15,6 +15,7 @@ globals:
 
 onInstall:
   - installWP
+  - installScripts
   - setupWP
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
     - nginxPurgeCache
