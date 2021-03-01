@@ -281,7 +281,10 @@ actions:
         targetGroup: cp
         targetNodes: ${this.nodeId}
         optimization: wordpress
-    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+    - cmd[${this.nodeId}]: |-
+        sed -i "s/zend_extension.*/; zend_extension=opcache.so/" /usr/local/lsws/lsphp/etc/php.d/10-opcache.ini;
+        sed -i "s/opcache.enable.*/; opcache.enable=0/" /usr/local/lsws/lsphp/etc/php.d/10-opcache.ini;
+        if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.ls_admin_pass}
         user: root
