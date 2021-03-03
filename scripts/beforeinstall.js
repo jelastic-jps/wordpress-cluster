@@ -11,6 +11,7 @@ var resp = {
 if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
+    tag: "2.0-7.8",
     count: 3,
     cluster: true,
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
