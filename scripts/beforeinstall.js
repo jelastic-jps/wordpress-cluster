@@ -96,7 +96,8 @@ if ('${settings.ls_addon:false}'== 'true') {
     displayName: "Load balancer",
     env: {
       WP_PROTECT: wpbfp,
-      WP_PROTECT_LIMIT: 100
+      WP_PROTECT_LIMIT: 100,
+      DEFAULT_CLUSTER: "FALSE"
     }
   }, {
     nodeType: "litespeedphp",
