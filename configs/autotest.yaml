@@ -1,4 +1,4 @@
-jps: https://github.com/jelastic-jps/wordpress-cluster/blob/v2.0.0/manifest.jps
+jps: https://github.com/jelastic-jps/wordpress-cluster/blob/v2.0.0/manifest.yml
 component: wordpress
 stack:
   - nodeType: litespeedadc
