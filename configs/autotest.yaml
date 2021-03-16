@@ -1,0 +1,36 @@
+jps: https://github.com/jelastic-jps/wordpress-cluster/blob/v2.0.0/manifest.jps
+component: wordpress
+stack:
+  - nodeType: litespeedadc
+    tagSetting: bl_tag
+    optimization: true
+    options:
+      - ls_addon: true
+        wp_protect: true
+        waf: true
+  - nodeType: litespeedphp
+    tagSetting: cp_tag
+    optimization: true
+    options:
+      - ls_addon: true
+        wp_protect: true
+        waf: true
+  - nodeType: nginx
+    tagSetting: bl_tag
+    options:
+      - ls_addon: false
+  - nodeType: nginxphp
+    tagSetting: cp_tag
+    optimization: true
+    options:
+      - ls_addon: false
+  - nodeType: mariadb
+    tagSetting: sqldb_tag
+    options:
+      - galera: true
+      - galera: false
+  - nodeType: storage
+    tagSetting: storage_tag
+    options:
+      - glusterfs: false      
+      - glusterfs: true
