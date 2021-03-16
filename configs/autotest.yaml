@@ -3,34 +3,40 @@ component: wordpress
 stack:
   - nodeType: litespeedadc
     tagSetting: bl_tag
+    nodeGroup: bl
     optimization: true
     options:
-      - ls_addon: true
+      - ls-addon: true
         wp_protect: true
         waf: true
   - nodeType: litespeedphp
     tagSetting: cp_tag
+    nodeGroup: cp
     optimization: true
     options:
-      - ls_addon: true
+      - ls-addon: true
         wp_protect: true
         waf: true
   - nodeType: nginx
     tagSetting: bl_tag
+    nodeGroup: bl
     options:
-      - ls_addon: false
+      - ls-addon: false
   - nodeType: nginxphp
     tagSetting: cp_tag
+    nodeGroup: cp
     optimization: true
     options:
-      - ls_addon: false
+      - ls-addon: false
   - nodeType: mariadb
     tagSetting: sqldb_tag
+    nodeGroup: sqldb
     options:
       - galera: true
       - galera: false
   - nodeType: storage
     tagSetting: storage_tag
+    nodeGroup: storage
     options:
       - glusterfs: false      
       - glusterfs: true
