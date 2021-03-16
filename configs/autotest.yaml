@@ -7,7 +7,7 @@ stack:
     optimization: true
     options:
       - ls-addon: true
-        wp-protect: true
+        wp_protect: true
         waf: true
   - nodeType: litespeedphp
     tagSetting: cp_tag
@@ -15,7 +15,7 @@ stack:
     optimization: true
     options:
       - ls-addon: true
-        wp-protect: true
+        wp_protect: true
         waf: true
   - nodeType: nginx
     tagSetting: bl_tag
