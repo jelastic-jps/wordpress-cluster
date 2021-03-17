@@ -15,6 +15,7 @@ globals:
 
 onInstall:
   - installWP
+  - installScripts
   - setupWP
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
     - nginxPurgeCache
@@ -22,18 +23,28 @@ onInstall:
 actions:
   installWP:
     - cmd[${nodes.cp.master.id}]: |-
-        wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT/;
+        wget -qO- 'https://wordpress.org/wordpress-${globals.VERSION_WORDPRESS}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT;
         mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${nodes.sqldb.master.intIP} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
         cd /var/www/webroot/ROOT && wp core config --dbhost=${nodes.sqldb.master.intIP} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=/var/www/webroot/ROOT/
         cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=/var/www/webroot/ROOT/
         mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/${nodes.sqldb.master.intIP}/${globals.DB_HOST}/g" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT;
         wget ${baseUrl}../images/favicon.ico -O /var/www/webroot/ROOT/favicon.ico
-        cd /var/www/webroot/ROOT && wp theme update --all --path=/var/www/webroot/ROOT/
-
+ 
+  installScripts:
+    - cmd[${nodes.cp.master.id}]: |- 
+        [ ! -d $HOME/bin ] && mkdir $HOME/bin
+        curl -o $HOME/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp
+        echo "export PATH=$PATH:$HOME/bin/" >> $HOME/.bash_profile
+        wget ${baseUrl}/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+        echo $HOME/bin;
+    - cmd[${nodes.cp.master.id}]:
+        echo ${response.out} >>  /etc/jelastic/redeploy.conf;
+      user: root
+  
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
-        wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
-        bash ~/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0
+        wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log
+        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0
 
   nginxPurgeCache:
     - cmd[${nodes.cp.master.id}]: |-
