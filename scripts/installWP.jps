@@ -23,7 +23,7 @@ onInstall:
 actions:
   installWP:
     - cmd[${nodes.cp.master.id}]: |-
-        wget -qO- 'https://wordpress.org/wordpress-${globals.VERSION_WORDPRESS}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT;
+        wget -qO- 'https://wordpress.org/latest.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT;
         mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${nodes.sqldb.master.intIP} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
         cd /var/www/webroot/ROOT && wp core config --dbhost=${nodes.sqldb.master.intIP} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=/var/www/webroot/ROOT/
         cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=/var/www/webroot/ROOT/
