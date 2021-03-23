@@ -215,8 +215,33 @@ onInstall:
       - addHSTS:  
           nodeId: cp
     - if (${settings.cdn_addon:false}): install-edgeport-CDN
-    
+
+addons:
+  - id: cache-clean
+    type: update
+    name: WordPress Cache Cleaner
+    description: Clean all cache for all clusters of multiregion topology.
+    logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
+    buttons:
+      - caption: Cache clean
+        settings: main
+        action: cache-clean
+        loadingText: Cleaning...
+        confirmText: Do you want to cache clean?
+        successText:  Cache for multiregion cluster has been successfully cleaned!
+        
+    env:
+      onAfterClone:
+        - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+        - install [bl, cp]: ${response.jps}
+          envName: ${event.response.env.envName}
+
 actions:
+
+  cache-clean:
+    - install: https://raw.githubusercontent.com/sych74/wordpress-multiregions/master/scripts/cacheManager.jps?_r=${fn.random}
+      settings:
+        clean_cache: true
 
   install-LE-addon:
     - install: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}
@@ -325,4 +350,3 @@ actions:
           sourceAddressType: NODE_GROUP
           protocol: NFS4
     
-
