@@ -22,6 +22,7 @@ ARGUMENT_LIST=(
     "CDN_ORI"
     "MODE"
     "DOMAIN"
+    "ENV_NAME"
 
 )
 
@@ -95,6 +96,11 @@ while [[ $# -gt 0 ]]; do
 
         --DOMAIN)
             DOMAIN=$2
+            shift 2
+            ;;
+
+        --ENV_NAME)
+            ENV_NAME=$2
             shift 2
             ;;
 
@@ -196,7 +202,7 @@ if [ $objectcache == 'true' ] ; then
 fi
 
 if [ $edgeportCDN == 'true' ] ; then
-  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then 
+  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
     case $WPCACHE in
       w3tc)
           generateCdnContent;
@@ -236,13 +242,15 @@ if [ $wpmu == 'true' ] ; then
 fi
 
 if [ $DOMAIN != 'false' ] ; then
-  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then 
+  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
     OLD_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
     OLD_SHORT_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
     NEW_SHORT_DOMAIN=$(echo $DOMAIN | cut -d'/' -f3)
 
     ${WP} search-replace "${OLD_DOMAIN}" "${DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${WP} search-replace "${OLD_SHORT_DOMAIN}" "${NEW_SHORT_DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
+    PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
+    ${WP} search-replace "http://${ENV_NAME}" "${PROTOCOL}://${ENV_NAME}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${CACHE_FLUSH}  &>> /var/log/run.log
     ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
   fi
