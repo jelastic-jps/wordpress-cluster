@@ -93,6 +93,7 @@ if ('${settings.ls_addon:false}'== 'true') {
     nodeGroup: "bl",
     restartDelay: 10,
     scalingMode: "STATEFUL",
+    addons: ["cache-clean"],
     displayName: "Load balancer",
     env: {
       WP_PROTECT: wpbfp,
@@ -126,6 +127,7 @@ if ('${settings.ls_addon:false}'== 'true') {
     nodeGroup: "bl",
     restartDelay: 10,
     scalingMode: "STATEFUL",
+    addons: ["cache-clean"],
     displayName: "Load balancer"
   }, {
     nodeType: "nginxphp",
