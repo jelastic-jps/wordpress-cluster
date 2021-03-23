@@ -224,7 +224,6 @@ addons:
     logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
     buttons:
       - caption: Cache clean
-        settings: main
         action: cache-clean
         loadingText: Cleaning...
         confirmText: Do you want to cache clean?
