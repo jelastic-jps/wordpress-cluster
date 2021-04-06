@@ -15,7 +15,6 @@ if ('${settings.glusterfs:false}' == 'true') {
     cluster: true,
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
-    diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
     restartDelay: 10,
     isRedeploySupport: false,
@@ -31,7 +30,6 @@ if ('${settings.glusterfs:false}' == 'true') {
     cluster: '${settings.is_storage_cluster:false}',
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
-    diskLimit: ${settings.st_diskLimit:100},
     nodeGroup: "storage",
     isRedeploySupport: false,
     displayName: "Storage",
@@ -42,12 +40,61 @@ if ('${settings.glusterfs:false}' == 'true') {
   })
 }
 
+if ('${settings.db_async_topology:true}' == 'true') {
+  resp.nodes.push({
+    nodeType: "mysql",
+    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+    fixedCloudlets: ${settings.db_fixedCloudlets:1},
+    count: 1,
+    nodeGroup: "sqldb",
+    skipNodeEmails: true,
+    cluster: false
+  }) 
+} else {
+  if ('${settings.is_db_cluster:true}' == 'true') {
+    resp.nodes.push({
+      nodeType: "mariadb-dockerized",
+      flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+      fixedCloudlets: ${settings.db_fixedCloudlets:1},
+      count: db_count,
+      nodeGroup: "sqldb",
+      restartDelay: 10,
+      skipNodeEmails: true,
+      validation: {
+        minCount: db_count,
+        maxCount: db_count
+      },
+      cluster: {
+        scheme: db_cluster,
+        db_user: "${globals.db_user}",
+        db_pass: "${globals.db_pass}",
+        is_proxysql: false,
+        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+      }
+    }) 
+  } else {
+    resp.nodes.push({
+      nodeType: "mariadb-dockerized",
+      flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+      fixedCloudlets: ${settings.db_fixedCloudlets:1},
+      count: db_count,
+      nodeGroup: "sqldb",
+      restartDelay: 10,
+      skipNodeEmails: true,
+      cluster: false,
+      validation: {
+        minCount: db_count,
+        maxCount: db_count
+      }
+    }) 
+  }
+}
+
 if ('${settings.is_db_cluster:true}' == 'true') {
   resp.nodes.push({
     nodeType: "mariadb-dockerized",
     flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
-    diskLimit: ${settings.db_diskLimit:10},
     count: db_count,
     nodeGroup: "sqldb",
     restartDelay: 10,
@@ -69,7 +116,6 @@ if ('${settings.is_db_cluster:true}' == 'true') {
     nodeType: "mariadb-dockerized",
     flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
     fixedCloudlets: ${settings.db_fixedCloudlets:1},
-    diskLimit: ${settings.db_diskLimit:10},
     count: db_count,
     nodeGroup: "sqldb",
     restartDelay: 10,
@@ -89,7 +135,6 @@ if ('${settings.ls_addon:false}'== 'true') {
     count: ${settings.bl_count:1},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
-    diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
     restartDelay: 10,
     scalingMode: "STATEFUL",
@@ -105,7 +150,6 @@ if ('${settings.ls_addon:false}'== 'true') {
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
-    diskLimit: ${settings.cp_diskLimit:10},
     nodeGroup: "cp",
     restartDelay: 10,
     scalingMode: "STATELESS",
