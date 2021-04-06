@@ -130,6 +130,7 @@ globals:
   success: success
   email: default
   is_install_wp: ${settings.is_install_wp:true}
+  db_async_topology: ${settings.db_async_topology:false}
 
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
