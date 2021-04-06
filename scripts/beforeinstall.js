@@ -49,6 +49,13 @@ if ('${settings.db_async_topology:true}' == 'true') {
     nodeGroup: "sqldb",
     skipNodeEmails: true,
     cluster: false
+  }, {
+    nodeType: "proxysql",
+    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+    fixedCloudlets: ${settings.db_fixedCloudlets:1},
+    count: 1,
+    nodeGroup: "proxy",
+    skipNodeEmails: true 
   }) 
 } else {
   if ('${settings.is_db_cluster:true}' == 'true') {
