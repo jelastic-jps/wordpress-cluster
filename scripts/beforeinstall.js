@@ -26,58 +26,93 @@ if ('${settings.glusterfs:false}' == 'true') {
 } else {
   resp.nodes.push({
     nodeType: "storage",
-    count: 1,
+    count: '${settings.storage_nodes_count:1}',
+    cluster: '${settings.is_storage_cluster:false}',
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     nodeGroup: "storage",
     isRedeploySupport: false,
+    displayName: "Storage",
     validation: {
-      minCount: 1,
-      maxCount: 1
+      minCount: '${settings.storage_nodes_count:1}',
+      maxCount: '${settings.storage_nodes_count:1}'
     }
   })
 }
 
-resp.nodes.push({
-  nodeType: "mariadb-dockerized",
-  flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
-  fixedCloudlets: ${settings.db_fixedCloudlets:1},
-  count: db_count,
-  nodeGroup: "sqldb",
-  restartDelay: 10,
-  skipNodeEmails: true,
-  validation: {
-    minCount: db_count,
-    maxCount: db_count
-  },
-  cluster: {
-    scheme: db_cluster,
-    db_user: "${globals.DB_USER}",
-    db_pass: "${globals.DB_PASS}",
-    is_proxysql: false,
-    custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
-  },
-  env: {
-    SCHEME: db_cluster,
-    DB_USER: "${globals.DB_USER}",
-    DB_PASS: "${globals.DB_PASS}",
-    IS_PROXYSQL: false
-  }  
-});
+if ('${settings.db_async_topology:true}' == 'true') {
+  resp.nodes.push({
+    nodeType: "mysql",
+    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+    fixedCloudlets: ${settings.db_fixedCloudlets:1},
+    count: 1,
+    nodeGroup: "sqldb",
+    skipNodeEmails: true,
+    cluster: false
+  }, {
+    nodeType: "proxysql",
+    flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+    fixedCloudlets: ${settings.db_fixedCloudlets:1},
+    count: 1,
+    nodeGroup: "proxy",
+    skipNodeEmails: true 
+  }) 
+} else {
+  if ('${settings.is_db_cluster:true}' == 'true') {
+    resp.nodes.push({
+      nodeType: "mariadb-dockerized",
+      flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+      fixedCloudlets: ${settings.db_fixedCloudlets:1},
+      count: db_count,
+      nodeGroup: "sqldb",
+      restartDelay: 10,
+      skipNodeEmails: true,
+      validation: {
+        minCount: db_count,
+        maxCount: db_count
+      },
+      cluster: {
+        scheme: db_cluster,
+        db_user: "${globals.db_user}",
+        db_pass: "${globals.db_pass}",
+        is_proxysql: false,
+        custom_conf: "${baseUrl}/configs/sqldb/wordpress.cnf"
+      }
+    }) 
+  } else {
+    resp.nodes.push({
+      nodeType: "mariadb-dockerized",
+      flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
+      fixedCloudlets: ${settings.db_fixedCloudlets:1},
+      count: db_count,
+      nodeGroup: "sqldb",
+      restartDelay: 10,
+      skipNodeEmails: true,
+      cluster: false,
+      validation: {
+        minCount: db_count,
+        maxCount: db_count
+      }
+    }) 
+  }
+}
 
-if ('${settings.ls-addon:false}'== 'true') {
+if ('${settings.ls_addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
-    count: ${settings.bl_count:2},
+    extip: true,
+    count: ${settings.bl_count:1},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     nodeGroup: "bl",
     restartDelay: 10,
     scalingMode: "STATEFUL",
-    addons: ["setup-site-url"],
+    addons: ["cache-clean"],
+    displayName: "Load balancer",
     env: {
       WP_PROTECT: wpbfp,
-      WP_PROTECT_LIMIT: 100
+      WP_PROTECT_LIMIT: 100,
+      DEFAULT_CLUSTER: "FALSE"
     }
   }, {
     nodeType: "litespeedphp",
@@ -87,7 +122,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "cp",
     restartDelay: 10,
     scalingMode: "STATELESS",
-    addons: ["setup-site-url"],
+    displayName: "AppServer",
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true",
@@ -98,22 +133,25 @@ if ('${settings.ls-addon:false}'== 'true') {
 } else {
   resp.nodes.push({
     nodeType: "nginx",
-    count: ${settings.bl_count:2},
+    count: ${settings.bl_count:1},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
+    diskLimit: ${settings.bl_diskLimit:10},
     nodeGroup: "bl",
     restartDelay: 10,
-    addons: ["setup-site-url"],
-    scalingMode: "STATEFUL"
+    scalingMode: "STATEFUL",
+    addons: ["cache-clean"],
+    displayName: "Load balancer"
   }, {
     nodeType: "nginxphp",
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
+    diskLimit: ${settings.cp_diskLimit:10},
     nodeGroup: "cp",
     restartDelay: 10,
     scalingMode: "STATELESS",
-    addons: ["setup-site-url"],
+    displayName: "AppServer",
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true"
