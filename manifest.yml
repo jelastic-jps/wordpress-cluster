@@ -9,7 +9,7 @@ description:
   text: WordPress Cluster Kit with built-in choice of servers, database clustering and scaling mode to create optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.png
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v3.0.1
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v3.0.0
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
@@ -222,7 +222,7 @@ addons:
     type: update
     name: WordPress Cache Cleaner
     description: Clean all cache for all clusters of multiregion topology.
-    logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
+    logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0/images/wp_logo_70.png
     buttons:
       - caption: Cache clean
         action: cache-clean
