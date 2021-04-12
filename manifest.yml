@@ -100,7 +100,7 @@ settings:
       value: false
       disabled: true
 
-    - caption: Install Lightning-Fast Premium CDN with 130+ PoPs
+    - caption: Install Lightning-Fast Premium CDN with 160+ PoPs
       type: checkbox
       name: cdn_addon
       value: true
@@ -140,7 +140,18 @@ onAfterScaleOut[nodeGroup:bl]:
       sudo jem service restart
   
 onAfterScaleOut[nodeGroup:cp]:
-  forEach(event.response.nodes):
+  - forEach(event.response.nodes):
+    - log: Mount Storage
+    - api:
+      - method: jelastic.environment.file.AddMountPointById
+        params:
+          nodeId: ${@i.id}
+          sourceNodeId: ${nodes.storage.master.id}
+          sourcePath: /data
+          path: /var/www/webroot/ROOT
+          sourceAddressType: NODE_GROUP
+          protocol: NFS4
+    - log: App Servers Setup
     - setupCP:
         nodeId: ${@i.id}
  
