@@ -107,7 +107,7 @@ if ('${settings.ls_addon:false}'== 'true') {
     nodeGroup: "bl",
     restartDelay: 10,
     scalingMode: "STATEFUL",
-    addons: ["cache-clean"],
+    addons: ["cache-clean","setup-site-url"],
     displayName: "Load balancer",
     env: {
       WP_PROTECT: wpbfp,
@@ -122,6 +122,7 @@ if ('${settings.ls_addon:false}'== 'true') {
     nodeGroup: "cp",
     restartDelay: 10,
     scalingMode: "STATELESS",
+    addons: ["cache-clean","setup-site-url"],
     displayName: "AppServer",
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
