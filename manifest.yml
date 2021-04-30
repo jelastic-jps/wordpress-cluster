@@ -280,7 +280,7 @@ addons:
 actions:
 
   cache-clean:
-    - install: https://raw.githubusercontent.com/sych74/wordpress-multiregions/master/scripts/cacheManager.jps?_r=${fn.random}
+    - install: https://raw.githubusercontent.com/jelastic-jps/wordpress-multiregions/master/scripts/cacheManager.jps?_r=${fn.random}
       settings:
         clean_cache: true
 
@@ -299,7 +299,7 @@ actions:
         domain: https://${response.out}
 
   setup-domain:
-    - install: ${globals.PATH}/scripts/setupDomain.jps
+    - install: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v3.0.0//scripts/setupDomain.jps
       settings:
         domain: ${settings.siteURL}
 
