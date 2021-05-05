@@ -29,7 +29,6 @@ actions:
         cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=/var/www/webroot/ROOT/
         mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/${nodes.sqldb.master.intIP}/${globals.DB_HOST}/g" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT;
         wget ${baseUrl}../images/favicon.ico -O /var/www/webroot/ROOT/favicon.ico
-        cd /var/www/webroot/ROOT && wp theme update --all --path=/var/www/webroot/ROOT/
  
   installScripts:
     - cmd[${nodes.cp.master.id}]: |- 
