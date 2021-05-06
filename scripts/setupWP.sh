@@ -242,7 +242,8 @@ if [ $wpmu == 'true' ] ; then
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" &>> /var/log/run.log
           ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" &>> /var/log/run.log
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" &>> /var/log/run.log
-	  ${WP} db query "select * from  wp_sitemeta  where meta_key = 'litespeed.conf.object-host'"
+	  echo "RESULT------" >> /var/log/run.log
+	  ${WP} db query "select * from  wp_sitemeta  where meta_key = 'litespeed.conf.object-host'" &>> /var/log/run.log
           ;;
   esac
 fi
