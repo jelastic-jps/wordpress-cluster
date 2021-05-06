@@ -15,8 +15,8 @@ globals:
   CLUSTER: ${settings.cluster:true}
 
 onInstall:
-  - installWP
   - installScripts
+  - installWP
   - setupWP
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
     - nginxPurgeCache
