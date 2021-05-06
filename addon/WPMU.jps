@@ -40,6 +40,5 @@ onInstall:
 
   - cmd[${nodes.cp.master.id}]: |-
       cat /tmp/.htaccess_wpmu >> /var/www/webroot/ROOT/.htaccess
-      wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
-      bash ~/setupWP.sh --wpmu true --MODE ${settings.mode}
+      bash ~/bin/setupWP.sh --wpmu true --MODE ${settings.mode}
       
