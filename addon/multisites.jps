@@ -1,0 +1,45 @@
+jpsType: update
+jpsVersion: '1.1'
+name: Multisites addon for WordPress cluster
+description: Multisites addon for WordPress cluster
+logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+settings:
+  main:
+    fields:
+    - name: mode
+      caption: Multisites mode
+      type: radio-fieldset
+      values:
+        subdir: SubDirectories
+        subdom: SubDomain
+      default: subdir
+
+globals:
+  MODE: ${settings.mode}
+
+onInstall:
+  - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
+    - if ('${globals.MODE}' == 'subdir'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}/configs/cp/nginx/subdir.conf -O /etc/nginx/conf.d/SITES_ENABLED/subdir.conf
+          sudo /etc/init.d/nginx reload
+    - if ('${globals.MODE}' == 'subdom'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}/configs/cp/nginx/subdom.conf -O /etc/nginx/conf.d/SITES_ENABLED/subdom.conf
+          sudo /etc/init.d/nginx reload
+
+  - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
+    - if ('${globals.MODE}' == 'subdir'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}/configs/cp/litespeed/.htaccess_subdir -O /tmp/.htaccess_wpmu
+          
+    - if ('${globals.MODE}' == 'subdom'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}/configs/cp/litespeed/.htaccess_subdom -O /tmp/.htaccess_wpmu
+
+  - cmd[${nodes.cp.master.id}]: |-
+      cat /tmp/.htaccess_wpmu >> /var/www/webroot/ROOT/.htaccess
+      wget ${baseUrl}/scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
+      bash ~/setupWP.sh --wpmu true --MODE ${settings.mode}
+      
