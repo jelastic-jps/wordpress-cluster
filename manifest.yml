@@ -247,10 +247,40 @@ addons:
         - install [bl, cp]: ${response.jps}
           envName: ${event.response.env.envName}
 
+  - id: setup-site-url
+    type: update
+    name: WordPress Site Address (URL)
+    description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
+    logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v3.0.0/images/wp_logo_70.png
+    settings:
+      fields:
+        - type: string
+          name: siteURL
+          caption: Site Address (URL)
+          default: ''
+          required: true
+          regex: "^https?:\\/\\/.+$"
+          regexText: Incorrect Site URL.
+
+    buttons:
+      - caption: Site URL
+        settings: main
+        action: setup-domain
+        loadingText: Applying...
+        confirmText: Do you want to change Site URL?
+        successText:  Site URL for WordPress has been successfully applyed!
+        
+    env:
+      onAfterClone:
+        - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+        - install [bl, cp]: ${response.jps}
+          envName: ${event.response.env.envName}
+
+
 actions:
 
   cache-clean:
-    - install: https://raw.githubusercontent.com/sych74/wordpress-multiregions/master/scripts/cacheManager.jps?_r=${fn.random}
+    - install: https://raw.githubusercontent.com/jelastic-jps/wordpress-multiregions/master/scripts/cacheManager.jps?_r=${fn.random}
       settings:
         clean_cache: true
 
@@ -269,7 +299,7 @@ actions:
         domain: https://${response.out}
 
   setup-domain:
-    - install: ${globals.PATH}/scripts/setupDomain.jps
+    - install: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v3.0.0//scripts/setupDomain.jps
       settings:
         domain: ${settings.siteURL}
 
