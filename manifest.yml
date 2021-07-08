@@ -415,7 +415,7 @@ actions:
         user: root
 
   addHSTS:
-    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $test
+    - cmd[${nodes.cp.master.id}]: source /opt/letsencrypt/settings && echo $test
     - if ('${response.out}' == 'false'):
       - if (/nginxphp/.test("${nodes.cp.nodeType}")):
           cmd[${this.nodeId}]: |-
