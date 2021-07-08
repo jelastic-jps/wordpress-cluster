@@ -202,6 +202,9 @@ onAfterClone:
         }
         return resp;
 
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
   - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
     settings:
@@ -219,6 +222,8 @@ onBeforeMigrate:
       cmd[${nodes.cp.master.id}]: echo false > ~/migrate
 
 onAfterMigrate:
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
   - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
   - if (/${response.out}/.test(true)):
     - script: |
