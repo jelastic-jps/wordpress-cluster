@@ -290,6 +290,7 @@ onInstall:
       user: root
 
   - install-wordpress
+  - initLEwebroot
 
   - if ('${settings.mu-addon:false}' == 'true'): configure-MU
 
@@ -303,7 +304,9 @@ onInstall:
             skipEmail: "true",
             settings: {
               customDomains: "${globals.DOMAIN}",
-              fallbackToX1: "true"
+              fallbackToX1: "true",
+              webroot: "true",
+              webrootPath: "/var/www/webroot/ROOT"
             }
           });
         if ('${settings.cdn-addon:false}' == 'true')
@@ -356,8 +359,15 @@ addons:
 
 actions:
 
+  initLEwebroot:
+    - cmd[cp, bl]: |-
+        [ ! -d /var/lib/jelastic/keys/letsencrypt ] && mkdir -p /var/lib/jelastic/keys/letsencrypt;
+        echo "webroot=true" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "webrootPath=/var/www/webroot/ROOT" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
+      user: root
+
   setup-LE-domain:
-    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
+    - cmd[${nodes.cp.master.id}]: source /opt/letsencrypt/settings && echo $domain
     - install: ${globals.PATH}/scripts/setupDomain.jps
       settings:
         domain: https://${response.out}
