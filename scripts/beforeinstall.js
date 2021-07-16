@@ -68,6 +68,7 @@ resp.nodes.push({
 if ('${settings.ls-addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
+    tag: "3.0.3",
     count: ${settings.bl_count:2},
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
