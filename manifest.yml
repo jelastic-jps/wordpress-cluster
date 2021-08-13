@@ -336,7 +336,6 @@ actions:
     - cmd[${this}]: |-
         yum install glusterfs-fuse -y &>> /var/log/run.log;
         sed -i 's/[^[:space:]][^[:space:]]*/-fstype=glusterfs/2' /etc/autofs.jelastic &>> /var/log/run.log;
-        sed -i 's/\/data/\/jelastic/g' /etc/autofs.jelastic &>> /var/log/run.log;
         service autofs restart;
       user: root
 
