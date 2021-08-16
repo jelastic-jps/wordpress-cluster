@@ -336,7 +336,7 @@ actions:
         wp_url: ${globals.protocol}://${globals.domain}/
         
   glusterfsMount:
-    - cmd[${this}]: |-
+    - cmd[${this.nodeId}]: |-
         yum install glusterfs-fuse -y &>> /var/log/run.log;
         sed -i 's/[^[:space:]][^[:space:]]*/-fstype=glusterfs/2' /etc/autofs.jelastic &>> /var/log/run.log;
         service autofs restart;
