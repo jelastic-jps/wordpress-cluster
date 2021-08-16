@@ -344,7 +344,7 @@ actions:
       
   glusterAllowClient:
     - forEach(i:nodes.storage):
-        cmd[${@i.id}]: gluster volume set data auth.allow ${this}
+        cmd[${@i.id}]: gluster volume set data auth.allow "*"
 
   setupCP:
     - log: CP OPTIMIZATION
