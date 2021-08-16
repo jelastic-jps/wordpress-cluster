@@ -176,7 +176,10 @@ onBeforeRemoveNode[storage]:
     type: warning
     message: Scaling is not supported for storage.
 
-      
+onBeforeStop:
+  - cmd[cp]: service autofs stop;
+    user: root
+
 onInstall:
 
   - if ('${globals.is_install_wp}' == 'true'):
