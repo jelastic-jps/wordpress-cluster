@@ -49,7 +49,7 @@ settings:
       name: ls-addon
       value: true
       disabled: false
-      tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers. More info about LiteSpeed [here](https://docs.jelastic.com/litespeed-web-server/)"
+      tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers. More info about LiteSpeed <a href='https://docs.jelastic.com/litespeed-web-server/' target='_blank'>here</a>"
       showIf:
         true:
           - caption: WordPress Brute Force Attack Protection
