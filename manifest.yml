@@ -44,7 +44,7 @@ settings:
       name: displayfield
       markup:
  
-    - caption: Install LiteSpeed High-Performance Web Server (<a href='https://docs.jelastic.com/litespeed-web-server/#license-pricing' target='_blank'>Additional License Fee</a>)
+    - caption: Install LiteSpeed High-Performance Web Server (Additional License Fee)
       type: checkbox
       name: ls_addon
       value: true
