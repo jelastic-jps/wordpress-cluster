@@ -296,7 +296,6 @@ onInstall:
       user: root
 
   - install-wordpress
-  - initLEwebroot
 
   - if ('${settings.mu-addon:false}' == 'true'): configure-MU
 
@@ -310,9 +309,7 @@ onInstall:
             skipEmail: "true",
             settings: {
               customDomains: "${globals.DOMAIN}",
-              fallbackToX1: "true",
-              webroot: "true",
-              webrootPath: "/var/www/webroot/ROOT"
+              fallbackToX1: "true"
             }
           });
         if ('${settings.cdn-addon:false}' == 'true')
