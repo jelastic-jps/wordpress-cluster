@@ -22,6 +22,7 @@ ARGUMENT_LIST=(
     "CDN_ORI"
     "MODE"
     "DOMAIN"
+    "ENV_NAME"
 
 )
 
@@ -95,6 +96,11 @@ while [[ $# -gt 0 ]]; do
 
         --DOMAIN)
             DOMAIN=$2
+            shift 2
+            ;;
+
+        --ENV_NAME)
+            ENV_NAME=$2
             shift 2
             ;;
 
@@ -174,13 +180,6 @@ if [ $pgcache == 'true' ] ; then
           $W3TC_OPTION_SET pgcache.file.nfs true --type=boolean --path=${SERVER_WEBROOT} &>> $lOG
           ;;
     lscwp)
-          $LSCWP_OPTION_SET cache_browser true --path=${SERVER_WEBROOT} &>> $lOG
-          $LSCWP_OPTION_SET css_http2 true --path=${SERVER_WEBROOT} &>> $lOG
-          $LSCWP_OPTION_SET js_http2 true --path=${SERVER_WEBROOT} &>> $lOG
-          $LSCWP_OPTION_SET optm_qs_rm true --path=${SERVER_WEBROOT} &>> $lOG
-          $LSCWP_OPTION_SET optm_emoji_rm true --path=${SERVER_WEBROOT} &>> $lOG
-          $LSCWP_OPTION_SET esi_enabled true --path=${SERVER_WEBROOT} &>> $lOG
-          $LSCWP_OPTION_SET cache_priv false --path=${SERVER_WEBROOT} &>> $lOG
           ;;
   esac
 fi
@@ -203,7 +202,7 @@ if [ $objectcache == 'true' ] ; then
 fi
 
 if [ $edgeportCDN == 'true' ] ; then
-  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then 
+  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
     case $WPCACHE in
       w3tc)
           generateCdnContent;
@@ -237,19 +236,25 @@ if [ $wpmu == 'true' ] ; then
           ${WP} plugin deactivate litespeed-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log
           [[ ${MODE} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log
           [[ ${MODE} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log
-          ${WP} plugin activate litespeed-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          ${WP} plugin activate litespeed-cache --network --path=${SERVER_WEBROOT} &>> /var/log/run.log
+	  ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" &>> /var/log/run.log
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" &>> /var/log/run.log
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" &>> /var/log/run.log
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" &>> /var/log/run.log
           ;;
   esac
 fi
 
 if [ $DOMAIN != 'false' ] ; then
-  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then 
+  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
     OLD_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
     OLD_SHORT_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
     NEW_SHORT_DOMAIN=$(echo $DOMAIN | cut -d'/' -f3)
 
     ${WP} search-replace "${OLD_DOMAIN}" "${DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${WP} search-replace "${OLD_SHORT_DOMAIN}" "${NEW_SHORT_DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
+    PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
+    ${WP} search-replace "http://${ENV_NAME}" "${PROTOCOL}://${ENV_NAME}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${CACHE_FLUSH}  &>> /var/log/run.log
     ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
   fi
