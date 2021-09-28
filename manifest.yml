@@ -370,7 +370,7 @@ actions:
       user: root
 
   setup-LE-domain:
-    - cmd[${nodes.cp.master.id}]: source /opt/letsencrypt/settings && echo $domain
+    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
     - install: ${globals.PATH}/scripts/setupDomain.jps
       settings:
         domain: https://${response.out}
