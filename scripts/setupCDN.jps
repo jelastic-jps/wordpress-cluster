@@ -7,4 +7,4 @@ onInstall:
   - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
   - cmd[${nodes.cp.master.id}]: |-
       wget https://raw.githubusercontent.com/sych74/wordpress-cluster/v3.0.0/scripts/setupWP.sh?_r=${fn.random} -O ~/bin/setupMG.sh &>> /var/log/run.log
-      bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
+      bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.response.partnerCode}.cdn.jelastic.net
