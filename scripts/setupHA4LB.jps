@@ -15,6 +15,7 @@ onInstall:
           id: "${@i.id}"
           ip: "${@i.address}"
     - setupReplClusters
+    - restartNodesInOrder
 
   - if ('${nodes.bl.master.nodeType}' == 'litespeedadc' && nodes.bl.length == 1): resetReplClusters
 
@@ -43,3 +44,6 @@ actions:
       /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "serverAddr" -v "${this.ip}:1447" "/var/www/conf/ha_config.xml" 2>/dev/null;
       /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "isFileCached" -v "1" "/var/www/conf/ha_config.xml" 2>/dev/null;
 
+  restartNodesInOrder:
+    - forEach(i:nodes.bl):
+        cmd [${@i.id}]: sudo jem service restart
