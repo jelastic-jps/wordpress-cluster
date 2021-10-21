@@ -1,7 +1,7 @@
 type: install
 jpsVersion: '1.7.2'
 name: WordPress Cluster Kit v2
-id: wordpress-cluster-v210
+id: wordpress-cluster
 categories:
   - apps/clusters
   - apps/content-management
