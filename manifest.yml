@@ -1,7 +1,7 @@
 type: install
 jpsVersion: '1.7.2'
 name: WordPress Cluster Kit v2
-id: wordpress-cluster-v210
+id: wordpress-cluster
 categories:
   - apps/clusters
   - apps/content-management
@@ -138,14 +138,14 @@ globals:
   SUCCESS: success
   EMAIL: default
 
-onAfterScaleIn[cp]: updateTriggers
-
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
-      - setupBL:
-          nodeId: ${@i.id}
-  - forEach(nodes.bl):
-      sudo jem service restart
+      - setupBL: ${@i.id}
+  - setupCacheSync
+
+onAfterScaleIn[bl]: setupCacheSync
+
+onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:cp]:
   - updateTriggers
@@ -163,26 +163,6 @@ onAfterScaleOut[nodeGroup:cp]:
     - log: App Servers Setup
     - setupCP:
         nodeId: ${@i.id}
-
-onBeforeAddNode[sqldb]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for database cluster.
-
-onBeforeRemoveNode[sqldb]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for database cluster.
-
-onBeforeAddNode[storage]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for storage.
-
-onBeforeRemoveNode[storage]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for storage.
 
 onAfterStart:
   cmd[cp]: sudo jem service restart
@@ -433,13 +413,13 @@ actions:
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
       settings:
         targetGroup: bl
-        targetNodes: ${this.nodeId}
+        targetNodes: ${this}
         optimization: wordpress
-    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+    - cmd[${this}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+
+  setupCacheSync:
     - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
-      - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
-        user: root
 
   updateTriggers:
     if (!${event.params.auto:true}):

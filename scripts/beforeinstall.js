@@ -17,7 +17,6 @@ if ('${settings.glusterfs:false}' == 'true') {
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     nodeGroup: "storage",
     restartDelay: 10,
-    isRedeploySupport: false,
     validation: {
       minCount: 3,
       maxCount: 3
@@ -30,7 +29,6 @@ if ('${settings.glusterfs:false}' == 'true') {
     flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
     fixedCloudlets: ${settings.st_fixedCloudlets:1},
     nodeGroup: "storage",
-    isRedeploySupport: false,
     validation: {
       minCount: 1,
       maxCount: 1
@@ -73,7 +71,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     nodeGroup: "bl",
     restartDelay: 10,
-    scalingMode: "STATEFUL",
+    scalingMode: "STATELESS",
     addons: ["setup-site-url"],
     env: {
       WP_PROTECT: wpbfp,
