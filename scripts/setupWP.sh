@@ -253,8 +253,6 @@ if [ $DOMAIN != 'false' ] ; then
 
     ${WP} search-replace "${OLD_DOMAIN}" "${DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${WP} search-replace "${OLD_SHORT_DOMAIN}" "${NEW_SHORT_DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
-    PROTOCOL=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d':' -f1)
-    ${WP} search-replace "http://${ENV_NAME}" "${PROTOCOL}://${ENV_NAME}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${CACHE_FLUSH}  &>> /var/log/run.log
     ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
   fi
