@@ -13,6 +13,7 @@ globals:
   WP_URL: "${settings.wp_url}"
 
 onInstall:
+  - installScripts
   - installWP
   - setupWP
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
@@ -34,6 +35,16 @@ actions:
     - cmd[${nodes.cp.master.id}]: |-
         wget ${baseUrl}../scripts/setupWP.sh?_r=${fn.random} -O ~/setupWP.sh &>> /var/log/run.log
         bash ~/setupWP.sh --pgcache true --objectcache true --REDIS_HOST 127.0.0.1
+
+  installScripts:
+    - cmd[${nodes.cp.master.id}]: |-
+        [ ! -d $HOME/bin ] && mkdir $HOME/bin
+        curl -o $HOME/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp
+        echo "export PATH=$PATH:$HOME/bin/" >> $HOME/.bash_profile
+        echo $HOME/bin;
+    - cmd[${nodes.cp.master.id}]:
+        echo ${response.out} >>  /etc/jelastic/redeploy.conf;
+      user: root
 
   nginxPurgeCache:
     - cmd[${nodes.cp.master.id}]: |-
