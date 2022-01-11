@@ -10,7 +10,7 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.1.0
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/load2022
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
