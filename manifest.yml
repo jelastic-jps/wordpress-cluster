@@ -286,7 +286,7 @@ onInstall:
 
   - if ('${settings.mu-addon:false}' == 'true'): configure-MU
   
-- if (${settings.woocommerce:false}): install-woocommerce
+  - if (${settings.woocommerce:false}): install-woocommerce
 
   - if (('${settings.le-addon:false}' == 'true') || ('${settings.cdn-addon:false}' == 'true')):
     - script: |
