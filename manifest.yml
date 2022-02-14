@@ -116,6 +116,13 @@ settings:
       value: false
       disabled: false
       tooltip: "Multisite is a type of WordPress installation that allows you to create and manage a network of multiple websites from a single WordPress dashboard. This lets you easily make changes and keep all of your websites updated from one place."
+      
+    - caption: Install WordPress WooCommerce plugin
+      type: checkbox
+      name: woocommerce
+      value: true
+      disabled: false
+      tooltip: "WooCommerce is an open-source e-commerce plugin for WordPress"
 
     - type: displayfield
       hideLabel: true
@@ -278,6 +285,8 @@ onInstall:
   - install-wordpress
 
   - if ('${settings.mu-addon:false}' == 'true'): configure-MU
+  
+  - if (${settings.woocommerce:false}): install-woocommerce
 
   - if (('${settings.le-addon:false}' == 'true') || ('${settings.cdn-addon:false}' == 'true')):
     - script: |
@@ -438,6 +447,9 @@ actions:
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
           protocol: NFS4
+          
+  install-woocommerce:
+    cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --woocommerce true    
 
 success:
   email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
