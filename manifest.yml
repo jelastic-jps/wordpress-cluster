@@ -117,12 +117,12 @@ settings:
       disabled: false
       tooltip: "Multisite is a type of WordPress installation that allows you to create and manage a network of multiple websites from a single WordPress dashboard. This lets you easily make changes and keep all of your websites updated from one place."
       
-    - caption: Install WordPress WooCommerce plugin
+    - caption: Install WooCommerce
       type: checkbox
       name: woocommerce
-      value: true
+      value: false
       disabled: false
-      tooltip: "WooCommerce is an open-source e-commerce plugin for WordPress"
+      tooltip: "WooCommerce is a free open-source e-commerce plugin designed specifically for WordPress. This is a great platform for a store of any size."
 
     - type: displayfield
       hideLabel: true
