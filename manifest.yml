@@ -319,6 +319,12 @@ onInstall:
 
   - if ('${settings.cdn-addon:false}' == 'true'): setup-edgeport-CDN
 
+  - if ('${settings.success_email}' != 'false'):
+      - return:
+          type: success
+          message: /ssuccess/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
+          email: /success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
+
 addons:
   - id: setup-site-url
     type: update
@@ -451,8 +457,3 @@ actions:
   install-woocommerce:
     cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --woocommerce true    
 
-success:
-  email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
-  text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
-
-startPage: ${globals.PROTOCOL}://${env.domain}/
