@@ -136,12 +136,12 @@ mixins:
 
 globals:
   PATH: ${baseUrl}
-  DB_USER: jelastic-${fn.random}
-  DB_PASS: ${fn.password(10)}
+  DB_USER: ${settings.DB_USER:jelastic-[fn.random]}
+  DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
   DB_HOST: sqldb
   PROTOCOL: http
-  WP_ADMIN_PASS: ${fn.password(10)}
-  LS_ADMIN_PASS: ${fn.password(10)}
+  WP_ADMIN_PASS: ${settings.WP_ADMIN_PASS:[fn.password(10)]}
+  LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
   SUCCESS: success
   EMAIL: default
 
