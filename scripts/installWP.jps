@@ -52,7 +52,8 @@ actions:
 
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
-        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0
+        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0;
+        wp option update permalink_structure '/%postname%' --path=/var/www/webroot/ROOT/;
 
   nginxPurgeCache:
     - cmd[${nodes.cp.master.id}]: |-
@@ -61,4 +62,4 @@ actions:
         mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT
         wp plugin install ${baseUrl}/nginx-fastcgi-cache-purge.zip --path=/var/www/webroot/ROOT/
         wp plugin activate nginx-fastcgi-cache-purge --path=/var/www/webroot/ROOT/
-        wp option update permalink_structure '/%postname%' --path=/var/www/webroot/ROOT/
+     
