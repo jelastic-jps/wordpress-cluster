@@ -53,7 +53,8 @@ actions:
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
         bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0;
-        wp option update permalink_structure '/%postname%' --path=/var/www/webroot/ROOT/;
+        wp option update permalink_structure '/%postname%/' --path=/var/www/webroot/ROOT/;
+        wp rewrite structure '/%postname%/' --path=/var/www/webroot/ROOT/;
 
   nginxPurgeCache:
     - cmd[${nodes.cp.master.id}]: |-
