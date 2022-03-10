@@ -139,11 +139,9 @@ else
 fi
 
 function generateCdnContent () {
-    echo "wp-content/themes/twentynineteen/style.css" > ~/checkCdnContent.txt;
     echo "wp-includes/css/dist/block-library/style.min.css" >> ~/checkCdnContent.txt;
     echo "wp-includes/css/dist/block-library/theme.min.css" >> ~/checkCdnContent.txt;
     echo "wp-includes/js/wp-embed.min.js" >> ~/checkCdnContent.txt;
-    echo "wp-content/themes/twentynineteen/print.css" >> ~/checkCdnContent.txt;
 }
 
 function checkCdnStatus () {
