@@ -12,8 +12,8 @@ logo: /images/wp-cluster-kit.svg
 
 baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.2.0
 
-onBeforeInit: /scripts/settings.js?_r=${fn.random}
-onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
+onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
+onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
 
 skipNodeEmails: true
 nodes: definedInOnBeforeInstall
