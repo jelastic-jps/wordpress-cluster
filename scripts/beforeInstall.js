@@ -71,8 +71,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     nodeGroup: "bl",
     restartDelay: 10,
-    scalingMode: "STATELESS",
-    addons: ["setup-site-url"],
     env: {
       WP_PROTECT: wpbfp,
       WP_PROTECT_LIMIT: 100
@@ -85,8 +83,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
     nodeGroup: "cp",
     restartDelay: 10,
-    scalingMode: "STATELESS",
-    addons: ["setup-site-url"],
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true",
@@ -101,9 +97,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     nodeGroup: "bl",
-    restartDelay: 10,
-    addons: ["setup-site-url"],
-    scalingMode: "STATEFUL"
+    restartDelay: 10
   }, {
     nodeType: "nginxphp",
     engine: "php8.0",
@@ -112,8 +106,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
     nodeGroup: "cp",
     restartDelay: 10,
-    scalingMode: "STATELESS",
-    addons: ["setup-site-url"],
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true"
