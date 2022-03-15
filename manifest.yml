@@ -144,6 +144,10 @@ globals:
   LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
   SUCCESS: default
 
+onAfterScaleOut[nodeGroup:bl]: setupCacheSync
+
+onAfterScaleIn[bl]: setupCacheSync
+
 onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:cp]: updateTriggers
@@ -156,11 +160,15 @@ onAfterInstallAddon [nodeGroup:bl, id:cdn]:
 
 onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setupLEdomain
 
-onAfterClone: 
+onAfterClone:
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
   - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
     settings:
       domain: ${event.response.env.domain}
+
   - install: ${globals.PATH}/scripts/setupCDN.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
 
@@ -172,6 +180,9 @@ onBeforeMigrate:
       cmd[${nodes.cp.master.id}]: echo false > ~/migrate
 
 onAfterMigrate:
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
   - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
   - if (/${response.out}/.test(true)): 
     - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
@@ -186,6 +197,7 @@ onInstall:
   - initLEwebroot
   - if (${settings.is_trigger:true}): setTriggers
   - optimization
+  - setupCacheSync
   - storageMount: NFS4
   - if (/litespeed/.test("${nodes.cp.nodeType}")): setPassword
   - installWordpress
@@ -325,38 +337,10 @@ actions:
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
         version_wordpress: ${globals.version_wordpress}
 
-  setupCP:
-    - log: CP OPTIMIZATION
-    - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
-      settings:
-        targetGroup: cp
-        targetNodes: ${this.nodeId}
-        optimization: wordpress
-    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-    - if (/litespeed/.test("${nodes.cp.nodeType}")):
-      - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
-        user: root
-
-  addHSTS:
-    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $test
-    - if ('${response.out}' == 'false'):
-      - if (/nginxphp/.test("${nodes.cp.nodeType}")):
-          cmd[${this.nodeId}]: |-
-            sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
-            sudo jem service restart;
-      - if (/litespeed/.test("${nodes.cp.nodeType}")):
-          cmd[${nodes.cp.master.id}]:
-            if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
-
-  setupBL:
-    - log: LB OPTIMIZATION
-    - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
-      settings:
-        targetGroup: bl
-        targetNodes: ${this}
-        optimization: wordpress
-    - cmd[${this}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-
+  setupCacheSync:
+    - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - install: /scripts/setupHA4LB.jps?_r=${fn.random}
+  
   updateTriggers:
     if (!${event.params.auto:true}):
       - log: update scaling trigger
