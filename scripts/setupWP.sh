@@ -5,7 +5,8 @@ pgcache=false;
 objectcache=false;
 edgeportCDN=false;
 wpmu=false;
-DOMAIN=false;
+domain=false;
+url=false;
 woocommerce=false;
 
 SERVER_WEBROOT=/var/www/webroot/ROOT
