@@ -161,7 +161,7 @@ onAfterClone:
     envName: ${event.response.env.envName}
     settings:
       domain: ${event.response.env.domain}
-   - install: ${globals.PATH}/scripts/setupCDN.jps?_r=${fn.random}
+  - install: ${globals.PATH}/scripts/setupCDN.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
 
 onBeforeMigrate:
