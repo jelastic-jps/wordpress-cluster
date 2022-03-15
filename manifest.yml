@@ -266,15 +266,16 @@ actions:
   initLEwebroot:
     - cmd[cp, bl]: |-
         [ ! -d /var/lib/jelastic/keys/letsencrypt ] && mkdir -p /var/lib/jelastic/keys/letsencrypt;
-        echo "webroot=true" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "webroot=false" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
         echo "webrootPath=/var/www/webroot/ROOT" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
         echo "test=false" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
       user: root
 
   setupLEdomain:
-    - cmd[${nodes.cp.master.id}]: 
-        source /opt/letsencrypt/settings;
-        bash ~/bin/setupWP.sh --url https://${domain}
+    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
+    - install: ${globals.PATH}/scripts/setupDomain.jps
+      settings:
+        domain: https://${response.out}
 
   optimization:
     - log: Load Balancers and App servers optimization
@@ -344,7 +345,7 @@ actions:
         user: root
 
   addHSTS:
-    - cmd[${nodes.cp.master.id}]: source /opt/letsencrypt/settings && echo $test
+    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $test
     - if ('${response.out}' == 'false'):
       - if (/nginxphp/.test("${nodes.cp.nodeType}")):
           cmd[${this.nodeId}]: |-
