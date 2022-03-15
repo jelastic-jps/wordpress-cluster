@@ -40,7 +40,7 @@ actions:
           wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico
 
   installScripts:
-    - cmd[${nodes.cp.master.id}]: |-
+    - cmd[cp]: |-
         [ ! -d $HOME/bin ] && mkdir $HOME/bin
         curl -o $HOME/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp;
         echo "apache_modules:" > ~/bin/wp-cli.yml;
