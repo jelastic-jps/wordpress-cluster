@@ -188,6 +188,7 @@ onInstall:
   - initLEwebroot
   - if (${settings.is_trigger:true}): setTriggers
   - optimization
+  - storageMount: NFS4
   - if (/litespeed/.test("${nodes.cp.nodeType}")): setPassword
   - installWordpress
   - if ('${settings.mu-addon:false}' == 'true'): configureMultisite  
@@ -228,36 +229,6 @@ onInstall:
           type: success
           message: /ssuccess/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
           email: /success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
-
-addons:
-  - id: setup-site-url
-    type: update
-    name: WordPress Site Address (URL)
-    description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
-    logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
-    settings:
-      fields:
-        - type: string
-          name: siteURL
-          caption: Site Address (URL)
-          default: ''
-          required: true
-          regex: "^https?:\\/\\/.+$"
-          regexText: Incorrect Site URL.
-
-    buttons:
-      - caption: Site URL
-        settings: main
-        action: setup-domain
-        loadingText: Applying...
-        confirmText: Do you want to change Site URL?
-        successText:  Site URL for WordPress has been successfully applyed!
-
-    env:
-      onAfterClone:
-        - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
-        - install [bl, cp]: ${response.jps}
-          envName: ${event.response.env.envName}
 
 actions:
 
@@ -322,6 +293,18 @@ actions:
   setPassword:
     - cmd[cp, bl]: jem passwd set -p ${globals.LS_ADMIN_PASS}
       user: root
+
+  storageMount:
+    - log: Mount Storage
+    - api:
+      - method: jelastic.environment.file.AddMountPointByGroup
+        params:
+          nodeGroup: cp
+          sourceNodeId: ${nodes.storage.master.id}
+          sourcePath: /data
+          path: /var/www/webroot/ROOT
+          sourceAddressType: NODE_GROUP
+          protocol: ${this}
 
   setupCDN:
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
