@@ -227,8 +227,8 @@ onInstall:
   - if ('${settings.success_email}' != 'false'):
       - return:
           type: success
-          message: /ssuccess/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
-          email: /success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
+          message: /success/text/success-${globals.SUCCESS}.md?_r=${fn.random}
+          email: /success/email/success-${nodes.cp.master.nodeType}-${globals.SUCCESS}.md?_r=${fn.random}
 
 actions:
 
@@ -311,8 +311,7 @@ actions:
     - setGlobals:
         CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.jelastic.net/
         CDN: ${env.envName}-${response.response.partnerCode}.cdn.jelastic.net
-        SUCCESS: success-cdn
-        EMAIL: cdn
+        SUCCESS: cdn
     - install: /scripts/setupCDN.jps
 
   configureMultisite:
