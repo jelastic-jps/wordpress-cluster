@@ -278,7 +278,7 @@ actions:
           PROTOCOL: https
 
   setDomain:
-    - script: ${globals.WP_CLUSTER_PATH}/scripts/idna.js
+    - script: /scripts/idna.js
       domains: ${env.domain}
     - setGlobals:
         DOMAIN: ${response.domains}
