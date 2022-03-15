@@ -48,7 +48,7 @@ actions:
         echo "export PATH=$PATH:$HOME/bin/" >> $HOME/.bash_profile;
         wget ${baseUrl}/setupWP.sh?_r=${fn.random} -O ~/bin/setupWP.sh &>> /var/log/run.log;
         echo $HOME/bin;
-    - cmd[${nodes.cp.master.id}]:
+    - cmd[cp]:
         echo ${response.out} >>  /etc/jelastic/redeploy.conf;
       user: root
 
