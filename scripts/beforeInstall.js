@@ -92,16 +92,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     },      
     volumes: [
       "/var/www/webroot/ROOT"
-    ],  
-    volumeMounts: {
-      "/var/www/webroot/ROOT": {
-        readOnly: "false",
-        sourcePath: "/data",
-        sourceNodeGroup: "storage",
-        sourceAddressType: "NODE_GROUP",
-        protocol: nfs_protocol
-      }
-    }
+    ]
   })
 } else {
   resp.nodes.push({
@@ -125,16 +116,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     },
     volumes: [
       "/var/www/webroot/ROOT"
-    ],  
-    volumeMounts: {
-      "/var/www/webroot/ROOT": {
-        readOnly: "false",
-        sourcePath: "/data",
-        sourceNodeGroup: "storage",
-        sourceAddressType: "NODE_GROUP",
-        protocol: nfs_protocol
-      }
-    }
+    ]
   })
 }
 
