@@ -144,10 +144,6 @@ globals:
   LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
   SUCCESS: default
 
-onAfterScaleOut[nodeGroup:bl]:
-  - forEach(event.response.nodes):
-      - setupBL: ${@i.id}
-
 onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:cp]: updateTriggers
@@ -165,6 +161,8 @@ onAfterClone:
     envName: ${event.response.env.envName}
     settings:
       domain: ${event.response.env.domain}
+   - install: ${globals.PATH}/scripts/setupCDN.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
 
 onBeforeMigrate:
   - cmd[${nodes.cp.master.id}]: wp option get siteurl --path=/var/www/webroot/ROOT | cut -d'/' -f3;
