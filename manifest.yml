@@ -217,8 +217,6 @@ onInstall:
 
   - if ('${settings.le-addon:false}' == 'true'):
       - setupLEdomain
-      - addHSTS:
-          nodeId: cp
 
   - if ('${settings.cdn-addon:false}' == 'true'): setupCDN
 
@@ -233,9 +231,8 @@ actions:
   limits:
     - env.control.ApplyNodeGroupData[bl,cp,sqldb,storage]:
         data:
-          validation : 
-            minCount: 1
-            
+          isRequired: true
+
   setProtocol:
     - script: |
         return {
@@ -271,9 +268,7 @@ actions:
 
   setupLEdomain:
     - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
-    - install: ${globals.PATH}/scripts/setupDomain.jps
-      settings:
-        domain: https://${response.out}
+    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --url https://${response.out};
 
   optimization:
     - log: Load Balancers and App servers optimization
