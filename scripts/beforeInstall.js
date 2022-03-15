@@ -1,6 +1,7 @@
 var wpbfp = '${settings.wp_protect}' == 'true' ? "THROTTLE" : "OFF";
 var db_cluster = '${settings.galera}' == 'true' ? "galera" : "master";
 var db_count = '${settings.galera}' == 'true' ? 3 : 2;
+var nfs_protocol = '${settings.glusterfs}' == 'true' ? "GLUSTER" : "NFS4";
 
 var resp = {
   result: 0,
@@ -88,6 +89,18 @@ if ('${settings.ls-addon:false}'== 'true') {
       REDIS_ENABLED: "true",
       WAF: "${settings.waf:false}",
       WP_PROTECT: "OFF"
+    },      
+    volumes: [
+      "/var/www/webroot/ROOT"
+    ],  
+    volumeMounts: {
+      "/var/www/webroot/ROOT": {
+        readOnly: "false",
+        sourcePath: "/data",
+        sourceNodeGroup: "storage",
+        sourceAddressType: "NODE_GROUP",
+        protocol: nfs_protocol
+      }
     }
   })
 } else {
@@ -109,6 +122,18 @@ if ('${settings.ls-addon:false}'== 'true') {
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
       REDIS_ENABLED: "true"
+    },
+    volumes: [
+      "/var/www/webroot/ROOT"
+    ],  
+    volumeMounts: {
+      "/var/www/webroot/ROOT": {
+        readOnly: "false",
+        sourcePath: "/data",
+        sourceNodeGroup: "storage",
+        sourceAddressType: "NODE_GROUP",
+        protocol: nfs_protocol
+      }
     }
   })
 }
