@@ -45,5 +45,10 @@ actions:
       /usr/bin/xmlstarlet ed --inplace -s "haConfig/replication"  -t elem -n "isFileCached" -v "1" "/var/www/conf/ha_config.xml" 2>/dev/null;
 
   restartNodesInOrder:
-    - forEach(i:nodes.bl):
-        cmd [${@i.id}]: sudo jem service restart
+    - forEach(i:nodes.bl): |-
+      - cmd[${@i.id}]: |- 
+          jem service stop;
+          pkill -9 lslbd;
+          jem service restart;
+        user: root
+ 
