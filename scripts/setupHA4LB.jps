@@ -16,6 +16,7 @@ onInstall:
           ip: "${@i.address}"
     - setupReplClusters
     - restartNodesInOrder
+    - cacheClean
 
   - if ('${nodes.bl.master.nodeType}' == 'litespeedadc' && nodes.bl.length == 1): resetReplClusters
 
@@ -51,4 +52,7 @@ actions:
           pkill -9 lslbd;
           jem service restart;
         user: root
- 
+
+  cacheClean:
+    cmd[bl]: |-
+      [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* &>> /var/log/run.log;
