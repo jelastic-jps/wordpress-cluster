@@ -1,9 +1,13 @@
 jpsType: update
 name: Balancer Rebuild 
 description: This script for balancer rebuild 
-id: magento-balancer-rebuild
+id: wordpress-balancer-rebuild
   
 onInstall:
+  - cmd[bl]: |- 
+      jem service stop;
+      pkill -9 lslbd;
+    user: root
   - cmd[bl]: |-
       [ -f /var/www/conf/hosts_list ] && rm -f /var/www/conf/hosts_list;
   - forEach(i:nodes.cp):

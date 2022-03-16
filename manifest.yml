@@ -144,6 +144,10 @@ globals:
   LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
   SUCCESS: default
 
+onAfterScaleOut[nodeGroup:bl]: setupCacheSync
+
+onAfterScaleIn[bl]: setupCacheSync
+
 onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:cp]: updateTriggers
@@ -159,6 +163,9 @@ onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setupLEdomain
 onAfterClone:
   - install: 
     jps: ${globals.PATH}/scripts/balancerRebuild.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
 
   - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
@@ -194,6 +201,7 @@ onInstall:
   - initLEwebroot
   - if (${settings.is_trigger:true}): setTriggers
   - optimization
+  - setupCacheSync
   - storageMount: NFS4
   - if (/litespeed/.test("${nodes.cp.nodeType}")): setPassword
   - installWordpress
