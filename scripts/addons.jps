@@ -1,0 +1,66 @@
+type: update
+id: wordpress-addons
+name: Addons for WordPress
+description: Addons for WordPress
+
+onAfterClone:
+  - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
+  - install [cp]: ${response.jps}
+    envName: ${event.response.env.envName}
+
+onInstall:
+  installAddon:
+  - id: setup-site-url-addon
+    nodeGroup: cp  
+  - id: cache-purge-addon
+    nodeGroup: cp  
+
+addons:
+  - id: setup-site-url-addon
+    type: update
+    name: WordPress Site Address (URL)
+    description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
+    logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
+    settings:
+      fields:
+        - type: string
+          name: siteURL
+          caption: Site Address (URL)
+          default: ''
+          required: true
+          regex: "^https?:\\/\\/.+$"
+          regexText: Incorrect Site URL.
+
+    buttons:
+      - caption: Site URL
+        settings: main
+        action: setup_site_url
+        loadingText: Applying...
+        confirmText: Do you want to change Site URL?
+        successText:  Site URL for WordPress has been successfully applyed!
+
+  - id: cache-purge-addon
+    type: update
+    name: Cache Manager
+    description: Clean all caches.
+    
+    buttons:
+      - caption: Clean all caches
+        action: cache_purge
+        loadingText: Cleaning...
+        confirmText: Do you want to clean all caches?
+        successText:  Caches have been successfully cleaned!                
+    
+actions:
+  cache_purge:
+    - cmd[cp]: |-
+        wp litespeed-purge all --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;;
+        wp cache flush --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
+    - if (nodes.bl):
+        cmd[bl]: |-
+          [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* &>> /var/log/run.log;
+              
+  setup_site_url:
+    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --url ${settings.siteURL}
+    - cache_purge
+    

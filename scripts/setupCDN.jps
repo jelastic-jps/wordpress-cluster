@@ -1,9 +1,22 @@
 jpsType: update
 id: edgeport-cdn-wordpress
-name: Edgeport CDN setup script
-description: This script for Edgeport CDN configurations
-  
+name: Edgeport CDN configuration for WordPress
 onInstall:
-  - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
-  - cmd[${nodes.cp.master.id}]: |-
-      bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.response.partnerCode}.cdn.jelastic.net
+  - script: |
+      var resp, isCDN, partnerCode;
+      isCDN = jelastic.dev.scripting.Eval("appstore", session, "GetApps", {
+        targetAppid: '${env.appid}',
+        search: {
+          appstore: 1,
+          app_id: "cdn"
+        }
+      });
+      if (isCDN.result != 0) return isCDN;
+      partnerCode = jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1});
+      if (partnerCode.result != 0) return partnerCode;
+      return { result: 0, isCDN: isCDN.response.apps[0].isInstalled, partnerCode: partnerCode.response.partnerCode }
+
+  - if (${response.isCDN}):
+    - cmd[${nodes.cp.master.id}]: |-
+        bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.partnerCode}.cdn.jelastic.net
+ 

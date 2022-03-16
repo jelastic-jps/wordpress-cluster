@@ -1,0 +1,14 @@
+jpsType: update
+name: Balancer Rebuild 
+description: This script for balancer rebuild 
+id: magento-balancer-rebuild
+  
+onInstall:
+  - cmd[bl]: |-
+      [ -f /var/www/conf/hosts_list ] && rm -f /var/www/conf/hosts_list;
+  - forEach(i:nodes.cp):
+      cmd[bl]: echo '${@i.address}' >> /var/www/conf/hosts_list;
+  - cmd[bl]: |-
+      jem balancer clear;
+      jem balancer rebuildCommon;
+    user: root
