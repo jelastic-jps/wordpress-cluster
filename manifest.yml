@@ -161,6 +161,10 @@ onAfterInstallAddon [nodeGroup:bl, id:cdn]:
 onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setupLEdomain
 
 onAfterClone:
+  - install: 
+    jps: ${globals.PATH}/scripts/balancerRebuild.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
   - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
 
