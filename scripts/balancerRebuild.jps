@@ -1,7 +1,7 @@
 jpsType: update
 name: Balancer Rebuild 
 description: This script for balancer rebuild 
-id: magento-balancer-rebuild
+id: wordpress-balancer-rebuild
   
 onInstall:
   - cmd[bl]: |-
