@@ -185,8 +185,7 @@ onBeforeMigrate:
 
 onAfterMigrate:
   - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-
+  - install: ${globals.PATH}/scripts/balancerRebuild.jps?_r=${fn.random}
   - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
   - if (/${response.out}/.test(true)): 
     - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
