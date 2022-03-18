@@ -136,7 +136,7 @@ mixins:
 
 globals:
   PATH: ${baseUrl}
-  DB_USER: ${settings.DB_USER:jelastic-[fn.random]}
+  DB_USER: ${settings.DB_USER:user-[fn.random]}
   DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
   DB_HOST: sqldb
   PROTOCOL: http
