@@ -17,6 +17,7 @@ globals:
 onInstall:
   - installScripts
   - installWP
+  - disableAutoUpdate
   - setupWP
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
     - nginxPurgeCache
@@ -51,6 +52,10 @@ actions:
     - cmd[cp]:
         echo ${response.out} >>  /etc/jelastic/redeploy.conf;
       user: root
+
+  disableAutoUpdate:
+    - cmd[${nodes.cp.master.id}]: |-
+        grep -E "(WP_AUTO_UPDATE_CORE)" /var/www/webroot/ROOT/wp-config.php &> /dev/null || sed -i "/^\$table_prefix.*/a define( 'WP_AUTO_UPDATE_CORE', false );" /var/www/webroot/ROOT/wp-config.php;
 
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
