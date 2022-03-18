@@ -55,7 +55,7 @@ actions:
 
   disableAutoUpdate:
     - cmd[${nodes.cp.master.id}]: |-
-        grep -E "(WP_AUTO_UPDATE_CORE)" /var/www/webroot/ROOT/wp-config.php &> /dev/null || sed -i "/^\$table_prefix.*/a define( 'WP_AUTO_UPDATE_CORE', false );" /var/www/webroot/ROOT/wp-config.php;
+        grep -qE "(WP_AUTO_UPDATE_CORE)" /var/www/webroot/ROOT/wp-config.php || sed -i "/^\$table_prefix.*/a define( 'WP_AUTO_UPDATE_CORE', false );" /var/www/webroot/ROOT/wp-config.php;
 
   setupWP:
     - cmd[${nodes.cp.master.id}]: |-
