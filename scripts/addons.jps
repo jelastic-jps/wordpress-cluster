@@ -20,7 +20,7 @@ addons:
     type: update
     name: WordPress Site Address (URL)
     description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
-    logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
+    logo: https://github.com/jelastic-jps/wordpress/blob/master/wordpress-edition/images/logo/cluster.svg
     settings:
       fields:
         - type: string
@@ -43,6 +43,7 @@ addons:
     type: update
     name: Cache Manager
     description: Clean all caches.
+    logo: https://github.com/jelastic-jps/wordpress/blob/master/wordpress-edition/images/logo/cluster.svg
     
     buttons:
       - caption: Clean all caches
@@ -52,15 +53,21 @@ addons:
         successText:  Caches have been successfully cleaned!                
     
 actions:
-  cache_purge:
+  litespeed-cache-clean:
     - cmd[cp]: |-
-        wp litespeed-purge all --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;;
-        wp cache flush --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
+        wp litespeed-purge all --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
     - if (nodes.bl):
         cmd[bl]: |-
           [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* &>> /var/log/run.log;
+
+  wordpress-cache-clean:
+    - cmd[cp]: |-
+        wp cache flush --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
+
+  cache_purge:
+    - if (/litespeed/.test("${nodes.cp.nodeType}")): litespeed-cache-clean
+    - wordpress-cache-clean
               
   setup_site_url:
     - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --url ${settings.siteURL}
     - cache_purge
-    
