@@ -176,6 +176,9 @@ onAfterClone:
   - install: ${globals.PATH}/scripts/setupCDN.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
 
+  - install: ${globals.PATH}/scripts/cacheClean.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
 onBeforeMigrate:
   - cmd[${nodes.cp.master.id}]: wp option get siteurl --path=/var/www/webroot/ROOT | cut -d'/' -f3;
   - if (/${response.out}/.test(env.domain)):
@@ -187,10 +190,11 @@ onAfterMigrate:
   - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
   - install: ${globals.PATH}/scripts/balancerRebuild.jps?_r=${fn.random}
   - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
-  - if (/${response.out}/.test(true)): 
+  - if (/${response.out}/.test(true)):
     - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
       settings:
-        domain: ${env.domain}         
+        domain: ${env.domain}
+  - install: ${globals.PATH}/scripts/cacheClean.jps?_r=${fn.random}
 
 onInstall:
 
@@ -230,11 +234,9 @@ onInstall:
           });
         return { result: 0, onAfterReturn: { install: actions } };
 
-  - if ('${settings.le-addon:false}' == 'true'):
-      - setupLEdomain
-
+  - if ('${settings.le-addon:false}' == 'true'): setupLEdomain
   - if ('${settings.cdn-addon:false}' == 'true'): setupCDN
-
+  - install: ${globals.PATH}/scripts/cacheClean.jps?_r=${fn.random}
   - if ('${settings.success_email}' != 'false'):
       - return:
           type: success
