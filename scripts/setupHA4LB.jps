@@ -48,7 +48,6 @@ actions:
   restartNodesInOrder:
     - forEach(i:nodes.bl):
       - cmd[${@i.id}]: |- 
-          jem service stop;
           pkill -9 lslbd;
           jem service restart;
         user: root
