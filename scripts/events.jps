@@ -59,3 +59,14 @@ onAfterMigrate:
       settings:
         domain: ${env.domain}
   - install: /scripts/cacheClean.jps?_r=${fn.random}
+  
+actions:
+  setupCacheSync:
+    - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - install: /scripts/setupHA4LB.jps?_r=${fn.random}
+  
+  updateTriggers:
+    if (!${event.params.auto:true}):
+      - log: update scaling trigger
+      - script: /scripts/updateTriggers.js
+        count: ${nodes.cp.length}
