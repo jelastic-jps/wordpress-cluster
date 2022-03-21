@@ -9,8 +9,6 @@ onInstall:
 
 actions:
   litespeed-cache-clean:
-    - cmd[cp]: |-
-        wp litespeed-purge all --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
     - if (nodes.bl):
         cmd[bl]: |-
           [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* &>> /var/log/run.log;
