@@ -144,54 +144,6 @@ globals:
   LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
   SUCCESS: default
 
-onAfterScaleOut[nodeGroup:bl]: setupCacheSync
-
-onAfterScaleIn[bl]: setupCacheSync
-
-onAfterScaleIn[cp]: updateTriggers
-
-onAfterScaleOut[nodeGroup:cp]: updateTriggers
-
-onAfterStart:
-  cmd[cp]: sudo jem service restart
-
-onAfterInstallAddon [nodeGroup:bl, id:cdn]:
-  - install: ${globals.PATH}/scripts/setupCDN.jps
-
-onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: setupLEdomain
-
-onAfterClone:
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-  
-  - install: 
-    jps: ${globals.PATH}/scripts/balancerRebuild.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-
-  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-    settings:
-      domain: ${event.response.env.domain}
-
-  - install: ${globals.PATH}/scripts/setupCDN.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-
-onBeforeMigrate:
-  - cmd[${nodes.cp.master.id}]: wp option get siteurl --path=/var/www/webroot/ROOT | cut -d'/' -f3;
-  - if (/${response.out}/.test(env.domain)):
-      cmd[${nodes.cp.master.id}]: echo true > ~/migrate
-  - else:
-      cmd[${nodes.cp.master.id}]: echo false > ~/migrate
-
-onAfterMigrate:
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-  - install: ${globals.PATH}/scripts/balancerRebuild.jps?_r=${fn.random}
-  - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
-  - if (/${response.out}/.test(true)): 
-    - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-      settings:
-        domain: ${env.domain}         
-
 onInstall:
 
   - limits
@@ -230,11 +182,12 @@ onInstall:
           });
         return { result: 0, onAfterReturn: { install: actions } };
 
-  - if ('${settings.le-addon:false}' == 'true'):
-      - setupLEdomain
-
+  - if ('${settings.le-addon:false}' == 'true'): setupLEdomain
   - if ('${settings.cdn-addon:false}' == 'true'): setupCDN
-
+  - install: 
+    - jps: /scripts/cacheClean.jps?_r=${fn.random}
+    - jps: /scripts/addons.jps?_r=${fn.random}
+    - jps: /scripts/events.jps?_r=${fn.random}
   - if ('${settings.success_email}' != 'false'):
       - return:
           type: success
@@ -351,4 +304,5 @@ actions:
         count: ${nodes.cp.length}
           
   installWoocommerce:
-    cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --woocommerce true    
+    cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --woocommerce true
+  

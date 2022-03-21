@@ -1,0 +1,18 @@
+jpsType: update
+name: Cache Clean 
+description: This script for cache clean
+id: wordpress-cache-clean
+
+onInstall:
+  - if (/litespeed/.test("${nodes.cp.nodeType}")): litespeed-cache-clean
+  - wordpress-cache-clean
+
+actions:
+  litespeed-cache-clean:
+    - if (nodes.bl):
+        cmd[bl]: |-
+          [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* &>> /var/log/run.log;
+
+  wordpress-cache-clean:
+    - cmd[cp]: |-
+        wp cache flush --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
