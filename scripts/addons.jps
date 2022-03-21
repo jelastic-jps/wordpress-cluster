@@ -42,7 +42,7 @@ addons:
   - id: cache-purge-addon
     type: update
     name: Cache Manager
-    description: Clean all caches at once: Object Cache, Static Cache ...
+    description: Clean all caches at once. Object Cache, Static Cache...
     logo: https://github.com/jelastic-jps/wordpress/blob/master/wordpress-edition/images/logo/cluster.svg
     
     buttons:
