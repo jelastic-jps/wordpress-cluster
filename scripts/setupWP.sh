@@ -5,9 +5,7 @@ pgcache=false;
 objectcache=false;
 edgeportCDN=false;
 wpmu=false;
-domain=false;
-url=false;
-woocommerce=false;
+DOMAIN=false;
 
 SERVER_WEBROOT=/var/www/webroot/ROOT
 
@@ -23,10 +21,8 @@ ARGUMENT_LIST=(
     "CDN_URL"
     "CDN_ORI"
     "MODE"
-    "url"
-    "domain"
+    "DOMAIN"
     "ENV_NAME"
-    "woocommerce"
 
 )
 
@@ -98,13 +94,8 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
 
-        --url)
-            url=$2
-            shift 2
-            ;;
-            
-        --domain)
-            domain=$2
+        --DOMAIN)
+            DOMAIN=$2
             shift 2
             ;;
 
@@ -112,11 +103,6 @@ while [[ $# -gt 0 ]]; do
             ENV_NAME=$2
             shift 2
             ;;
-
-	--woocommerce)
-	    woocommerce=$2
-	    shift 2
-	    ;;
 
         *)
             break
@@ -146,7 +132,6 @@ else
 fi
 
 function generateCdnContent () {
-    echo "wp-content/themes/twentytwentytwo/style.css" > ~/checkCdnContent.txt;
     echo "wp-includes/css/dist/block-library/style.min.css" >> ~/checkCdnContent.txt;
     echo "wp-includes/css/dist/block-library/theme.min.css" >> ~/checkCdnContent.txt;
     echo "wp-includes/js/wp-embed.min.js" >> ~/checkCdnContent.txt;
@@ -250,35 +235,24 @@ if [ $wpmu == 'true' ] ; then
           [[ ${MODE} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log
           [[ ${MODE} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log
           ${WP} plugin activate litespeed-cache --network --path=${SERVER_WEBROOT} &>> /var/log/run.log
-	  ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" &>> /var/log/run.log
-          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" &>> /var/log/run.log
-          ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" &>> /var/log/run.log
-          ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" &>> /var/log/run.log
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
   esac
 fi
 
-if [ $url != 'false' ] ; then
+if [ $DOMAIN != 'false' ] ; then
   if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
-    old_url=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
-    old_domain=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
-    new_domain=$(echo $url | cut -d'/' -f3)
-    ${WP} search-replace "${old_url}" "${url}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
-    ${WP} search-replace "${old_domain}" "${new_domain}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
+    OLD_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT})
+    OLD_SHORT_DOMAIN=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
+    NEW_SHORT_DOMAIN=$(echo $DOMAIN | cut -d'/' -f3)
+
+    ${WP} search-replace "${OLD_DOMAIN}" "${DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
+    ${WP} search-replace "${OLD_SHORT_DOMAIN}" "${NEW_SHORT_DOMAIN}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${CACHE_FLUSH}  &>> /var/log/run.log
     ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
   fi
-fi
-
-if [ $domain != 'false' ] ; then
-  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
-    old_domain=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
-    ${WP} search-replace "${old_domain}" "${domain}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
-    ${CACHE_FLUSH}  &>> /var/log/run.log
-    ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
-  fi
-fi
-
-if [ $woocommerce == 'true' ] ; then
-  ${WP} plugin install woocommerce --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log
 fi
