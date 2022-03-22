@@ -5,11 +5,12 @@ id: wordpress-cluster
 categories:
   - apps/clusters
   - apps/content-management
-description: 
+description:
   text: WordPress Cluster Kit with highly available Load Balancer and Shared Storage with GlusterFS, database clustering, and scaling mode to create an optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0
+
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.1.0
 
 onBeforeInit: /scripts/settings.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
@@ -25,10 +26,10 @@ settings:
       default: slow
       required: true
       width: 225
-      tooltip: | 
+      tooltip: |
         Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes.
         <p>Read more about <a href="https://docs.jelastic.com/automatic-horizontal-scaling">Automatic Horizontal Scaling</a></p>
-      values:        
+      values:
         - value: slow
           caption: Low Load
           tooltip: <h2>Low load scaling strategy</h2>add 1 new node when CPU > 70% <p>remove when CPU < 20%</p>
@@ -38,12 +39,12 @@ settings:
         - value: fast
           caption: High Load
           tooltip: <h3>High load scaling strategy</h3>add 2 new nodes when CPU > 30% <p>remove when CPU < 10%</p>
-  
+
     - caption: Advanced Features
       type: displayfield
       name: displayfield
       markup:
- 
+
     - caption: Install LiteSpeed High-Performance Web Server
       type: checkbox
       name: ls-addon
@@ -73,21 +74,21 @@ settings:
             value: false
             disabled: true
             tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
-        
+
           - caption: Web Application Firewall
             type: checkbox
             name: waf
             value: false
             disabled: true
             tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
-      
+
     - caption: Install MariaDB Galera Cluster
       type: checkbox
       name: galera
       value: true
       disabled: false
       tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
-             
+
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
@@ -119,7 +120,7 @@ settings:
     - type: displayfield
       hideLabel: true
       hidden: true
-      name: bl_count   
+      name: bl_count
       value: 2
       markup:
 
@@ -136,16 +137,16 @@ globals:
   LS_ADMIN_PASS: ${fn.password(10)}
   SUCCESS: success
   EMAIL: default
-  
-onAfterScaleIn[cp]: updateTriggers
 
 onAfterScaleOut[nodeGroup:bl]:
   - forEach(event.response.nodes):
-      - setupBL:
-          nodeId: ${@i.id}
-  - forEach(nodes.bl): 
-      sudo jem service restart
-  
+      - setupBL: ${@i.id}
+  - setupCacheSync
+
+onAfterScaleIn[bl]: setupCacheSync
+
+onAfterScaleIn[cp]: updateTriggers
+
 onAfterScaleOut[nodeGroup:cp]:
   - updateTriggers
   - forEach(event.response.nodes):
@@ -162,46 +163,29 @@ onAfterScaleOut[nodeGroup:cp]:
     - log: App Servers Setup
     - setupCP:
         nodeId: ${@i.id}
- 
-onBeforeAddNode[sqldb]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for database cluster.
 
-onBeforeRemoveNode[sqldb]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for database cluster.
-
-onBeforeAddNode[storage]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for storage.
-
-onBeforeRemoveNode[storage]:
-  stopEvent:
-    type: warning
-    message: Scaling is not supported for storage.
-      
-onAfterStart: 
+onAfterStart:
   cmd[cp]: sudo jem service restart
-  
+
 onAfterInstallAddon [nodeGroup:bl, id:cdn]:
   - install: ${globals.PATH}/scripts/setupCDN.jps
- 
-onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]: 
+
+onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]:
   - setup-LE-domain
-  - addHSTS:  
+  - addHSTS:
       nodeId: cp
 
-onAfterClone: 
+onAfterClone:
   - script: |
         var resp = {result:0}
         if (${event.response.env.sslstate}) {
           resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
         }
         return resp;
- 
+
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
   - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
     settings:
@@ -210,7 +194,7 @@ onAfterClone:
   - if (/litespeed/.test("${nodes.bl.nodeType}")):
     - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
       envName: ${event.response.env.envName}
-    
+
 onBeforeMigrate:
   - cmd[${nodes.cp.master.id}]: wp option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3;
   - if (/${response.out}/.test(env.domain)):
@@ -219,6 +203,8 @@ onBeforeMigrate:
       cmd[${nodes.cp.master.id}]: echo false > ~/migrate
 
 onAfterMigrate:
+  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
   - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
   - if (/${response.out}/.test(true)):
     - script: |
@@ -227,16 +213,16 @@ onAfterMigrate:
           resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
         }
         return resp;
- 
+
     - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
       settings:
         domain: ${globals.PROTOCOL}://${env.domain}
-      
+
   - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-      
+
   - cmd[cp]: sudo jem service restart
-      
+
 onInstall:
 
   - script: |
@@ -250,7 +236,7 @@ onInstall:
 
   - script: /scripts/idna.js
   - setGlobals:
-      DOMAIN: ${response.domain}         
+      DOMAIN: ${response.domain}
 
   - if (${settings.is_trigger:true}):
     - log: Auto Scaling Triggers
@@ -266,7 +252,7 @@ onInstall:
   - if ('${settings.le-addon:false}' == 'true'):
       - setGlobals:
           PROTOCOL: https
-   
+
   - log: Load Balancers and App servers optimization
   - install:
     - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
@@ -290,7 +276,7 @@ onInstall:
       user: root
 
   - install-wordpress
- 
+
   - if ('${settings.mu-addon:false}' == 'true'): configure-MU
 
   - if (('${settings.le-addon:false}' == 'true') || ('${settings.cdn-addon:false}' == 'true')):
@@ -316,14 +302,14 @@ onInstall:
             }
           });
         return { result: 0, onAfterReturn: { install: actions } };
-   
-  - if ('${settings.le-addon:false}' == 'true'): 
+
+  - if ('${settings.le-addon:false}' == 'true'):
       - setup-LE-domain
-      - addHSTS:  
+      - addHSTS:
           nodeId: cp
 
   - if ('${settings.cdn-addon:false}' == 'true'): setup-edgeport-CDN
-  
+
 addons:
   - id: setup-site-url
     type: update
@@ -347,14 +333,21 @@ addons:
         loadingText: Applying...
         confirmText: Do you want to change Site URL?
         successText:  Site URL for WordPress has been successfully applyed!
-        
+
     env:
       onAfterClone:
         - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
         - install [bl, cp]: ${response.jps}
           envName: ${event.response.env.envName}
-    
+
 actions:
+
+  initLEwebroot:
+    - cmd[cp, bl]: |-
+        [ ! -d /var/lib/jelastic/keys/letsencrypt ] && mkdir -p /var/lib/jelastic/keys/letsencrypt;
+        echo "webroot=true" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "webrootPath=/var/www/webroot/ROOT" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
+      user: root
 
   setup-LE-domain:
     - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
@@ -370,8 +363,8 @@ actions:
   setup-edgeport-CDN:
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
     - setGlobals:
-        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.edgeport.net/
-        CDN: ${env.envName}-${response.response.partnerCode}.cdn.edgeport.net
+        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.jelastic.net/
+        CDN: ${env.envName}-${response.response.partnerCode}.cdn.jelastic.net
         SUCCESS: success-cdn
         EMAIL: cdn
     - install: /scripts/setupCDN.jps
@@ -403,7 +396,7 @@ actions:
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
         user: root
-        
+
   addHSTS:
     - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $test
     - if ('${response.out}' == 'false'):
@@ -414,20 +407,20 @@ actions:
       - if (/litespeed/.test("${nodes.cp.nodeType}")):
           cmd[${nodes.cp.master.id}]:
             if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
-  
+
   setupBL:
     - log: LB OPTIMIZATION
     - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
       settings:
         targetGroup: bl
-        targetNodes: ${this.nodeId}
+        targetNodes: ${this}
         optimization: wordpress
-    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+    - cmd[${this}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+
+  setupCacheSync:
     - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
-      - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
-        user: root
-        
+
   updateTriggers:
     if (!${event.params.auto:true}):
       - log: update scaling trigger
@@ -445,7 +438,7 @@ actions:
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
           protocol: NFS4
-    
+
 success:
   email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
   text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
