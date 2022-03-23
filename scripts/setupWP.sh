@@ -254,10 +254,10 @@ if [ $multisite == 'true' ] ; then
           ${WP} plugin activate litespeed-cache --network --path=${SERVER_WEBROOT} &>> /var/log/run.log
 	  echo "Configuring litespeed.conf.cache" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+	  ${WP} db query "select meta_value from wp_sitemeta where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 	  
 	  echo "Configuring litespeed.conf.object" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-	  ${WP} db query "select meta_value from wp_sitemeta where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 	  echo "Configuring litespeed.conf.object-kind" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 	  
