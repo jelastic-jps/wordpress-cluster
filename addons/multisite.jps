@@ -4,7 +4,7 @@ id: wordpress-multisite
 name: WordPress Multisite
 description: WordPress Multisite
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/WP-166
 settings:
   main:
     fields:
