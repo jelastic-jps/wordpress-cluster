@@ -22,21 +22,21 @@ onInstall:
   - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
     - if ('${globals.mode}' == 'subdir'):
         cmd[${nodes.cp.master.id}]: |-
-          wget ${baseUrl}/../configs/cp/nginx/subdir.conf -O /etc/nginx/conf.d/sites-enabled/subdir.conf;
+          wget ${baseUrl}../configs/cp/nginx/subdir.conf -O /etc/nginx/conf.d/sites-enabled/subdir.conf;
           sudo /etc/init.d/nginx reload
     - if ('${globals.mode}' == 'subdom'):
         cmd[${nodes.cp.master.id}]: |-
-          wget ${baseUrl}/../configs/cp/nginx/subdom.conf -O /etc/nginx/conf.d/sites-enabled/subdom.conf;
+          wget ${baseUrl}../configs/cp/nginx/subdom.conf -O /etc/nginx/conf.d/sites-enabled/subdom.conf;
           sudo /etc/init.d/nginx reload
 
   - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
     - if ('${globals.mode}' == 'subdir'):
         cmd[${nodes.cp.master.id}]: |-
-          wget ${baseUrl}/../configs/cp/litespeed/.htaccess_subdir -O /tmp/.htaccess_wpmu;
+          wget ${baseUrl}../configs/cp/litespeed/.htaccess_subdir -O /tmp/.htaccess_wpmu;
           
     - if ('${globals.mode}' == 'subdom'):
         cmd[${nodes.cp.master.id}]: |-
-          wget ${baseUrl}/../configs/cp/litespeed/.htaccess_subdom -O /tmp/.htaccess_wpmu;
+          wget ${baseUrl}../configs/cp/litespeed/.htaccess_subdom -O /tmp/.htaccess_wpmu;
 
   - cmd[${nodes.cp.master.id}]: |-
       cat /tmp/.htaccess_wpmu >> /var/www/webroot/ROOT/.htaccess;
