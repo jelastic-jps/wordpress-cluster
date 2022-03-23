@@ -24,7 +24,7 @@ onInstall:
         cmd[${nodes.cp.master.id}]: |-
           wget ${baseUrl}/configs/cp/nginx/subdir.conf -O /etc/nginx/conf.d/sites-enabled/subdir.conf;
           sudo /etc/init.d/nginx reload
-    - else ('${globals.mode}' == 'subdom'):
+    - if ('${globals.mode}' == 'subdom'):
         cmd[${nodes.cp.master.id}]: |-
           wget ${baseUrl}/configs/cp/nginx/subdom.conf -O /etc/nginx/conf.d/sites-enabled/subdom.conf;
           sudo /etc/init.d/nginx reload
