@@ -40,5 +40,5 @@ onInstall:
 
   - cmd[${nodes.cp.master.id}]: |-
       cat /tmp/.htaccess_wpmu >> /var/www/webroot/ROOT/.htaccess;
-      bash ~/bin/setupWP.sh --wpmu true --mode ${globals.mode};
+      bash ~/bin/setupWP.sh --multisite true --mode ${globals.mode};
       
