@@ -240,12 +240,13 @@ fi
 if [ $multisite == 'true' ] ; then
   cd ~/bin/ && ${WP} option update permalink_structure '' --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
   cd ~/bin/ && ${WP} rewrite structure '' --hard --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
+  ${WP} cache flush --path=${SERVER_WEBROOT};
   case $WPCACHE in
     w3tc)
-          ${WP} plugin deactivate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          [[ ${mode} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          [[ ${mode} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log
-          ${WP} plugin activate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          ${WP} plugin deactivate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ${mode} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ${mode} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log;
+          ${WP} plugin activate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
     lscwp)
           ${WP} plugin deactivate litespeed-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log;
@@ -269,6 +270,7 @@ if [ $multisite == 'true' ] ; then
 	  ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
   esac
+  ${WP} cache flush --path=${SERVER_WEBROOT};
 fi
 
 if [ $url != 'false' ] ; then
