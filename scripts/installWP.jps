@@ -1,7 +1,7 @@
 jpsType: update
-id: wordpress-installation
-name: WordPress installation
-description: WordPress installation
+id: wordpress-core-installation
+name: WordPress Core Installation
+description: WordPress Core Installation
 
 mixins:
  - https://raw.githubusercontent.com/sych74/wordpress/master/configs/vers.yaml
