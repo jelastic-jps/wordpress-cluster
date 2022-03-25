@@ -310,5 +310,6 @@ actions:
         count: ${nodes.cp.length}
           
   installWoocommerce:
-    cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --woocommerce true
+    cmd[${nodes.cp.master.id}]: |-
+      wp plugin install woocommerce --version=${globals.version_woocommerce} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
   
