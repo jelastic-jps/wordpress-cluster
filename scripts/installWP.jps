@@ -30,7 +30,7 @@ actions:
         wget -qO- 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* ${SERVER_WEBROOT};
     - addContext [cp]:
         name: ROOT
-        fileName: wordpress-${globals.version_wordpress}.tar.gz
+        fileName: WordPress
         type: ARCHIVE
 
   installWordPress:
