@@ -20,27 +20,31 @@ onInstall:
   - deployWordPress
   - installScripts
   - installWordPress
-  - disableAutoUpdate
+  - setupWordPress
 
 actions:
   deployWordPress:
-    cmd[${nodes.cp.master.id}]: |-
-      wget -qO- 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT;
+    - cmd[${nodes.cp.master.id}]: |-
+        wget -qO- 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* ${SERVER_WEBROOT};
+    - addContext [cp]:
+        name: ROOT
+        fileName: wordpress-${globals.version_wordpress}.tar.gz
+        type: ARCHIVE
 
-  installWordpress:
+  installWordPress:
     - if ('${globals.CLUSTER}' == 'true'):
         cmd[${nodes.cp.master.id}]: |-
           mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${nodes.sqldb.master.intIP} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
-          cd /var/www/webroot/ROOT && wp core config --dbhost=${nodes.sqldb.master.intIP} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=/var/www/webroot/ROOT/;
-          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=/var/www/webroot/ROOT/;
-          mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/${nodes.sqldb.master.intIP}/${globals.DB_HOST}/g" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT;
-          wget ${baseUrl}../images/favicon.ico -O /var/www/webroot/ROOT/favicon.ico;
+          cd /var/www/webroot/ROOT && wp core config --dbhost=${nodes.sqldb.master.intIP} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT};
+          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=${SERVER_WEBROOT};
+          mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/${nodes.sqldb.master.intIP}/${globals.DB_HOST}/g" /tmp/wp-config.php; mv /tmp/wp-config.php ${SERVER_WEBROOT};
+          wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico;
     - else:
         cmd[${nodes.cp.master.id}]: |-
           mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${globals.DB_HOST} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
-          cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT}
-          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=${SERVER_WEBROOT}
-          wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico
+          cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT};
+          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=${SERVER_WEBROOT};
+          wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico;
 
   installScripts:
     - cmd[cp]: |-
@@ -55,6 +59,9 @@ actions:
         echo ${response.out} >>  /etc/jelastic/redeploy.conf;
       user: root
 
-  disableAutoUpdate:
+  setupWordPress:
     - cmd[${nodes.cp.master.id}]: |-
-        grep -qE "(WP_AUTO_UPDATE_CORE)" /var/www/webroot/ROOT/wp-config.php || sed -i "/^\$table_prefix.*/a define( 'WP_AUTO_UPDATE_CORE', false );" /var/www/webroot/ROOT/wp-config.php;
+        grep -qE "(WP_AUTO_UPDATE_CORE)" ${SERVER_WEBROOT}/wp-config.php || sed -i "/^\$table_prefix.*/a define( 'WP_AUTO_UPDATE_CORE', false );" ${SERVER_WEBROOT}/wp-config.php;
+        cd ~/bin/ && wp option update permalink_structure '/%postname%/' --path=${SERVER_WEBROOT};
+        cd ~/bin/ && wp rewrite structure '/%postname%/' --hard --path=${SERVER_WEBROOT};
+        
