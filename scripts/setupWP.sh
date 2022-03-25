@@ -4,7 +4,7 @@ purge=false;
 pgcache=false;
 objectcache=false;
 edgeportCDN=false;
-wpmu=false;
+multisite=false;
 domain=false;
 url=false;
 woocommerce=false;
@@ -16,13 +16,13 @@ ARGUMENT_LIST=(
     "pgcache"
     "objectcache"
     "edgeportCDN"
-    "wpmu"
+    "multisite"
     "REDIS_HOST"
     "REDIS_PASS"
     "REDIS_PORT"
     "CDN_URL"
     "CDN_ORI"
-    "MODE"
+    "mode"
     "url"
     "domain"
     "ENV_NAME"
@@ -88,13 +88,13 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
 
-        --wpmu)
-            wpmu=$2
+        --multisite)
+            multisite=$2
             shift 2
             ;;
 
-        --MODE)
-            MODE=$2
+        --mode)
+            mode=$2
             shift 2
             ;;
 
@@ -102,7 +102,7 @@ while [[ $# -gt 0 ]]; do
             url=$2
             shift 2
             ;;
-            
+
         --domain)
             domain=$2
             shift 2
@@ -133,11 +133,9 @@ COMPUTE_TYPE=$(grep "COMPUTE_TYPE=" /etc/jelastic/metainf.conf | cut -d"=" -f2)
 cd ${SERVER_WEBROOT};
 
 if [[ ${COMPUTE_TYPE} == *"llsmp"* || ${COMPUTE_TYPE} == *"litespeed"* ]] ; then
-    ${WP} plugin install litespeed-cache --activate --path=${SERVER_WEBROOT}
     CACHE_FLUSH="${WP} litespeed-purge all --path=${SERVER_WEBROOT}; rm -rf /var/www/webroot/.cache/vhosts/Jelastic/* "
     WPCACHE='lscwp';
 elif [[ ${COMPUTE_TYPE} == *"lemp"* || ${COMPUTE_TYPE} == *"nginx"* ]] ; then
-    ${WP} plugin install w3-total-cache --activate --path=${SERVER_WEBROOT}
     CACHE_FLUSH="${WP} w3-total-cache flush all --path=${SERVER_WEBROOT}; /var/www/webroot/.cache/* "
     WPCACHE="w3tc";
 else
@@ -237,25 +235,40 @@ if [ $edgeportCDN == 'true' ] ; then
   fi
 fi
 
-if [ $wpmu == 'true' ] ; then
+if [ $multisite == 'true' ] ; then
+  cd ~/bin/ && ${WP} option update permalink_structure '' --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
+  cd ~/bin/ && ${WP} rewrite structure '' --hard --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
+  ${WP} cache flush --path=${SERVER_WEBROOT};
   case $WPCACHE in
     w3tc)
-          ${WP} plugin deactivate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          [[ ${MODE} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          [[ ${MODE} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log
-          ${WP} plugin activate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          ${WP} plugin deactivate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ${mode} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ${mode} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log;
+          ${WP} plugin activate w3-total-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
     lscwp)
-          ${WP} plugin deactivate litespeed-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          [[ ${MODE} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          [[ ${MODE} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log
-          ${WP} plugin activate litespeed-cache --network --path=${SERVER_WEBROOT} &>> /var/log/run.log
-	  ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" &>> /var/log/run.log
-          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" &>> /var/log/run.log
-          ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" &>> /var/log/run.log
-          ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" &>> /var/log/run.log
+          ${WP} plugin deactivate litespeed-cache --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ${mode} == 'subdir' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ${mode} == 'subdom' ]] && ${WP} core multisite-convert --path=${SERVER_WEBROOT} --subdomains &>> /var/log/run.log;
+          ${WP} plugin activate litespeed-cache --network --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+	  ${WP} cache flush --path=${SERVER_WEBROOT};
+	  echo "Configuring litespeed.conf.cache" >> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+	  ${WP} db query "select meta_value from wp_sitemeta where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+	  
+	  echo "Configuring litespeed.conf.object" >> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+	  echo "Configuring litespeed.conf.object-kind" >> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+	  
+	  echo "Configuring litespeed.conf.object-host" >> /var/log/run.log;
+          ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          
+	  echo "Configuring litespeed.conf.object-port" >> /var/log/run.log;
+	  ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
   esac
+  ${WP} cache flush --path=${SERVER_WEBROOT};
 fi
 
 if [ $url != 'false' ] ; then

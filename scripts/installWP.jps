@@ -1,7 +1,10 @@
 jpsType: update
-id: wordpress-installation-addon
-name: WordPress Installation addon
-description: This addon for WordPress installation
+id: wordpress-core-installation
+name: WordPress Core Installation
+description: WordPress Core Installation
+
+mixins:
+ - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
 
 globals:
   WP_ADMIN_PASS: ${settings.wp_admin_pass}
@@ -11,38 +14,43 @@ globals:
   DB_USER: ${settings.db_user}
   DB_PASS: ${settings.db_pass}
   WP_URL: ${settings.wp_url}
-  VERSION_WORDPRESS: ${settings.version_wordpress}
   CLUSTER: ${settings.cluster:true}
 
 onInstall:
+  - deployWordPress
   - installScripts
-  - installWP
-  - disableAutoUpdate
-  - setupWP
-  - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
-    - nginxPurgeCache
+  - installWordPress
+  - setupWordPress
+  - installPlugins
+  - setupPlugins
 
 actions:
-  installWP:
+  deployWordPress:
+    - cmd[${nodes.cp.master.id}]: |-
+        wget -qO- 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* ${SERVER_WEBROOT};
+    - addContext [cp]:
+        name: ROOT
+        fileName: WordPress
+        type: ARCHIVE
+
+  installWordPress:
     - if ('${globals.CLUSTER}' == 'true'):
         cmd[${nodes.cp.master.id}]: |-
-          wget -qO- 'https://wordpress.org/wordpress-${globals.VERSION_WORDPRESS}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT;
           mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${nodes.sqldb.master.intIP} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
-          cd /var/www/webroot/ROOT && wp core config --dbhost=${nodes.sqldb.master.intIP} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=/var/www/webroot/ROOT/
-          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=/var/www/webroot/ROOT/
-          mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/${nodes.sqldb.master.intIP}/${globals.DB_HOST}/g" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT;
-          wget ${baseUrl}../images/favicon.ico -O /var/www/webroot/ROOT/favicon.ico
+          cd /var/www/webroot/ROOT && wp core config --dbhost=${nodes.sqldb.master.intIP} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT};
+          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=${SERVER_WEBROOT};
+          mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/${nodes.sqldb.master.intIP}/${globals.DB_HOST}/g" /tmp/wp-config.php; mv /tmp/wp-config.php ${SERVER_WEBROOT};
+          wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico;
     - else:
         cmd[${nodes.cp.master.id}]: |-
-          wget -qO- 'https://wordpress.org/wordpress-${globals.VERSION_WORDPRESS}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* ${SERVER_WEBROOT}
           mysql -u${globals.DB_USER} -p${globals.DB_PASS} -h ${globals.DB_HOST} -e "CREATE DATABASE IF NOT EXISTS ${globals.DB_NAME};"
-          cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT}
-          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=${SERVER_WEBROOT}
-          wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico
+          cd /var/www/webroot/ROOT && wp core config --dbhost=${globals.DB_HOST} --dbname=${globals.DB_NAME} --dbuser=${globals.DB_USER} --dbpass=${globals.DB_PASS} --path=${SERVER_WEBROOT};
+          cd /var/www/webroot/ROOT && wp core install --title="${globals.WP_TITLE}" --admin_user=${user.email} --admin_password=${globals.WP_ADMIN_PASS} --url=${globals.WP_URL} --admin_email=${user.email} --skip-email --path=${SERVER_WEBROOT};
+          wget ${baseUrl}../images/favicon.ico -O ${SERVER_WEBROOT}/favicon.ico;
 
   installScripts:
     - cmd[cp]: |-
-        [ ! -d $HOME/bin ] && mkdir $HOME/bin
+        [ ! -d $HOME/bin ] && mkdir $HOME/bin;
         curl -o $HOME/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp;
         echo "apache_modules:" > ~/bin/wp-cli.yml;
         echo "  - mod_rewrite" >> ~/bin/wp-cli.yml;
@@ -53,21 +61,26 @@ actions:
         echo ${response.out} >>  /etc/jelastic/redeploy.conf;
       user: root
 
-  disableAutoUpdate:
+  setupWordPress:
     - cmd[${nodes.cp.master.id}]: |-
-        grep -qE "(WP_AUTO_UPDATE_CORE)" /var/www/webroot/ROOT/wp-config.php || sed -i "/^\$table_prefix.*/a define( 'WP_AUTO_UPDATE_CORE', false );" /var/www/webroot/ROOT/wp-config.php;
-
-  setupWP:
+        grep -qE "(WP_AUTO_UPDATE_CORE)" ${SERVER_WEBROOT}/wp-config.php || sed -i "/^\$table_prefix.*/a define( 'WP_AUTO_UPDATE_CORE', false );" ${SERVER_WEBROOT}/wp-config.php;
+        cd ~/bin/ && wp option update permalink_structure '/%postname%/' --path=${SERVER_WEBROOT};
+        cd ~/bin/ && wp rewrite structure '/%postname%/' --hard --path=${SERVER_WEBROOT};
+        
+  installPlugins:
+    - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O ${SERVER_WEBROOT}/wp-jelastic.php
+          mv ${SERVER_WEBROOT}/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php ${SERVER_WEBROOT};
+          wp plugin install w3-total-cache --version=${globals.version_w3total} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+    
+    - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
+        cmd[${nodes.cp.master.id}]: |-
+          wp plugin install litespeed-cache --version=${globals.version_lscache} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+    
+  setupPlugins:
     - cmd[${nodes.cp.master.id}]: |-
         bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0;
-        cd ~/bin/ && wp option update permalink_structure '/%postname%/' --path=/var/www/webroot/ROOT/;
-        cd ~/bin/ && wp rewrite structure '/%postname%/' --hard --path=/var/www/webroot/ROOT/;
-
-  nginxPurgeCache:
-    - cmd[${nodes.cp.master.id}]: |-
-        cd /var/www/webroot/ROOT/;
-        wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O /var/www/webroot/ROOT/wp-jelastic.php
-        mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT
-        wp plugin install ${baseUrl}/nginx-fastcgi-cache-purge.zip --path=/var/www/webroot/ROOT/
-        wp plugin activate nginx-fastcgi-cache-purge --path=/var/www/webroot/ROOT/
-     
+   

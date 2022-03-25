@@ -10,7 +10,7 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.2.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/WP-169
 
 onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
@@ -286,10 +286,8 @@ actions:
     - install: /scripts/setupCDN.jps
 
   configureMultisite:
-    - install: ${globals.PATH}/addon/WPMU.jps
-      settings:
-        mode: subdir
-
+    - install: /addons/multisite.jps
+ 
   installWordpress:
     - install: ${baseUrl}/scripts/installWP.jps
       settings:
@@ -312,5 +310,6 @@ actions:
         count: ${nodes.cp.length}
           
   installWoocommerce:
-    cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --woocommerce true
+    cmd[${nodes.cp.master.id}]: |-
+      wp plugin install woocommerce --version=${globals.version_woocommerce} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
   
