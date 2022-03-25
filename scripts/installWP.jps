@@ -4,7 +4,7 @@ name: WordPress Core Installation
 description: WordPress Core Installation
 
 mixins:
- - https://raw.githubusercontent.com/sych74/wordpress/master/configs/vers.yaml
+ - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
 
 globals:
   WP_ADMIN_PASS: ${settings.wp_admin_pass}
@@ -70,6 +70,8 @@ actions:
   installPlugins:
     - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
         cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O ${SERVER_WEBROOT}/wp-jelastic.php
+          mv ${SERVER_WEBROOT}/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php ${SERVER_WEBROOT};
           wp plugin install w3-total-cache --version=${globals.version_w3total} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
     
