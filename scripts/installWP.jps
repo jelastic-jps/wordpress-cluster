@@ -21,6 +21,8 @@ onInstall:
   - installScripts
   - installWordPress
   - setupWordPress
+  - installPlugins
+  - setupPlugins
 
 actions:
   deployWordPress:
@@ -65,3 +67,18 @@ actions:
         cd ~/bin/ && wp option update permalink_structure '/%postname%/' --path=${SERVER_WEBROOT};
         cd ~/bin/ && wp rewrite structure '/%postname%/' --hard --path=${SERVER_WEBROOT};
         
+  installPlugins:
+    - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
+        cmd[${nodes.cp.master.id}]: |-
+          wp plugin install w3-total-cache --version=${globals.version_w3total} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+    
+    - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
+        cmd[${nodes.cp.master.id}]: |-
+          wp plugin install litespeed-cache --version=${globals.version_lscache} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+    
+  setupPlugins:
+    - cmd[${nodes.cp.master.id}]: |-
+        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST /var/run/redis/redis.sock --REDIS_PORT 0;
+   
