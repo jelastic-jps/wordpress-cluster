@@ -286,10 +286,8 @@ actions:
     - install: /scripts/setupCDN.jps
 
   configureMultisite:
-    - install: ${globals.PATH}/addon/WPMU.jps
-      settings:
-        mode: subdir
-
+    - install: /addons/multisite.jps
+ 
   installWordpress:
     - install: ${baseUrl}/scripts/installWP.jps
       settings:
