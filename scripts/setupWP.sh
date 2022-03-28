@@ -18,9 +18,8 @@ ARGUMENT_LIST=(
     "edgeportCDN"
     "multisite"
     "REDIS_HOST"
+    "REDIS_PASS"
     "REDIS_PORT"
-    "REDIS_USER"
-    "REDIS_PSWD"
     "CDN_URL"
     "CDN_ORI"
     "mode"
@@ -69,18 +68,13 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
 
-        --REDIS_PORT)
-            REDIS_PORT=$2
+        --REDIS_PASS)
+            REDIS_PASS=$2
             shift 2
             ;;
 
-        --REDIS_USER)
-            REDIS_USER=$2
-            shift 2
-            ;;
-            
-        --REDIS_PSWD)
-            REDIS_PSWD=$2
+        --REDIS_PORT)
+            REDIS_PORT=$2
             shift 2
             ;;
 
@@ -207,23 +201,13 @@ if [ $objectcache == 'true' ] ; then
           $W3TC_OPTION_SET objectcache.enabled true --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET objectcache.engine redis --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET objectcache.redis.servers ${REDIS_HOST}:${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $W3TC_OPTION_SET objectcache.redis.password ${REDIS_PSWD} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $W3TC_OPTION_SET objectcache.redis.password ${REDIS_PASS} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
     lscwp)
-          $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          $LSCWP_OPTION_SET object-kind 1 --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          
-          $LSCWP_OPTION_SET object-host '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          [[ ! -z "${REDIS_HOST}" ]] && $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          
-          $LSCWP_OPTION_SET object-port '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          [[ ! -z "${REDIS_PORT}" ]] && $LSCWP_OPTION_SET object-port ${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          
-          $LSCWP_OPTION_SET object-user '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          [[ ! -z "${REDIS_USER}" ]] && $LSCWP_OPTION_SET object-user ${REDIS_USER} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          
-          $LSCWP_OPTION_SET object-pswd '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          [[ ! -z "${REDIS_PSWD}" ]] && $LSCWP_OPTION_SET object-pswd ${REDIS_PSWD} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object-kind 1 --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object-port ${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
   esac
 fi
@@ -271,15 +255,15 @@ if [ $multisite == 'true' ] ; then
 	  echo "Configuring litespeed.conf.cache" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 	  ${WP} db query "select meta_value from wp_sitemeta where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-
+	  
 	  echo "Configuring litespeed.conf.object" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 	  echo "Configuring litespeed.conf.object-kind" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-
+	  
 	  echo "Configuring litespeed.conf.object-host" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-
+          
 	  echo "Configuring litespeed.conf.object-port" >> /var/log/run.log;
 	  ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
