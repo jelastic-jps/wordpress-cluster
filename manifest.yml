@@ -156,6 +156,7 @@ onInstall:
   - storageHealthCheck
   - storageMount: NFS4
   - if (/litespeed/.test("${nodes.cp.nodeType}")): setPassword
+  - getRedisPswd
   - installWordpress
   - if ('${settings.mu-addon:false}' == 'true'): configureMultisite  
   - if (${settings.woocommerce:false}): installWoocommerce
@@ -288,7 +289,7 @@ actions:
   configureMultisite:
     - install: /addons/multisite.jps
 
-  redisPswd:
+  getRedisPswd:
     - cmd[nosqldb]: cat /etc/redis.conf | tail -1 | awk '{print $2}';
     - setGlobals:
         REDIS_PSWD: ${response.out}
