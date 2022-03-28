@@ -212,10 +212,18 @@ if [ $objectcache == 'true' ] ; then
     lscwp)
           $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           $LSCWP_OPTION_SET object-kind 1 --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          $LSCWP_OPTION_SET object-port ${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          $LSCWP_OPTION_SET object-user ${REDIS_USER} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          $LSCWP_OPTION_SET object-pswd ${REDIS_PSWD} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          
+          $LSCWP_OPTION_SET object-host '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ! -z "${REDIS_HOST}" ]] && $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          
+          $LSCWP_OPTION_SET object-port '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ! -z "${REDIS_PORT}" ]] && $LSCWP_OPTION_SET object-port ${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          
+          $LSCWP_OPTION_SET object-user '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ! -z "${REDIS_USER}" ]] && $LSCWP_OPTION_SET object-user ${REDIS_USER} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          
+          $LSCWP_OPTION_SET object-pswd '' --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          [[ ! -z "${REDIS_PSWD}" ]] && $LSCWP_OPTION_SET object-pswd ${REDIS_PSWD} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
   esac
 fi
