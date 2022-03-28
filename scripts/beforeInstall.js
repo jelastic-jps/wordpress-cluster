@@ -86,7 +86,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10,
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true",
+      REDIS_ENABLED: "false",
       WAF: "${settings.waf:false}",
       WP_PROTECT: "OFF"
     },      
@@ -112,12 +112,20 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10,
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true"
+      REDIS_ENABLED: "false"
     },
     volumes: [
       "/var/www/webroot/ROOT"
     ]
   })
 }
+
+resp.nodes.push({
+  nodeType: "redis",
+  count: 1,
+  flexibleCloudlets: ${settings.st_flexibleCloudlets:16},
+  fixedCloudlets: ${settings.st_fixedCloudlets:1},
+  nodeGroup: "nosqldb"
+})
 
 return resp;
