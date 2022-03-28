@@ -255,15 +255,15 @@ if [ $multisite == 'true' ] ; then
 	  echo "Configuring litespeed.conf.cache" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 	  ${WP} db query "select meta_value from wp_sitemeta where meta_key = 'litespeed.conf.cache'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-	  
+
 	  echo "Configuring litespeed.conf.object" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
 	  echo "Configuring litespeed.conf.object-kind" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = 1 where meta_key = 'litespeed.conf.object-kind'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-	  
+
 	  echo "Configuring litespeed.conf.object-host" >> /var/log/run.log;
           ${WP} db query "UPDATE wp_sitemeta set meta_value = '/var/run/redis/redis.sock' where meta_key = 'litespeed.conf.object-host'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
-          
+
 	  echo "Configuring litespeed.conf.object-port" >> /var/log/run.log;
 	  ${WP} db query "UPDATE wp_sitemeta set meta_value = 0 where meta_key = 'litespeed.conf.object-port'" --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
