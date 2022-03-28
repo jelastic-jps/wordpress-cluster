@@ -18,8 +18,9 @@ ARGUMENT_LIST=(
     "edgeportCDN"
     "multisite"
     "REDIS_HOST"
-    "REDIS_PASS"
     "REDIS_PORT"
+    "REDIS_USER"
+    "REDIS_PSWD"
     "CDN_URL"
     "CDN_ORI"
     "mode"
@@ -68,13 +69,18 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
 
-        --REDIS_PASS)
-            REDIS_PASS=$2
+        --REDIS_PORT)
+            REDIS_PORT=$2
             shift 2
             ;;
 
-        --REDIS_PORT)
-            REDIS_PORT=$2
+        --REDIS_USER)
+            REDIS_USER=$2
+            shift 2
+            ;;
+            
+        --REDIS_PSWD)
+            REDIS_PSWD=$2
             shift 2
             ;;
 
@@ -201,13 +207,15 @@ if [ $objectcache == 'true' ] ; then
           $W3TC_OPTION_SET objectcache.enabled true --type=boolean --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET objectcache.engine redis --path=${SERVER_WEBROOT} &>> /var/log/run.log
           $W3TC_OPTION_SET objectcache.redis.servers ${REDIS_HOST}:${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $W3TC_OPTION_SET objectcache.redis.password ${REDIS_PASS} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $W3TC_OPTION_SET objectcache.redis.password ${REDIS_PSWD} --path=${SERVER_WEBROOT} &>> /var/log/run.log
           ;;
     lscwp)
-          $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET object-kind 1 --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log
-          $LSCWP_OPTION_SET object-port ${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log
+          $LSCWP_OPTION_SET object true --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          $LSCWP_OPTION_SET object-kind 1 --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          $LSCWP_OPTION_SET object-host ${REDIS_HOST} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          $LSCWP_OPTION_SET object-port ${REDIS_PORT} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          $LSCWP_OPTION_SET object-user ${REDIS_USER} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+          $LSCWP_OPTION_SET object-pswd ${REDIS_PSWD} --path=${SERVER_WEBROOT} &>> /var/log/run.log;
           ;;
   esac
 fi
