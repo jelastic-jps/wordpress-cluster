@@ -78,6 +78,11 @@ actions:
           mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT;
           wp plugin install w3-total-cache --version=${globals.version_w3total} --activate --path=/var/www/webroot/ROOT &>> /var/log/run.log;
           wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
+          wp plugin install nginx-cache --activate --path=/var/www/webroot/ROOT &>> /var/log/run.log;
+          wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
+          wp db query "UPDATE wp_options set option_value = '/var/www/webroot/ROOT/.cache' where option_name = 'nginx_cache_path'" --path=/var/www/webroot/ROOT &>> /var/log/run.log;
+          wp db query "UPDATE wp_options set option_value = 1 where option_name = 'nginx_auto_purge'" --path=/var/www/webroot/ROOT &>> /var/log/run.log;
+          wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
     
     - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
         cmd[${nodes.cp.master.id}]: |-
