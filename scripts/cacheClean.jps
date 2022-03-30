@@ -15,4 +15,4 @@ actions:
 
   wordpress-cache-clean:
     - cmd[cp]: |-
-        wp cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+        wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
