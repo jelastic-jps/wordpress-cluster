@@ -80,8 +80,8 @@ actions:
           wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
           wp plugin install nginx-cache --activate --path=/var/www/webroot/ROOT &>> /var/log/run.log;
           wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
-          wp db query "UPDATE wp_options set option_value = '/var/www/webroot/ROOT/.cache' where option_name = 'nginx_cache_path'" --path=/var/www/webroot/ROOT &>> /var/log/run.log;
-          wp db query "UPDATE wp_options set option_value = 1 where option_name = 'nginx_auto_purge'" --path=/var/www/webroot/ROOT &>> /var/log/run.log;
+          wp db query "INSERT INTO wp_options(option_name,option_value,autoload) VALUES('nginx_cache_path','/var/www/webroot/.cache','yes');" --path=/var/www/webroot/ROOT &>> /var/log/run.log;
+          wp db query "INSERT INTO wp_options(option_name,option_value,autoload) VALUES('nginx_auto_purge',1,'yes');" --path=/var/www/webroot/ROOT &>> /var/log/run.log;
           wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
     
     - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
