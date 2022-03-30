@@ -120,4 +120,12 @@ if ('${settings.ls-addon:false}'== 'true') {
   })
 }
 
+resp.nodes.push({
+  nodeType: "redis",
+  count: 1,
+  flexibleCloudlets: ${settings.st_flexibleCloudlets:16},
+  fixedCloudlets: ${settings.st_fixedCloudlets:1},
+  nodeGroup: "nosqldb"
+})
+
 return resp;
