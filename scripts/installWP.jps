@@ -13,10 +13,10 @@ globals:
   DB_NAME: wp_${fn.random}
   DB_USER: ${settings.db_user}
   DB_PASS: ${settings.db_pass}
-  REDIS_HOST: ${settings.redis_host:''}
-  REDIS_PORT: ${settings.redis_port:''}
-  REDIS_USER: ${settings.redis_user:''}
-  REDIS_PSWD: ${settings.redis_pswd:''}
+  REDIS_HOST: ${settings.redis_host:}
+  REDIS_PORT: ${settings.redis_port:}
+  REDIS_USER: ${settings.redis_user:}
+  REDIS_PSWD: ${settings.redis_pswd:}
   WP_URL: ${settings.wp_url}
   CLUSTER: ${settings.cluster:true}
 
