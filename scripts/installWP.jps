@@ -4,7 +4,7 @@ name: WordPress Core Installation
 description: WordPress Core Installation
 
 mixins:
- - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
+ - https://raw.githubusercontent.com/jelastic-jps/wordpress/master/configs/vers.yaml
 
 globals:
   WP_ADMIN_PASS: ${settings.wp_admin_pass}
