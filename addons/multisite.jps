@@ -1,0 +1,44 @@
+jpsType: update
+jpsVersion: '1.1'
+id: wordpress-multisite
+name: WordPress Multisite
+description: WordPress Multisite
+logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
+
+settings:
+    fields:
+    - name: mode
+      caption: Multisites mode
+      type: radio-fieldset
+      values:
+        subdir: SubDirectories
+        subdom: SubDomain
+      default: subdir
+      
+globals:
+  mode: ${settings.mode:subdir}
+
+onInstall:
+  - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
+    - if ('${globals.mode}' == 'subdir'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}../configs/cp/nginx/subdir.conf -O /etc/nginx/conf.d/sites-enabled/subdir.conf;
+          sudo /etc/init.d/nginx reload
+    - if ('${globals.mode}' == 'subdom'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}../configs/cp/nginx/subdom.conf -O /etc/nginx/conf.d/sites-enabled/subdom.conf;
+          sudo /etc/init.d/nginx reload
+
+  - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
+    - if ('${globals.mode}' == 'subdir'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}../configs/cp/litespeed/.htaccess_subdir -O /tmp/.htaccess_wpmu;
+          
+    - if ('${globals.mode}' == 'subdom'):
+        cmd[${nodes.cp.master.id}]: |-
+          wget ${baseUrl}../configs/cp/litespeed/.htaccess_subdom -O /tmp/.htaccess_wpmu;
+
+  - cmd[${nodes.cp.master.id}]: |-
+      cat /tmp/.htaccess_wpmu >> /var/www/webroot/ROOT/.htaccess;
+      bash ~/bin/setupWP.sh --multisite true --mode ${globals.mode};
+      
