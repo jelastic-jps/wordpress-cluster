@@ -4,7 +4,7 @@ description: This script for cache clean
 id: wordpress-cache-clean
 
 onInstall:
-  - if (/litespeed/.test("${nodes.cp.nodeType}")): litespeed-cache-clean
+  - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")): litespeed-cache-clean
   - wordpress-cache-clean
 
 actions:
@@ -15,4 +15,4 @@ actions:
 
   wordpress-cache-clean:
     - cmd[cp]: |-
-        wp cache flush --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
+        wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
