@@ -57,13 +57,20 @@ actions:
     - if (nodes.bl):
         cmd[bl]: |-
           [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* &>> /var/log/run.log;
+    - cmd[cp]: |-
+        [ -d /var/www/webroot/.cache/vhosts/Jelastic/ ] && rm -rf /var/www/webroot/.cache/vhosts/Jelastic/* &>> /var/log/run.log;
+
+  nginx-cache-clean:
+    - cmd[cp]: |-
+        [ -d /var/www/webroot/ROOT/.cache/ ] && rm -rf /var/www/webroot/ROOT/.cache/* &>> /var/log/run.log;
 
   wordpress-cache-clean:
     - cmd[cp]: |-
         wp cache flush --path=/var/www/webroot/ROOT/ &>> /var/log/run.log;
 
   cache_purge:
-    - if (/litespeed/.test("${nodes.cp.nodeType}")): litespeed-cache-clean
+    - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")): litespeed-cache-clean
+    - if (/lemp/.test("${nodes.cp.nodeType}") || /nginx/.test("${nodes.cp.nodeType}")): nginx-cache-clean-cache-clean
     - wordpress-cache-clean
               
   setup_site_url:
