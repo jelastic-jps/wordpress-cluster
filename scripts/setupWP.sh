@@ -300,11 +300,12 @@ if [ $url != 'false' ] ; then
 fi
 
 if [ $domain != 'false' ] ; then
-  if ! $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
     old_domain=$(${WP} option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3)
     ${WP} search-replace "${old_domain}" "${domain}" --skip-columns=guid --all-tables --path=${SERVER_WEBROOT} &>> /var/log/run.log
     ${CACHE_FLUSH}  &>> /var/log/run.log
     ${WP} cache flush --path=${SERVER_WEBROOT} &>> /var/log/run.log
+  if $(${WP} core is-installed --network --path=${SERVER_WEBROOT}); then
+    ${WP} config set DOMAIN_CURRENT_SITE ${domain} --path=${SERVER_WEBROOT}
   fi
 fi
 
