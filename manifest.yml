@@ -10,7 +10,7 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.2.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/WP-221
 
 onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
@@ -149,7 +149,7 @@ onInstall:
   - limits
   - setProtocol
   - setDomain
-  - initLEwebroot
+  - initLEsettings
   - if (${settings.is_trigger:true}): setTriggers
   - optimization
   - setupCacheSync
@@ -170,7 +170,8 @@ onInstall:
             skipEmail: "true",
             settings: {
               customDomains: "${globals.DOMAIN}",
-              fallbackToX1: "true"
+              fallbackToX1: "true",
+              withExtIp: "${globals.isExtIP}"
             }
           });
         if ('${settings.cdn-addon:false}' == 'true')
@@ -228,12 +229,21 @@ actions:
       cleanOldTriggers: true
       scaleDownLimit: ${nodes.cp.length}
 
-  initLEwebroot:
+  initLEsettings:
+    - script: |
+        return {
+          result:0,
+          extIP: Boolean(jelastic.billing.account.GetQuotas('environment.externalip.enabled').array[0].value)
+        }
+    - setGlobals:
+        isExtIP: ${response.extIP}
+
     - cmd[cp, bl]: |-
         [ ! -d /var/lib/jelastic/keys/letsencrypt ] && mkdir -p /var/lib/jelastic/keys/letsencrypt;
         echo "webroot=false" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
         echo "webrootPath=/var/www/webroot/ROOT" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
         echo "test=false" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "withExtIp=${globals.isExtIP}" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
       user: root
 
   setupLEdomain:
