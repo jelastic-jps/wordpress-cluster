@@ -202,7 +202,8 @@ actions:
   limits:
     - env.control.ApplyNodeGroupData[bl,cp,sqldb,storage,nosqldb]:
         data:
-          project: ${settings.project:production}
+          project: ${settings.project:default}
+          projectScope: ${settings.projectScope:production}
           isRequired: true
 
   setProtocol:
