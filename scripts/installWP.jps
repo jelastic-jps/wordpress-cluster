@@ -63,6 +63,7 @@ actions:
         echo $HOME/bin;
     - cmd[cp]:
         echo ${response.out} >>  /etc/jelastic/redeploy.conf;
+        yum install jq -y &>> /var/log/run.log;
       user: root
 
   setupWordPress:
