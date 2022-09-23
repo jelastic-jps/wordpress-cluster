@@ -285,10 +285,7 @@ actions:
           
   storageHealthCheck:
     - cmd[cp]: |-
-        service autofs stop;  mountpoint -q /var/www/webroot/ROOT && umount /var/www/webroot/ROOT;
         echo "<?php http_response_code(500); ?>" > /var/www/webroot/ROOT/index.php
-        service autofs start;
-      user: root
 
   setupCDN:
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
