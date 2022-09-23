@@ -10,10 +10,10 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.1.0
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.2.0
 
-onBeforeInit: /scripts/settings.js?_r=${fn.random}
-onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
+onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
+onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
 
 skipNodeEmails: true
 nodes: definedInOnBeforeInstall
@@ -58,14 +58,14 @@ settings:
             name: wp_protect
             value: true
             disabled: false
-            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
+            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection' target='_blank'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
 
           - caption: Web Application Firewall
             type: checkbox
             name: waf
             value: true
             disabled: false
-            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf' target='_blank'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
 
         false:
           - caption: WordPress Brute Force Attack Protection
@@ -73,14 +73,14 @@ settings:
             name: wp_protect
             value: false
             disabled: true
-            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
+            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection' target='_blank'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
 
           - caption: Web Application Firewall
             type: checkbox
             name: waf
             value: false
             disabled: true
-            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf' target='_blank'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
 
     - caption: Install MariaDB Galera Cluster
       type: checkbox
@@ -92,8 +92,8 @@ settings:
     - caption: Install Let's Encrypt SSL with Auto-Renewal
       type: checkbox
       name: le-addon
-      value: false
-      disabled: true
+      value: true
+      disabled: false
       tooltip: "Advanced integration with Let's Encrypt certificate authority that simplifies and automates the process of issuing, configuring and updating trusted custom SSL certificates."
 
     - caption: Install Lightning-Fast Premium CDN
@@ -116,6 +116,13 @@ settings:
       value: false
       disabled: false
       tooltip: "Multisite is a type of WordPress installation that allows you to create and manage a network of multiple websites from a single WordPress dashboard. This lets you easily make changes and keep all of your websites updated from one place."
+      
+    - caption: Install WooCommerce
+      type: checkbox
+      name: woocommerce
+      value: false
+      disabled: false
+      tooltip: "WooCommerce is a free open-source e-commerce plugin designed specifically for WordPress. This is a great platform for a store of any size."
 
     - type: displayfield
       hideLabel: true
@@ -129,156 +136,30 @@ mixins:
 
 globals:
   PATH: ${baseUrl}
-  DB_USER: jelastic-${fn.random}
-  DB_PASS: ${fn.password(10)}
+  DB_USER: ${settings.DB_USER:user-[fn.random]}
+  DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
   DB_HOST: sqldb
   PROTOCOL: http
-  WP_ADMIN_PASS: ${fn.password(10)}
-  LS_ADMIN_PASS: ${fn.password(10)}
-  SUCCESS: success
-  EMAIL: default
-
-onAfterScaleOut[nodeGroup:bl]:
-  - forEach(event.response.nodes):
-      - setupBL: ${@i.id}
-  - setupCacheSync
-
-onAfterScaleIn[bl]: setupCacheSync
-
-onAfterScaleIn[cp]: updateTriggers
-
-onAfterScaleOut[nodeGroup:cp]:
-  - updateTriggers
-  - forEach(event.response.nodes):
-    - log: Mount Storage
-    - api:
-      - method: jelastic.environment.file.AddMountPointById
-        params:
-          nodeId: ${@i.id}
-          sourceNodeId: ${nodes.storage.master.id}
-          sourcePath: /data
-          path: /var/www/webroot/ROOT
-          sourceAddressType: NODE_GROUP
-          protocol: NFS4
-    - log: App Servers Setup
-    - setupCP:
-        nodeId: ${@i.id}
-
-onAfterStart:
-  cmd[cp]: sudo jem service restart
-
-onAfterInstallAddon [nodeGroup:bl, id:cdn]:
-  - install: ${globals.PATH}/scripts/setupCDN.jps
-
-onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]:
-  - setup-LE-domain
-  - addHSTS:
-      nodeId: cp
-
-onAfterClone:
-  - script: |
-        var resp = {result:0}
-        if (${event.response.env.sslstate}) {
-          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
-        }
-        return resp;
-
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-
-  - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-    settings:
-      domain: ${globals.PROTOCOL}://${event.response.env.domain}
-
-  - if (/litespeed/.test("${nodes.bl.nodeType}")):
-    - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-      envName: ${event.response.env.envName}
-
-onBeforeMigrate:
-  - cmd[${nodes.cp.master.id}]: wp option get siteurl --path=${SERVER_WEBROOT} | cut -d'/' -f3;
-  - if (/${response.out}/.test(env.domain)):
-      cmd[${nodes.cp.master.id}]: echo true > ~/migrate
-  - else:
-      cmd[${nodes.cp.master.id}]: echo false > ~/migrate
-
-onAfterMigrate:
-  - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-  - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
-  - if (/${response.out}/.test(true)):
-    - script: |
-        var resp = {result:0}
-        if (${env.sslstate}) {
-          resp.onAfterReturn = {setGlobals: {PROTOCOL: "https"}}
-        }
-        return resp;
-
-    - install: ${globals.PATH}/scripts/setupDomain.jps?_r=${fn.random}
-      settings:
-        domain: ${globals.PROTOCOL}://${env.domain}
-
-  - if (/litespeed/.test("${nodes.bl.nodeType}")):
-      - install: ${globals.PATH}/scripts/setupHA4LB.jps?_r=${fn.random}
-
-  - cmd[cp]: sudo jem service restart
+  WP_ADMIN_PASS: ${settings.WP_ADMIN_PASS:[fn.password(10)]}
+  LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
+  SUCCESS: default
 
 onInstall:
 
-  - script: |
-        return {
-          result:0,
-          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
-        }
-  - if (${response.ssl}):
-      setGlobals:
-        PROTOCOL: https
-
-  - script: /scripts/idna.js
-  - setGlobals:
-      DOMAIN: ${response.domain}
-
-  - if (${settings.is_trigger:true}):
-    - log: Auto Scaling Triggers
-    - script: "/scripts/addTriggers.js"
-      nodeGroup: cp
-      resourceType: CPU
-      loadGrowth: ${settings.loadGrowth}
-      cleanOldTriggers: true
-      scaleDownLimit: ${nodes.cp.length}
-
-  - mountStorage
-
-  - if ('${settings.le-addon:false}' == 'true'):
-      - setGlobals:
-          PROTOCOL: https
-
-  - log: Load Balancers and App servers optimization
-  - install:
-    - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
-      settings:
-        targetGroup: bl
-        targetNodes: bl
-        optimization: wordpress
-    - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
-      settings:
-        targetGroup: cp
-        targetNodes: cp
-        optimization: wordpress
-  - cmd[cp, bl]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-  - if (/litespeed/.test("${nodes.cp.nodeType}")):
-    - cmd[cp, bl]: jem passwd set -p ${globals.LS_ADMIN_PASS}
-      user: root
-    - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
-    - cmd[bl]: |-
-        jem balancer clear;
-        jem balancer rebuildCommon;
-      user: root
-
-  - install-wordpress
-
-  - if ('${settings.mu-addon:false}' == 'true'): configure-MU
-
+  - limits
+  - setProtocol
+  - setDomain
+  - initLEsettings
+  - if (${settings.is_trigger:true}): setTriggers
+  - optimization
+  - setupCacheSync
+  - storageHealthCheck
+  - storageMount: NFS4
+  - if (/litespeed/.test("${nodes.cp.nodeType}")): setPassword
+  - getRedisPswd
+  - installWordpress
+  - if ('${settings.mu-addon:false}' == 'true'): configureMultisite  
+  - if (${settings.woocommerce:false}): installWoocommerce
   - if (('${settings.le-addon:false}' == 'true') || ('${settings.cdn-addon:false}' == 'true')):
     - script: |
         var actions = [];
@@ -289,7 +170,8 @@ onInstall:
             skipEmail: "true",
             settings: {
               customDomains: "${globals.DOMAIN}",
-              fallbackToX1: "true"
+              fallbackToX1: "true",
+              withExtIp: "${globals.isExtIP}"
             }
           });
         if ('${settings.cdn-addon:false}' == 'true')
@@ -303,131 +185,93 @@ onInstall:
           });
         return { result: 0, onAfterReturn: { install: actions } };
 
-  - if ('${settings.le-addon:false}' == 'true'):
-      - setup-LE-domain
-      - addHSTS:
-          nodeId: cp
-
-  - if ('${settings.cdn-addon:false}' == 'true'): setup-edgeport-CDN
-
-addons:
-  - id: setup-site-url
-    type: update
-    name: WordPress Site Address (URL)
-    description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
-    logo: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.0.0/images/wp_logo_70.png
-    settings:
-      fields:
-        - type: string
-          name: siteURL
-          caption: Site Address (URL)
-          default: ''
-          required: true
-          regex: "^https?:\\/\\/.+$"
-          regexText: Incorrect Site URL.
-
-    buttons:
-      - caption: Site URL
-        settings: main
-        action: setup-domain
-        loadingText: Applying...
-        confirmText: Do you want to change Site URL?
-        successText:  Site URL for WordPress has been successfully applyed!
-
-    env:
-      onAfterClone:
-        - script: delete MANIFEST.id; return {result:0, jps:MANIFEST};
-        - install [bl, cp]: ${response.jps}
-          envName: ${event.response.env.envName}
+  - if ('${settings.le-addon:false}' == 'true'): setupLEdomain
+  - if ('${settings.cdn-addon:false}' == 'true'): setupCDN
+  - install: 
+    - jps: /scripts/cacheClean.jps?_r=${fn.random}
+    - jps: /scripts/addons.jps?_r=${fn.random}
+    - jps: /scripts/events.jps?_r=${fn.random}
+  - if ('${settings.success_email}' != 'false'):
+      - return:
+          type: success
+          message: /success/text/success-${globals.SUCCESS}.md?_r=${fn.random}
+          email: /success/email/success-${nodes.cp.master.nodeType}-${globals.SUCCESS}.md?_r=${fn.random}
 
 actions:
 
-  initLEwebroot:
+  limits:
+    - env.control.ApplyNodeGroupData[bl,cp,sqldb,storage,nosqldb]:
+        data:
+          project: ${settings.project:default}
+          projectScope: ${settings.projectScope:production}
+          isRequired: true
+
+  setProtocol:
+    - script: |
+        return {
+          result:0,
+          ssl: jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value
+        }
+    - if (${response.ssl} || ${settings.le-addon:false}):
+        setGlobals:
+          PROTOCOL: https
+
+  setDomain:
+    - script: /scripts/idna.js
+      domains: ${env.domain}
+    - setGlobals:
+        DOMAIN: ${response.domains}
+        
+  setTriggers:
+    - log: Auto Scaling Triggers
+    - script: /scripts/addTriggers.js
+      nodeGroup: cp
+      resourceType: CPU
+      loadGrowth: ${settings.loadGrowth}
+      cleanOldTriggers: true
+      scaleDownLimit: ${nodes.cp.length}
+
+  initLEsettings:
+    - script: |
+        return {
+          result:0,
+          extIP: Boolean(jelastic.billing.account.GetQuotas('environment.externalip.enabled').array[0].value)
+        }
+    - setGlobals:
+        isExtIP: ${response.extIP}
+
     - cmd[cp, bl]: |-
         [ ! -d /var/lib/jelastic/keys/letsencrypt ] && mkdir -p /var/lib/jelastic/keys/letsencrypt;
-        echo "webroot=true" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "webroot=false" > /var/lib/jelastic/keys/letsencrypt/settings-custom;
         echo "webrootPath=/var/www/webroot/ROOT" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "test=false" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
+        echo "withExtIp=${globals.isExtIP}" >> /var/lib/jelastic/keys/letsencrypt/settings-custom;
       user: root
 
-  setup-LE-domain:
+  setupLEdomain:
     - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
-    - install: ${globals.PATH}/scripts/setupDomain.jps
-      settings:
-        domain: https://${response.out}
+    - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --url https://${response.out};
 
-  setup-domain:
-    - install: ${globals.PATH}/scripts/setupDomain.jps
-      settings:
-        domain: ${settings.siteURL}
+  optimization:
+    - log: Load Balancers and App servers optimization
+    - install:
+      - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
+        settings:
+          targetGroup: bl
+          targetNodes: bl
+          optimization: wordpress
+      - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
+        settings:
+          targetGroup: cp
+          targetNodes: cp
+          optimization: wordpress
+    - cmd[cp, bl]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
+  
+  setPassword:
+    - cmd[cp, bl]: jem passwd set -p ${globals.LS_ADMIN_PASS}
+      user: root
 
-  setup-edgeport-CDN:
-    - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
-    - setGlobals:
-        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.jelastic.net/
-        CDN: ${env.envName}-${response.response.partnerCode}.cdn.jelastic.net
-        SUCCESS: success-cdn
-        EMAIL: cdn
-    - install: /scripts/setupCDN.jps
-
-  configure-MU:
-    - install: ${globals.PATH}/addon/WPMU.jps
-      settings:
-        mode: subdir
-
-  install-wordpress:
-    - install: ${baseUrl}/scripts/installWP.jps
-      settings:
-        db_host: ${globals.DB_HOST}
-        db_user: ${globals.DB_USER}
-        db_pass: ${globals.DB_PASS}
-        wp_admin_pass: ${globals.WP_ADMIN_PASS}
-        wp_title: "Hello World"
-        wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
-        version_wordpress: ${globals.version_wordpress}
-
-  setupCP:
-    - log: CP OPTIMIZATION
-    - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
-      settings:
-        targetGroup: cp
-        targetNodes: ${this.nodeId}
-        optimization: wordpress
-    - cmd[${this.nodeId}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-    - if (/litespeed/.test("${nodes.cp.nodeType}")):
-      - cmd[${this.nodeId}]: jem passwd set -p ${globals.LS_ADMIN_PASS}
-        user: root
-
-  addHSTS:
-    - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $test
-    - if ('${response.out}' == 'false'):
-      - if (/nginxphp/.test("${nodes.cp.nodeType}")):
-          cmd[${this.nodeId}]: |-
-            sed -i "s/#add_header Strict-Transport-Security/add_header Strict-Transport-Security/" /etc/nginx/conf.d/sites_enabled/default.conf;
-            sudo jem service restart;
-      - if (/litespeed/.test("${nodes.cp.nodeType}")):
-          cmd[${nodes.cp.master.id}]:
-            if [[ $(grep -L "Strict-Transport-Security" /var/www/webroot/ROOT/.htaccess) ]]; then echo "$(echo 'Header always set Strict-Transport-Security "max-age=31536000"' | cat - /var/www/webroot/ROOT/.htaccess)" > /var/www/webroot/ROOT/.htaccess; fi
-
-  setupBL:
-    - log: LB OPTIMIZATION
-    - install: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
-      settings:
-        targetGroup: bl
-        targetNodes: ${this}
-        optimization: wordpress
-    - cmd[${this}]: if test -f /usr/local/sbin/optimization.sh; then bash /usr/local/sbin/optimization.sh &>> /var/log/run.log; fi
-
-  setupCacheSync:
-    - if (/litespeed/.test("${nodes.bl.nodeType}")):
-      - install: ${baseUrl}/scripts/setupHA4LB.jps?_r=${fn.random}
-
-  updateTriggers:
-    if (!${event.params.auto:true}):
-      - log: update scaling trigger
-      - script: /scripts/updateTriggers.js
-        count: ${nodes.cp.length}
-
-  mountStorage:
+  storageMount:
     - log: Mount Storage
     - api:
       - method: jelastic.environment.file.AddMountPointByGroup
@@ -437,10 +281,54 @@ actions:
           sourcePath: /data
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
-          protocol: NFS4
+          protocol: ${this}
+          
+  storageHealthCheck:
+    - cmd[cp]: |-
+        echo "<?php http_response_code(500); ?>" > /var/www/webroot/ROOT/index.php
 
-success:
-  email: success/email/${nodes.cp.master.nodeType}/oneregion-${globals.EMAIL}.md?_r=${fn.random}
-  text: success/text/oneregion/${globals.SUCCESS}.md?_r=${fn.random}
+  setupCDN:
+    - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
+    - setGlobals:
+        CDN_URL: ${globals.PROTOCOL}://${env.envName}-${response.response.partnerCode}.cdn.jelastic.net/
+        CDN: ${env.envName}-${response.response.partnerCode}.cdn.jelastic.net
+        SUCCESS: cdn
+    - install: /scripts/setupCDN.jps
 
-startPage: ${globals.PROTOCOL}://${env.domain}/
+  configureMultisite:
+    - install: /addons/multisite.jps
+
+  getRedisPswd:
+    - cmd[nosqldb]: cat /etc/redis.conf | tail -1 | awk '{print $2}';
+    - setGlobals:
+        REDIS_PSWD: ${response.out}
+
+  installWordpress:
+    - install: /scripts/installWP.jps
+      settings:
+        db_host: ${globals.DB_HOST}
+        db_user: ${globals.DB_USER}
+        db_pass: ${globals.DB_PASS}
+        redis_host: nosqldb
+        redis_port: 6379
+        redis_user: admin
+        redis_pswd: ${globals.REDIS_PSWD}
+        wp_admin_pass: ${globals.WP_ADMIN_PASS}
+        wp_title: "Hello World"
+        wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
+        version_wordpress: ${globals.version_wordpress}
+
+  setupCacheSync:
+    - if (/litespeed/.test("${nodes.bl.nodeType}")):
+      - install: /scripts/setupHA4LB.jps?_r=${fn.random}
+  
+  updateTriggers:
+    if (!${event.params.auto:true}):
+      - log: update scaling trigger
+      - script: /scripts/updateTriggers.js
+        count: ${nodes.cp.length}
+          
+  installWoocommerce:
+    cmd[${nodes.cp.master.id}]: |-
+      wp plugin install woocommerce --version=${globals.version_woocommerce} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+  
