@@ -10,7 +10,7 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.2.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/JE-63596
 
 onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
@@ -243,7 +243,7 @@ actions:
   optimization:
     - log: Load Balancers and App servers optimization
     - install:
-      - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
+      - jps: https://raw.githubusercontent.com/jelastic/templates/JE-63596/config_v2.jps?_r=${fn.random}
         settings:
           targetGroup: bl
           targetNodes: bl
@@ -273,10 +273,7 @@ actions:
           
   storageHealthCheck:
     - cmd[cp]: |-
-        service autofs stop;  mountpoint -q /var/www/webroot/ROOT && umount /var/www/webroot/ROOT;
         echo "<?php http_response_code(500); ?>" > /var/www/webroot/ROOT/index.php
-        service autofs start;
-      user: root
 
   setupCDN:
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
