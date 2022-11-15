@@ -147,6 +147,7 @@ globals:
 onInstall:
 
   - limits
+  - metadata
   - setProtocol
   - setDomain
   - initLEsettings
@@ -202,9 +203,14 @@ actions:
   limits:
     - env.control.ApplyNodeGroupData[bl,cp,sqldb,storage,nosqldb]:
         data:
+          isRequired: true
+
+  metadata:
+    - env.control.ApplyEnvProperty[bl,cp,sqldb,storage,nosqldb]:
+        properties:
           project: ${settings.project:default}
           projectScope: ${settings.projectScope:production}
-          isRequired: true
+
 
   setProtocol:
     - script: |
