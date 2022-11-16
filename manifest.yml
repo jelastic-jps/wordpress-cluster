@@ -198,7 +198,7 @@ onInstall:
           email: /success/email/success-${nodes.cp.master.nodeType}-${globals.SUCCESS}.md?_r=${fn.random}
 
 actions:
-  
+
   limits:
     - env.control.ApplyNodeGroupData [*]:
         data:
