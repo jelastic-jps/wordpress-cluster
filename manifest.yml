@@ -145,8 +145,8 @@ globals:
   SUCCESS: default
 
 onInstall:
-
-  - limits
+  - addLimits
+  - addMetadata
   - setProtocol
   - setDomain
   - initLEsettings
@@ -199,12 +199,17 @@ onInstall:
 
 actions:
 
-  limits:
-    - env.control.ApplyNodeGroupData[bl,cp,sqldb,storage,nosqldb]:
+  addLimits:
+    - env.control.ApplyNodeGroupData [*]:
         data:
-          project: ${settings.project:default}
-          projectScope: ${settings.projectScope:production}
           isRequired: true
+
+  addMetadata:
+    script: |
+      var metadata = { project: "${settings.project:default}", projectScope: "${settings.projectScope:production}" };
+      return api.env.control.ApplyEnvProperty ?
+        api.env.control.ApplyEnvProperty('${env.name}', session, metadata) :
+        api.env.control.ApplyNodeGroupData('${env.name}', session, 'cp', metadata);
 
   setProtocol:
     - script: |
