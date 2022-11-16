@@ -145,8 +145,8 @@ globals:
   SUCCESS: default
 
 onInstall:
-  - limits
-  - metadata
+  - addLimits
+  - addMetadata
   - setProtocol
   - setDomain
   - initLEsettings
@@ -199,28 +199,17 @@ onInstall:
 
 actions:
 
-  limits:
+  addLimits:
     - env.control.ApplyNodeGroupData [*]:
         data:
           isRequired: true
 
-  metadata:
+  addMetadata:
     script: |
-      var apiList = [],
-          metadata = { project: "${settings.project:default}", projectScope: "${settings.projectScope:production}" };
-      if (api.env.control.ApplyEnvProperty) {
-        apiList.push({
-          method: "env.control.ApplyEnvProperty",
-          properties: metadata
-        });
-        } else {
-        apiList.push({
-          method: "env.control.ApplyNodeGroupData",
-          nodeGroup: "cp",
-          data: metadata
-        });     
-      }
-      return { result: 0, onAfterReturn: { api: apiList } };
+      var metadata = { project: "${settings.project:default}", projectScope: "${settings.projectScope:production}" };
+      return api.env.control.ApplyEnvProperty ?
+        api.env.control.ApplyEnvProperty('${env.name}', session, metadata) :
+        api.env.control.ApplyNodeGroupData('${env.name}', session, 'cp', metadata);
 
   setProtocol:
     - script: |
