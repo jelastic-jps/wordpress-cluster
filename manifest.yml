@@ -145,7 +145,6 @@ globals:
   SUCCESS: default
 
 onInstall:
-
   - limits
   - metadata
   - setProtocol
@@ -199,18 +198,29 @@ onInstall:
           email: /success/email/success-${nodes.cp.master.nodeType}-${globals.SUCCESS}.md?_r=${fn.random}
 
 actions:
-
+  
   limits:
-    - env.control.ApplyNodeGroupData[bl,cp,sqldb,storage,nosqldb]:
+    - env.control.ApplyNodeGroupData [*]:
         data:
           isRequired: true
 
   metadata:
-    - env.control.ApplyEnvProperty[bl,cp,sqldb,storage,nosqldb]:
-        properties:
-          project: ${settings.project:default}
-          projectScope: ${settings.projectScope:production}
-
+    script: |
+      var apiList = [],
+          metadata = { project: "${settings.project:default}", projectScope: "${settings.projectScope:production}" };
+      if (api.env.control.ApplyEnvProperty) {
+        apiList.push({
+          method: "env.control.ApplyEnvProperty",
+          properties: metadata
+        });
+        } else {
+        apiList.push({
+          method: "env.control.ApplyNodeGroupData",
+          nodeGroup: "cp",
+          data: metadata
+        });     
+      }
+      return { result: 0, onAfterReturn: { api: apiList } };
 
   setProtocol:
     - script: |
