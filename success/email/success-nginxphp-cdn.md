@@ -14,3 +14,4 @@ Manage the database nodes using the next credentials:
 **Username**: ${globals.DB_USER}    
 **Password**: ${globals.DB_PASS}  
 
+**Note:** Every time when you need to make settings customization for web server or load balancer node you should apply it to all the web server nodes or the load balancer nodes respectively.
