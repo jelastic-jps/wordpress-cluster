@@ -27,7 +27,7 @@ settings:
       width: 225
       tooltip: | 
         Configure auto-scaling triggers, i.e. how fast the system responds to load spikes by adding or removing nodes.
-        <p>Read more about <a href="https://docs.jelastic.com/automatic-horizontal-scaling">Automatic Horizontal Scaling</a></p>
+        <p>Read more about <a href="https://docs.jelastic.com/automatic-horizontal-scaling" target='_blank'>Automatic Horizontal Scaling</a></p>
       values:        
         - value: slow
           caption: Low Load
@@ -44,12 +44,12 @@ settings:
       name: displayfield
       markup:
  
-    - caption: Install LiteSpeed High-Performance Web Server
+    - caption: Install LiteSpeed High-Performance Web Server (Additional License Fee)
       type: checkbox
       name: ls_addon
       value: true
       disabled: false
-      tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers"
+      tooltip: "If this option is disabled, the cluster will be installed using NGINX load balancer and application servers. More info about LiteSpeed <a href='https://docs.jelastic.com/litespeed-web-server/' target='_blank'>here</a>"
       showIf:
         true:
           - caption: WordPress Brute Force Attack Protection
@@ -57,14 +57,14 @@ settings:
             name: wp_protect
             value: true
             disabled: false
-            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
+            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection' target='_blank'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
 
           - caption: Web Application Firewall
             type: checkbox
             name: waf
             value: true
             disabled: false
-            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf' target='_blank'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
 
         false:
           - caption: WordPress Brute Force Attack Protection
@@ -72,21 +72,21 @@ settings:
             name: wp_protect
             value: false
             disabled: true
-            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
+            tooltip: "Secure WordPress Admin Panel with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection' target='_blank'>LiteSpeed Brute Force Protection</a> that limits failed login attempts. Default action is <b>Throttle</b> and number of allowed attempts is <b>100</b>"
         
           - caption: Web Application Firewall
             type: checkbox
             name: waf
             value: false
             disabled: true
-            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
+            tooltip: "Protect web sites with <a href='https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf' target='_blank'>LiteSpeed built-in WAF</a> based on Free ModSecurity Rules from Comodo"
       
     - caption: Install MariaDB Galera Cluster
       type: checkbox
       name: galera
       value: true
       disabled: false
-      tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/'>limitations</a>"
+      tooltip: "<h3>Requirements for All Tables:</h3> * run on InnoDB storage engine <p>* have a primary key</p>Read more about <a href='https://mariadb.com/kb/en/library/mariadb-galera-cluster-known-limitations/' target='_blank'>limitations</a>"
       
     - caption: Install GlusterFS Cluster
       type: checkbox
@@ -126,7 +126,7 @@ globals:
   db_host: sqldb
   protocol: http
   wp_admin_pass: ${fn.password(10)}
-  ls_admin_pass: ${settings.ls_admin_pass}
+  ls_admin_pass: ${settings.ls_admin_pass:[fn.password(10)]}
   success: success
   email: default
   is_install_wp: ${settings.is_install_wp:true}
