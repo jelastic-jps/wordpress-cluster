@@ -106,7 +106,6 @@ if ('${settings.ls_addon:false}'== 'true') {
     fixedCloudlets: ${settings.bl_fixedCloudlets:1},
     nodeGroup: "bl",
     restartDelay: 10,
-    scalingMode: "STATEFUL",
     addons: ["cache-clean","setup-site-url"],
     displayName: "Load balancer",
     env: {

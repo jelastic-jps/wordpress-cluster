@@ -213,12 +213,6 @@ onInstall:
   - setupBL:
       nodeId: bl
   
-  - if (/litespeed/.test("${nodes.cp.nodeType}")):
-    - cmd[bl]: |-
-        jem balancer clear;
-        jem balancer rebuildCommon;
-      user: root
-
   - forEach(i:nodes.cp):
       setupCP:
         nodeId: ${@i.id}
