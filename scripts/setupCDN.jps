@@ -16,11 +16,9 @@ onInstall:
           }
         });
         if (isCdnInstalled.result != 0) return isCdnInstalled;
-        isCdnInstalled = isCdnInstalled.response.apps[0].isInstalled;
         partnerCode = jelastic.dev.scripting.Eval(cdnAppid, session, "cdn.info", {partnerCode:1});
         if (partnerCode.result != 0) return partnerCode;
-        partnerCode = partnerCode.response.partnerCode;
         if (isCdnInstalled.response.apps[0].isInstalled)
-          return jelastic.env.control.ExecCmdById(envName, session, ${nodes.cp.master.id}, toJSON([{ command:' bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.partnerCode}.cdn.jelastic.net ' }]), true);        
+          return jelastic.env.control.ExecCmdById('${env.envName}', session, '${nodes.cp.master.id}', toJSON([{ command:' bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-'+partnerCode.response.partnerCode+'.cdn.jelastic.net ' }]), true);        
       }      
       return { result: 0 }
