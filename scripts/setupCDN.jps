@@ -3,20 +3,22 @@ id: edgeport-cdn-wordpress
 name: Edgeport CDN configuration for WordPress
 onInstall:
   - script: |
-      var resp, isCDN, partnerCode;
-      isCDN = jelastic.dev.scripting.Eval("appstore", session, "GetApps", {
-        targetAppid: '${env.appid}',
-        search: {
-          appstore: 1,
-          app_id: "cdn"
-        }
-      });
-      if (isCDN.result != 0) return isCDN;
-      partnerCode = jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1});
-      if (partnerCode.result != 0) return partnerCode;
-      return { result: 0, isCDN: isCDN.response.apps[0].isInstalled, partnerCode: partnerCode.response.partnerCode }
-
-  - if (${response.isCDN}):
-    - cmd[${nodes.cp.master.id}]: |-
-        bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-${response.partnerCode}.cdn.jelastic.net
- 
+      import com.hivext.api.Response;
+      var cdnAppid = "c05ffa5b45628a2a0c95467ebca8a0b4";
+      var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
+      var isCdnInstalled = false, partnerCode = "";
+      if (isCDN.result == 0 || isCDN.result == Response.PERMISSION_DENIED) {
+        isCdnInstalled = jelastic.dev.scripting.Eval("appstore", session, "GetApps", {
+          targetAppid: '${env.appid}',
+          search: {
+            appstore: 1,
+            app_id: "cdn"
+          }
+        });
+        if (isCdnInstalled.result != 0) return isCdnInstalled;
+        partnerCode = jelastic.dev.scripting.Eval(cdnAppid, session, "cdn.info", {partnerCode:1});
+        if (partnerCode.result != 0) return partnerCode;
+        if (isCdnInstalled.response.apps[0].isInstalled)
+          return jelastic.env.control.ExecCmdById('${env.envName}', session, '${nodes.cp.master.id}', toJSON([{ command:' bash ~/bin/setupWP.sh --edgeportCDN true --CDN_URL ${env.envName}-'+partnerCode.response.partnerCode+'.cdn.jelastic.net ' }]), true);        
+      }      
+      return { result: 0 }
