@@ -78,7 +78,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     }
   }, {
     nodeType: "litespeedphp",
-    engine: "php8.0",
+    engine: "php8.1",
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
@@ -104,7 +104,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10
   }, {
     nodeType: "nginxphp",
-    engine: "php8.0",
+    engine: "php8.1",
     count: ${settings.cp_count:2},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
