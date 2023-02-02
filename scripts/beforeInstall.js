@@ -86,7 +86,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10,
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true",
       WAF: "${settings.waf:false}",
       WP_PROTECT: "OFF"
     },      
@@ -111,8 +110,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "cp",
     restartDelay: 10,
     env: {
-      SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true"
+      SERVER_WEBROOT: "/var/www/webroot/ROOT"
     },
     volumes: [
       "/var/www/webroot/ROOT"
