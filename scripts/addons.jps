@@ -9,11 +9,12 @@ onAfterClone:
     envName: ${event.response.env.envName}
 
 onInstall:
-  installAddon:
-  - id: setup-site-url-addon
-    nodeGroup: cp  
-  - id: cache-purge-addon
-    nodeGroup: cp  
+  - installAddon:
+    - id: setup-site-url-addon
+      nodeGroup: cp  
+    - id: cache-purge-addon
+      nodeGroup: cp
+  - cache_purge
 
 addons:
   - id: setup-site-url-addon
