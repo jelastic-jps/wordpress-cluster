@@ -357,9 +357,6 @@ actions:
     - if (/litespeed/.test("${nodes.cp.nodeType}")):
       - cmd[${this.nodeId}]: jem passwd set -p ${globals.ls_admin_pass}
         user: root
-    - if ('${settings.glusterfs}' == 'true'):
-        - glusterAllowClient: ${this.nodeIP}
-        - glusterfsMount: ${this.nodeId}
         
   addHSTS:
     - if (/nginxphp/.test("${nodes.cp.nodeType}")):
@@ -393,5 +390,5 @@ actions:
           sourcePath: /data
           path: /var/www/webroot/ROOT
           sourceAddressType: NODE_GROUP
-          protocol: NFS4
+          protocol: GLUSTER
     
