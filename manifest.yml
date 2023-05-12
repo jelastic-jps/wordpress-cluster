@@ -335,5 +335,5 @@ actions:
           
   installWoocommerce:
     cmd[${nodes.cp.master.id}]: |-
-      wp plugin install woocommerce --version=${globals.version_woocommerce} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+      wp plugin install woocommerce --version=${globals.version_woocommerce} --activate --path=/var/www/webroot/ROOT &>> /var/log/run.log;
   
