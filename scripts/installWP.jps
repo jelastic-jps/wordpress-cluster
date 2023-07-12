@@ -31,7 +31,11 @@ onInstall:
 actions:
   deployWordPress:
     - cmd[${nodes.cp.master.id}]: |-
-        wget -qO- 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT;
+        wget -qO /tmp/wordpress.tar.gz 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz';
+        [ -d /tmp/wordpress/ ] && rm -rf /tmp/wordpress;
+        tar -xzf /tmp/wordpress.tar.gz -C /tmp/;
+        rsync -a /tmp/wordpress /var/www/webroot/ROOT;
+        rsync -a --checksum /tmp/wordpress /var/www/webroot/ROOT;
     - addContext [cp]:
         name: ROOT
         fileName: WordPress
