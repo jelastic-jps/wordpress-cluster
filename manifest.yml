@@ -133,6 +133,7 @@ settings:
 
 mixins:
  - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
+ - /scripts/common.yml
 
 globals:
   PATH: ${baseUrl}
