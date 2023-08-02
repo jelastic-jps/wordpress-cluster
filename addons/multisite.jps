@@ -23,11 +23,11 @@ onInstall:
     - if ('${globals.mode}' == 'subdir'):
         cmd[${nodes.cp.master.id}]: |-
           wget ${baseUrl}../configs/cp/nginx/subdir.conf -O /etc/nginx/conf.d/sites-enabled/subdir.conf;
-          sudo /etc/init.d/nginx reload
+          sudo jem service restart
     - if ('${globals.mode}' == 'subdom'):
         cmd[${nodes.cp.master.id}]: |-
           wget ${baseUrl}../configs/cp/nginx/subdom.conf -O /etc/nginx/conf.d/sites-enabled/subdom.conf;
-          sudo /etc/init.d/nginx reload
+          sudo jem service restart
 
   - if (/llsmp/.test("${nodes.cp.nodeType}") || /litespeed/.test("${nodes.cp.nodeType}")):
     - if ('${globals.mode}' == 'subdir'):
