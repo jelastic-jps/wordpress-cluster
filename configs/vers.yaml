@@ -2,4 +2,4 @@ globals:
   version_lscache: 5.3.1
   version_w3total: 2.2.9
   version_woocommerce: 7.5.1
-  version_wordpress: 6.2.2
+  version_wordpress: "6.3"
