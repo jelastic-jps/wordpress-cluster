@@ -1,7 +1,7 @@
 type: update
 id: wordpress-cluster-events
 name: WordPress Cluster Events
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.2.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/JE-67933
 
 onAfterScaleOut[nodeGroup:bl]: setupCacheSync
 
