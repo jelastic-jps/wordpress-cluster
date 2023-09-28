@@ -5,10 +5,10 @@ id: wordpress-balancer-rebuild
   
 onInstall:
   - cmd[bl]: |-
+      jem balancer clear;
       [ -f /var/www/conf/hosts_list ] && rm -f /var/www/conf/hosts_list;
   - forEach(i:nodes.cp):
       cmd[bl]: echo '${@i.address}' >> /var/www/conf/hosts_list;
   - cmd[bl]: |-
-      jem balancer clear;
       jem balancer rebuildCommon;
     user: root
