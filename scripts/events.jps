@@ -25,9 +25,6 @@ onAfterClone:
   - install: /scripts/setupHA4LB.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
   
-  - install: /scripts/balancerRebuild.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
-
   - install: /scripts/setupDomain.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
     settings:
@@ -52,7 +49,6 @@ onBeforeMigrate:
 
 onAfterMigrate:
   - install: /scripts/setupHA4LB.jps?_r=${fn.random}
-  - install: /scripts/balancerRebuild.jps?_r=${fn.random}
   - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
   - if (/${response.out}/.test(true)):
     - install: /scripts/setupDomain.jps?_r=${fn.random}
