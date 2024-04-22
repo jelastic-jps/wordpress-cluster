@@ -152,7 +152,6 @@ onInstall:
   - setProtocol
   - setDomain
   - initLEsettings
-  - if (${settings.is_trigger:true}): setTriggers
   - optimization
   - setupCacheSync
   - storageHealthCheck
@@ -193,6 +192,7 @@ onInstall:
     - jps: /scripts/cacheClean.jps?_r=${fn.random}
     - jps: /scripts/addons.jps?_r=${fn.random}
     - jps: /scripts/events.jps?_r=${fn.random}
+  - if (${settings.is_trigger:true}): setTriggers
   - if ('${settings.success_email}' != 'false'):
       - return:
           type: success
