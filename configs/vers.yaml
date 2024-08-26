@@ -1,5 +1,5 @@
 globals:
-  version_woocommerce: 8.5.2
-  version_wordpress: 6.4.3
   version_lscache: 6.0.0.1
   version_w3total: 2.6.1
+  version_woocommerce: 9.2.3
+  version_wordpress: 6.4.3
