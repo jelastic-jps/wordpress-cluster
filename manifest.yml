@@ -177,7 +177,7 @@ onInstall:
           });
         if ('${settings.cdn-addon:false}' == 'true')
           actions.push({
-            jps: "https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}",
+            jps: "https://raw.githubusercontent.com/jelastic-jps/cdn/master/manifest.yml?_r=${fn.random}",
             nodeGroup: "bl",
             skipEmail: "true",
             settings: {
