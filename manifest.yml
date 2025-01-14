@@ -100,7 +100,8 @@ settings:
     - caption: Install Lightning-Fast Premium CDN
       type: checkbox
       name: cdn-addon
-      value: true
+      value: false
+      hidden: true
       disabled: false
       tooltip: "Jelastic CDN is an HTTP/3 premium content delivery network of 160+ Super PoPs (points of presence) with bandwidth capacity up to 115 Tbps, advanced caching and acceleration strategies based on best-in-class IP Anycast technology."
 
