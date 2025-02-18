@@ -1,68 +1,71 @@
-# Highly Available and Auto-Scalable WordPress Cluster v2
+<p align="center"> 
+<img src="images/wp-cluster-kit.svg" alt="WordPress Cluster">
+</p>
 
-Out-of-the-box automated Enterprise WordPress Cluster solution v2 for large businesses and mission-critical sites
+# Highly Available and Auto-Scalable WordPress Cluster Kit
+
+Out-of-the-box automated WordPress Cluster solution for large businesses and mission-critical sites. WordPress cluster helps you to handle permanent high loads and huge load spikes, ensures zero downtime, improves performance, cuts maintenance costs, and, as a result, offers an excellent experience for end-users.
 
 
 ## WordPress Cluster Topology
 
-Upon the package installation, a new environment with the following topology will be created: 
+This package creates a dedicated WordPress cluster environment that contains the following:
 
-* Either highly available **[LiteSpeed ADC](https://docs.jelastic.com/litespeed-web-adc)** or **[NGINX](https://docs.jelastic.com/tcp-load-balancing)**  load balancer is used for distributing the incoming traffic within a cluster  
-* **WordPress Brute Force Attack Protection** option will protect WordPress admin panel in case  **[LiteSpeed Web Server](https://docs.jelastic.com/litespeed-web-server)** is chosen  
-* **Web Application Firewall** will be enabled by the default if **LiteSpeed Web Server** will be installed
-* The *WordPress* application itself is handled by either **LiteSpeed Web Server** or **[NGINX PHP](https://docs.jelastic.com/nginx-php)** servers with preconfigured [automatic horizontal scaling](https://docs.jelastic.com/automatic-horizontal-scaling) to handle load spikes  
-* **Redis** is high-performance RAM-allocated data structure store used as a highspeed caching solution
-* Highly-available **[MariaDB Galera Cluster](https://github.com/jelastic-jps/mysql-cluster#mariadb-galera-cluster)** is used to store and operate user data   
-* **[Shared Storage](https://docs.jelastic.com/shared-storage-container)** cluster, ensuring high avaiablity with GlusterFS, is mounted to all application server nodes for sharing common data  
-* Traffic encryption is provided by [Let's Encrypt Add-On](https://jelastic.com/blog/free-ssl-certificates-with-lets-encrypt/)  with automatic issuing of trusted SSL certificate and Auto-Renewal.
-* **[Premium CDN](https://jelastic.com/blog/enterprise-cdn-verizon-integration/)** integration in order to provide Lightning-fast static assets loading  
+- two load balancers (either LiteSpeed ADC or NGINX) for distributing the incoming traffic within a cluster
+- two application servers (either LiteSpeed or NGINX) with automatic horizontal scaling to handle load spikes
+- a Redis high-performance RAM-allocated data structure store used as a high-speed caching solution
+- a highly available MariaDB cluster (either Galera or Primary-Primary replication) to store and operate user data
+- a dedicated Shared Storage (either a single node or a fault-tolerant cluster based on GlusterFS) for sharing common data
+ 
+![WordPress cluster topology](images/01-wp-cluster-topology.png)
 
 
+## Deployment to Cloud
 
+To get your WordPress Cluster solution, click the "**Deploy to Cloud**" button below, specify your email address within the widget, choose one of the [Virtuozzo Public Cloud Providers](https://www.virtuozzo.com/application-platform-partners/), and confirm by clicking **Install**.
 
-<p align="left"> 
-<img src="https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0/images/single-cluster-topology-storage-scaling-v2.png" width="500">
-</p>
+[![Deploy to Cloud](https://raw.githubusercontent.com/jelastic-jps/common/main/images/deploy-to-cloud.png)](https://www.virtuozzo.com/install/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/refs/heads/v2.2.0/manifest.yml)
 
-## Deployment to the Cloud
+> If you already have a Virtuozzo Application Platform (VAP) account, you can deploy this solution from the [Marketplace](https://www.virtuozzo.com/application-platform-docs/marketplace/) or [import](https://www.virtuozzo.com/application-platform-docs/environment-import/) a manifest file from this repository.
 
-Click the **Deploy** button below, specify your email address within the widget, choose one of the [Jelastic Public Cloud providers](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0/manifest.yml&keys=app.mycloud.by;app.jelastic.eapps.com;app.hidora.com;app.rag-control.hosteur.com;app.jpc.infomaniak.com;;app.jpe.infomaniak.com;app.trendhosting.cloud;app.cloudjiffy.com;app.paas.mamazala.com;app.mircloud.host;app.paas-infra.previder.com;app.my.reclaim.cloud;app.j.scaleforce.net;app.unicloud.pl;app.unispace.io;app.trendhosting.cloud;app.cloudlets.com.au&filter=auto_cluster) and press **Install**.
-
-[![Deploy to Jelastic](https://github.com/jelastic-jps/git-push-deploy/raw/master/images/deploy-to-jelastic.png)](https://jelastic.com/install-application/?manifest=https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0/manifest.yml&keys=app.mycloud.by;app.jelastic.eapps.com;app.hidora.com;app.rag-control.hosteur.com;app.jpc.infomaniak.com;;app.jpe.infomaniak.com;app.trendhosting.cloud;app.cloudjiffy.com;app.paas.mamazala.com;app.mircloud.host;app.paas-infra.previder.com;app.my.reclaim.cloud;app.j.scaleforce.net;app.unicloud.pl;app.unispace.io;app.trendhosting.cloud;app.cloudlets.com.au&filter=auto_cluster)
-
-> **Note:** 
->  - The installation of this clustered solution is available only for billing customers
->  - If you are already registered at Jelastic, you can deploy this cluster by importing the  [the package manifest raw link](https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0/manifest.yml) within the dashboard.
 
 ## Installation Process
 
-In the opened confirmation window at Jelastic dashboard, if required change:  
+In the opened installation window at the VAP dashboard, customize your WordPress cluster by selecting the necessary options:
 
-* preconfigured horizontal __Scaling Strategy__   
- 
-*  what __Advanced Features__ should be installed or not  
-* __Environment__ name  
+![WordPress cluster installation](images/02-wp-cluster-installation.png)
 
-* __Display Name__  
+1\. The **Scaling Strategy** parameter aims to foresee possible upcoming load growth in the cluster and scale out the application servers horizontally in order to prevent WordPress application downtime.
 
-* destination __[Region](https://docs.jelastic.com/environment-regions)__ if several are available  
+Based on our experience, we offer three common [scaling automation scenarios](https://www.virtuozzo.com/application-platform-docs/automatic-horizontal-scaling/) for WordPress to prevent overload (these settings can be adjusted after the installation):
 
-and click on __Install__.
+- ***Low Load***
+  - adds **1** application server node (up to 16) if the workload is higher than **70%**
+  - removes **1** application server node (down to 2) if the workload goes below **20%**
+- ***Medium Load***
+  - adds **1** application server node (up to 16) if the workload is higher than **50%**
+  - removes **1** application server node (down to 2) if the workload goes below **20%**
+- ***High Load***
+  - adds **2** application server nodes (up to 16) if the workload is higher than **30%**
+  - removes **1** application server node (down to 2) if the workload goes below **10%**
 
-<p align="left"> 
-<img src="https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0/images/install-v2.png" width="500">
-</p>
+![auto horizontal scaling triggers](images/03-horizontal-scaling-triggers.png)
 
-Once the deployment is finished, you’ll see an appropriate success pop-up with access credentials to your administration WordPress panel, whilst the same information will be duplicated to your email box.
+2\. Activate the preferred **Advanced Features** within the same installation frame.
 
-<p align="left"> 
-<img src="https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.0.0/images/success-wordpress.png" width="350">
-</p>
+- **LiteSpeed High-Performance Web Server** installs cluster based on [LiteSpeed Web Server](https://www.virtuozzo.com/application-platform-docs/litespeed-web-server/) and [Web Application Delivery Controller](https://www.virtuozzo.com/application-platform-docs/litespeed-web-adc/). This option provides the highest possible speed of website content delivery to clients via modern [HTTP/3](https://www.virtuozzo.com/application-platform-docs/http3/) protocol. If you untick this option, the cluster will be installed using the NGINX web server and load balancer. The following two additional features are available only for LiteSpeed-based installations:
+  - **[Brute Force Attack Protection](https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:wordpress-protection)** secures the WordPress admin panel by limiting failed login attempts. The default action is *Throttle*, and the number of allowed attempts is *100*.
+  - **[Web Application Firewall](https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:waf)** (WAF) enables/disables the feature that protects your WordPress website by applying rules for filtering out attacking requests by checking for known attack signatures.
+  > **Note:** Refer to the [LiteSpeed Web Server](https://www.virtuozzo.com/application-platform-docs/litespeed-web-server/) documentation for more details on these features and their configuration.
+- **[MariaDB Galera Cluster](https://mariadb.com/kb/en/library/galera-cluster/)** is a multi-primary database cluster based on synchronous replication and the InnoDB engine. With the Galera Cluster, you can perform direct read and write operations to any node. In case of a single instance failure, there will be no cluster downtime and no complex failover procedures. If you untick the checkbox, a [Primary-Primary database cluster](https://www.virtuozzo.com/application-platform-docs/auto-clustering/#mariadb) will be installed.
+> **Note:** When manually restoring a database dump for the Galera cluster, it is essential to [consider the limitations](https://github.com/jelastic-jps/database-backup-addon/blob/main/docs/ManualRestoreFromDump.md).
+- **[Let's Encrypt SSL with Auto-Renewal](https://www.virtuozzo.com/company/blog/free-ssl-certificates-with-lets-encrypt/)** add-on issues and uses a trusted, free certificate for a custom domain. The built-in functionality employs periodical renewal to prevent certificate expiration. The appropriate notifications are sent by email.
+- **[GlusterFS Cluster](https://www.virtuozzo.com/application-platform-docs/shared-storage-container/#shared-storage-auto-cluster)** provides a fault-tolerant shared storage solution for your WordPress cluster. It ensures data consistency and integrity, as well as high availability and scalability.
+- **[WordPress Multisite Network](https://wordpress.org/support/article/glossary/#multisite)** enables/disables the same-named feature. It allows the application to act as a WordPress network hub, where the network can comprise several websites. With this built-in feature and platform automation, you can create an independent network of websites and invite others to develop their sites on the same network, even for commercial usage.
+- **[WooCommerce](https://wordpress.org/plugins/woocommerce/)** is a free, open-source WordPress plugin that adds e-commerce functionality to your WordPress website. Enable this option to automatically install this outstanding platform for a store of any size hosted on your WordPress cluster.
 
-So now you can just click on the **Open in browser** button within the shown frame and start filling your highly available and reliable WP installation with the required content, being ready to handle as much users as your service requires.
+3\. Specify **Environment** name, **Display Name**, choose availability **Region** (if available), and click **Install**.
 
-> **Note:** Keep in mind that you can't do redeploy from previous WordPress Cluster edition to the new version. So in case you have decided to move your site to the WordPress Cluster v2 you should migrate it  following the Tutorial ["How to Migrate a WordPress Site to Jelastic PaaS](https://jelastic.com/blog/migrate-wordpress-site/) or any other one you prefer.
+![WordPress cluster installation success](images/04-wp-cluster-installation-success.png)
 
-## WordPress Managed Hosting Business
-
-To start offering this solution to your customers please follow to [Auto-Scalable Clusters for Managed Cloud Business](https://jelastic.com/apaas/)
+Wait several minutes for the platform to set up your WordPress Cluster. Use the links and credentials from the successful installation frame or the appropriate email to manage your WordPress application (or even create a network).
