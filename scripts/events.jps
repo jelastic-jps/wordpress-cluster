@@ -14,9 +14,6 @@ onAfterScaleOut[nodeGroup:cp]: updateTriggers
 onAfterStart:
   cmd[cp]: sudo jem service restart
 
-onAfterInstallAddon [nodeGroup:bl, id:cdn]:
-  - install: /scripts/setupCDN.jps
-
 onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]:
   - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
   - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --url https://${response.out};
@@ -29,9 +26,6 @@ onAfterClone:
     envName: ${event.response.env.envName}
     settings:
       domain: ${event.response.env.domain}
-
-  - install: /scripts/setupCDN.jps?_r=${fn.random}
-    envName: ${event.response.env.envName}
 
   - install: /scripts/cacheClean.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
