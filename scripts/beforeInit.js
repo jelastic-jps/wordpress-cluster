@@ -12,7 +12,11 @@ var isLS = jelastic.dev.apps.GetApp(lsAppid);
 var perEnv = "environment.maxnodescount",
       maxEnvs = "environment.maxcount",
       perNodeGroup = "environment.maxsamenodescount",
-      maxCloudletsPerRec = "environment.maxcloudletsperrec";
+      maxCloudletsPerRec = "environment.maxcloudletsperrec",
+      extIP = "environment.externalip.enabled",
+      extIPperEnv = "environment.externalip.maxcount",
+      extIPperNode = "environment.externalip.maxcount.per.node";
+      
 var nodesPerEnvWO_Bl = 9,
       nodesPerEnvWO_GlusterFS = 7,
       nodesPerEnvMin = 6,
@@ -20,13 +24,31 @@ var nodesPerEnvWO_Bl = 9,
       maxCloudlets = 16,
       markup = "", cur = null, text = "used", prod = true;
 
+var hasCollaboration = (parseInt('${fn.compareEngine(7.0)}', 10) >= 0),
+    quotas = [], group;
+
+if (hasCollaboration) {
+    quotas = [
+        { quota : { name: perEnv }, value: parseInt('${quota.environment.maxnodescount}', 10) },
+        { quota : { name: maxEnvs }, value: parseInt('${quota.environment.maxcount}', 10) },
+        { quota : { name: perNodeGroup }, value: parseInt('${quota.environment.maxsamenodescount}', 10) },
+        { quota : { name: maxCloudletsPerRec }, value: parseInt('${quota.environment.maxcloudletsperrec}', 10) },
+        { quota : { name: extIP }, value: parseInt('${quota.environment.externalip.enabled}', 10) },
+        { quota : { name: extIPperEnv }, value: parseInt('${quota.environment.externalip.maxcount}', 10) },
+        { quota : { name: extIPperNode }, value: parseInt('${quota.environment.externalip.maxcount.per.node}', 10) }
+        
+    ];
+    group = { groupType: '${account.groupType}' };
+} else {
+    quotas = jelastic.billing.account.GetQuotas(perEnv + ";"+ maxEnvs + ";"+ perNodeGroup + ";"+ maxCloudletsPerRec + ";"+ extIP + ";"+ extIPperEnv+";" + extIPperNode).array;
+    group = jelastic.billing.account.GetAccount(appid, session);
+}
+
 var settings = jps.settings;
 var fields = {};
 for (var i = 0, field; field = jps.settings.fields[i]; i++)
   fields[field.name] = field;
 
-var quotas = jelastic.billing.account.GetQuotas(perEnv + ";"+maxEnvs+";" + perNodeGroup + ";" + maxCloudletsPerRec ).array;
-var group = jelastic.billing.account.GetAccount(appid, session);
 for (var i = 0; i < quotas.length; i++){
     var q = quotas[i], n = toNative(q.quota.name);
 
@@ -107,6 +129,11 @@ for (var i = 0; i < quotas.length; i++){
     } else {
       fields["cdn-addon"].hidden = true;
       fields["cdn-addon"].value = false;
+    }
+     
+    if ((extIP.result == 0 && extIP.array[0].value) && (extIPperEnv.result == 0 && extIPperEnv.array[0].value >= 2) && (extIPperNode.result == 0 && extIPperNode.array[0].value >= 1)) {
+      fields["le-addon"].disabled = false;
+      fields["le-addon"].value = true;
     }
 }
 
