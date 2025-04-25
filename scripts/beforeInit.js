@@ -22,7 +22,7 @@
         nodesPerEnvMin = 6,
         nodesPerGroupMin = 2,
         maxCloudlets = 16,
-        markup = "", cur = null, prod = true, leMarkup = "", le = true;
+        markup = "", cur = null, prod = true, leMarkup = "", le = true, text = "";
 
   var hasCollaboration = (parseInt('${fn.compareEngine(7.0)}', 10) >= 0),
       quotas = [], group;
