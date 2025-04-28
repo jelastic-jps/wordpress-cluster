@@ -130,7 +130,7 @@ settings:
     - type: displayfield
       hideLabel: true
       hidden: true
-      name: warning
+      name: blCount
       markup: ""
 
 mixins:
