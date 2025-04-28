@@ -131,6 +131,7 @@ settings:
       hideLabel: true
       hidden: true
       name: blCount
+      value: 2
       markup: ""
 
 mixins:
