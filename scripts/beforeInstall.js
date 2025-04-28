@@ -96,9 +96,9 @@ if ('${settings.ls-addon:false}'== 'true') {
 } else {
   resp.nodes.push({
     nodeType: "nginx",
-    count: ${settings.bl_count:2},
-    flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
-    fixedCloudlets: ${settings.bl_fixedCloudlets:1},
+    count: ${settings.bl.nodes:2},
+    cloudlets: ${settings.bl.cloudlets:8},
+    diskLimit: "${settings.bl.diskspace:[quota.disk.limitation]}",
     nodeGroup: "bl",
     restartDelay: 10
   }, {
