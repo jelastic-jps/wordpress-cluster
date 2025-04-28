@@ -67,7 +67,7 @@ resp.nodes.push({
 if ('${settings.ls-addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
-    count: ${settings.bl.nodes:2},
+    count: ${settings.bl.nodes:[settings.blCount]},
     cloudlets: ${settings.bl.cloudlets:8},
     diskLimit: "${settings.bl.diskspace:[quota.disk.limitation]}",
     nodeGroup: "bl",
@@ -96,7 +96,7 @@ if ('${settings.ls-addon:false}'== 'true') {
 } else {
   resp.nodes.push({
     nodeType: "nginx",
-    count: ${settings.bl.nodes:2},
+    count: ${settings.bl.nodes:[settings.blCount]},
     cloudlets: ${settings.bl.cloudlets:8},
     diskLimit: "${settings.bl.diskspace:[quota.disk.limitation]}",
     nodeGroup: "bl",
