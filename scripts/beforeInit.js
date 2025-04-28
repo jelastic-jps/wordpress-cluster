@@ -4,7 +4,6 @@
 
   var cdnAppid = "c05ffa5b45628a2a0c95467ebca8a0b4test";
   var lsAppid = "9e6afcf310004ac84060f90ff41a5aba";
-  var group = jelastic.billing.account.GetAccount(appid, session);
   var isCDN = jelastic.dev.apps.GetApp(cdnAppid);
   var isLS = jelastic.dev.apps.GetApp(lsAppid);
 
@@ -22,9 +21,9 @@
         nodesPerEnvMin = 6,
         nodesPerGroupMin = 2,
         maxCloudlets = 16,
-        markup = "", cur = null, prod = true, leMarkup = "", le = true, text = "";
+        markup = "", cur = null, prod = true, leMarkup = "", le = true, warnText = "";
 
-  var hasCollaboration = (parseInt('${fn.compareEngine(7.0)}', 10) >= 0),
+  var hasCollaboration = (parseInt("${fn.compareEngine(7.0)}", 10) >= 0),
       quotas = [], group;
 
   if (hasCollaboration) {
@@ -106,23 +105,23 @@
 
       if (n == perEnv && nodesPerEnvMin  == q.value){
         disableFields(["glusterfs", "galera"]);
-        fields["bl_count"].value = 1;
+        fields["blCount"].value = 1;
         setDisplayWarning("displayfield", "Some advanced features are not available. Please upgrade your account.", 25);      }
 
       if (n == perEnv && nodesPerEnvWO_GlusterFS  == q.value){
         disableFields(["glusterfs"]);
-        fields["bl_count"].value = 1;
+        fields["blCount"].value = 1;
         setDisplayWarning("displayfield", "Some advanced features are not available. Please upgrade your account.", 25);
       }
 
       if (n == perEnv && q.value == 8){
         disableFields(["glusterfs"]);
-        fields["bl_count"].value = 2;
+        fields["blCount"].value = 2;
         setDisplayWarning("displayfield", "Some advanced features are not available. Please upgrade your account.", 25);
       }
 
       if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
-        fields["bl_count"].value = 1;      
+        fields["blCount"].value = 1;      
       }
 
       if (n == perNodeGroup && nodesPerGroupMin  == q.value){
@@ -134,17 +133,17 @@
   if (!le) {
     disableFields(["le-addon"]);
     setDisplayWarning("displayfield", "Some advanced features are not available. Please upgrade your account.", 25);
-    text = "Let's Encrypt is not available. " + leMarkup + "Please upgrade your account.";
-    setDisplayWarning("bl_count", text, 30);
+    warnText = "Lets Encrypt is not available. Please upgrade your account.";
+    setDisplayWarning("blCount", warnText, 30);
   }
 
   if (!prod || group.groupType == 'trial') {
     disableFields(["ls-addon", "loadGrowth", "galera", "glusterfs", "le-addon", "cdn-addon", "mu-addon", "woocommerce"]);    
     setDisplayWarning("displayfield", "Advanced features are not available.", 25);
-    text = (group.groupType == 'trial')
+    warnText = (group.groupType == 'trial')
       ? "WordPress cluster is not available for " + group.groupType + ". Please upgrade your account."
       : "WordPress cluster is not available. " + markup + "Please upgrade your account.";
-    setDisplayWarning("bl_count", text, 30);
+    setDisplayWarning("blCount", warnText, 30);
 
     settings.fields.push(
       {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
@@ -160,12 +159,12 @@
     }
   }
   
-  function setDisplayWarning(field, text, height) {
-    fields[field].markup = text;
+  function setDisplayWarning(field, warnText, height) {
+    fields[field].markup = warnText;
     fields[field].cls = "warning";
     fields[field].hideLabel = true;
     fields[field].hidden = false;
-    fields[field].height = height || 25;
+    fields[field].height = height;
   }
 
   function err(e, text, cur){
