@@ -45,7 +45,7 @@ settings:
     - caption: Advanced Features
       type: displayfield
       name: displayfield
-      markup:
+      markup: ""
 
     - caption: Install LiteSpeed High-Performance Web Server (Additional License Fee)
       type: checkbox
@@ -130,9 +130,8 @@ settings:
     - type: displayfield
       hideLabel: true
       hidden: true
-      name: blCount
-      value: 2
-      markup:
+      name: warning
+      markup: ""
 
 mixins:
  - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
