@@ -130,7 +130,7 @@ settings:
     - type: displayfield
       hideLabel: true
       hidden: true
-      name: bl_count
+      name: blCount
       value: 2
       markup:
 
