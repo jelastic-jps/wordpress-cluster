@@ -127,10 +127,10 @@ settings:
       disabled: false
       tooltip: "WooCommerce is a free open-source e-commerce plugin designed specifically for WordPress. This is a great platform for a store of any size."
 
-    - type: displayfield
+    - type: spinner
       hideLabel: true
       hidden: true
-      name: blCount
+      name: bl_count
       value: 2
       markup: ""
 
