@@ -72,17 +72,17 @@ for (var i = 0; i < quotas.length; i++){
     }
 
     if (n == extIP &&  !q.value){
-      leMarkup = err(q, "required", 1);
+      le_markup = err(q, "required", 1);
       le  = false; break;
     }
   
     if (n == extIPperEnv && q.value < 2){
-      leMarkup = err(q, "required", 2);
+      le_markup = err(q, "required", 2);
       le = false; break;
     }
 
     if (n == extIPperNode && q.value < 1){
-      leMarkup = err(q, "required", 1);
+      le_markup = err(q, "required", 1);
       le = false; break;
     }
 
