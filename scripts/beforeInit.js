@@ -149,7 +149,7 @@ for (var i = 0; i < quotas.length; i++){
 if (!le) {
   disableFields(["le-addon"]);
   setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
-  warn_text = "Lets Encrypt is not available. " + le_markup + "Please upgrade your account.";
+  warn_text = warn_text + " Lets Encrypt is not available. " + le_markup + "Please upgrade your account.";
   addDisplayWarning(warn_text, 30);
 }
 
