@@ -103,30 +103,46 @@ for (var i = 0; i < quotas.length; i++){
       fields["cdn-addon"].value = false;
     }
 
-    if (n == perEnv && nodesPerEnvMin  == q.value){
-      disableFields(["glusterfs", "galera"]);
-      fields["bl_count"].value = 1;
-      setDisplayWarning("displayfield", "Some advanced features are not available.", 25);      }
-
     if (n == perEnv && nodesPerEnvWO_GlusterFS  == q.value){
       disableFields(["glusterfs"]);
       fields["bl_count"].value = 1;
       setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
+      markup = err(q, "required", 8);
+      warn_text = "GlusterFS is not available. Only one load balancer will be installed. " + markup + "Please upgrade your account.";
+      addDisplayWarning(warn_text, 30);
     }
 
     if (n == perEnv && q.value == 8){
       disableFields(["glusterfs"]);
       fields["bl_count"].value = 2;
       setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
+      markup = err(q, "required", perEnv + 1);
+      warn_text = "GlusterFS is not available. " + markup + "Please upgrade your account.";
+      addDisplayWarning(warn_text, 30);
     }
 
     if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
-      fields["bl_count"].value = 1;      
+      fields["bl_count"].value = 1;
+      markup = err(q, "required", nodesPerEnvWO_Bl + 1);
+      warn_text = "Only one load balancer will be installed. " + markup + "Please upgrade your account.";
+      addDisplayWarning(warn_text, 30);
     }
 
     if (n == perNodeGroup && nodesPerGroupMin  == q.value){
       disableFields(["glusterfs", "galera"]);
       setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
+      markup = err(q, "required", nodesPerGroupMin + 1);
+      warn_text = "GlusterFS and Galera cluster are not available. " + markup + "Please upgrade your account.";
+      addDisplayWarning(warn_text, 30);
+    }
+
+    if (n == perEnv && nodesPerEnvMin  == q.value){
+      disableFields(["glusterfs", "galera"]);
+      fields["bl_count"].value = 1;
+      setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
+      markup = err(q, "required", nodesPerEnvMin + 1);
+      warn_text = "GlusterFS and Galera cluster are not available. Only one load balancer will be installed." + markup + "Please upgrade your account.";
+      addDisplayWarning(warn_text, 30);
     }
 }
 
