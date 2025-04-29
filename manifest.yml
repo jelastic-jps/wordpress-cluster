@@ -1,7 +1,7 @@
 type: install
 jpsVersion: '1.7.2'
-name: WordPress Cluster Kit v2
-id: wordpress-cluster
+name: WordPress Cluster Kit v2 JE-61515
+id: wordpress-cluster-je-61515
 categories:
   - apps/clusters
   - apps/content-management
