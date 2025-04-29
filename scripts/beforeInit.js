@@ -161,7 +161,7 @@ function disableFields(names) {
 
 function addDisplayWarning(warn_text, height) {
   settings.fields.push(
-    {"type": "displayfield", "cls": "warning", "height": height, "hideLabel": true, "markup": warn}
+    {"type": "displayfield", "cls": "warning", "height": height, "hideLabel": true, "markup": warn_text}
   );
 }
 
