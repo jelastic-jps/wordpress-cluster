@@ -108,7 +108,7 @@ for (var i = 0; i < quotas.length; i++){
       fields["bl_count"].value = 1;
       setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
       markup = err(q, "required", 8);
-      warn_text = "GlusterFS is not available. Only one load balancer will be installed. " + markup + "Please upgrade your account.";
+      warn_text = "GlusterFS is not available. Only one load balancer will be installed. " + markup + " Please upgrade your account.";
       addDisplayWarning(warn_text, 30);
     }
 
@@ -117,14 +117,14 @@ for (var i = 0; i < quotas.length; i++){
       fields["bl_count"].value = 2;
       setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
       markup = err(q, "required", perEnv + 1);
-      warn_text = "GlusterFS is not available. " + markup + "Please upgrade your account.";
+      warn_text = "GlusterFS is not available. " + markup + " Please upgrade your account.";
       addDisplayWarning(warn_text, 30);
     }
 
     if (n == perEnv && nodesPerEnvWO_Bl  == q.value){
       fields["bl_count"].value = 1;
       markup = err(q, "required", nodesPerEnvWO_Bl + 1);
-      warn_text = "Only one load balancer will be installed. " + markup + "Please upgrade your account.";
+      warn_text = "Only one load balancer will be installed. " + markup + " Please upgrade your account.";
       addDisplayWarning(warn_text, 30);
     }
 
@@ -132,7 +132,7 @@ for (var i = 0; i < quotas.length; i++){
       disableFields(["glusterfs", "galera"]);
       setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
       markup = err(q, "required", nodesPerGroupMin + 1);
-      warn_text = "GlusterFS and Galera cluster are not available. " + markup + "Please upgrade your account.";
+      warn_text = "GlusterFS and Galera cluster are not available. " + markup + " Please upgrade your account.";
       addDisplayWarning(warn_text, 30);
     }
 
@@ -141,7 +141,7 @@ for (var i = 0; i < quotas.length; i++){
       fields["bl_count"].value = 1;
       setDisplayWarning("displayfield", "Some advanced features are not available.", 25);
       markup = err(q, "required", nodesPerEnvMin + 1);
-      warn_text = "GlusterFS and Galera cluster are not available. Only one load balancer will be installed." + markup + "Please upgrade your account.";
+      warn_text = "GlusterFS and Galera cluster are not available. Only one load balancer will be installed. " + markup + " Please upgrade your account.";
       addDisplayWarning(warn_text, 30);
     }
 }
@@ -158,7 +158,7 @@ if (!prod || group.groupType == 'trial') {
   setDisplayWarning("displayfield", "Advanced features are not available.", 25);
   warn_text = (group.groupType == 'trial')
     ? "WordPress cluster is not available for " + group.groupType + ". Please upgrade your account."
-    : "WordPress cluster is not available. " + markup + "Please upgrade your account.";
+    : "WordPress cluster is not available. " + markup + " Please upgrade your account.";
   addDisplayWarning(warn_text, 30);
 
   settings.fields.push(
