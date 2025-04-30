@@ -28,13 +28,13 @@ var hasCollaboration = (parseInt("${fn.compareEngine(7.0)}", 10) >= 0),
 
 if (hasCollaboration) {
     quotas = [
-      { quota : { name: perEnv }, value: parseInt('${quota.environment.maxnodescount}', 10) },
-      { quota : { name: maxEnvs }, value: parseInt('${quota.environment.maxcount}', 10) },
-      { quota : { name: perNodeGroup }, value: parseInt('${quota.environment.maxsamenodescount}', 10) },
-      { quota : { name: maxCloudletsPerRec }, value: parseInt('${quota.environment.maxcloudletsperrec}', 10) },
-      { quota : { name: extIP }, value: parseInt('${quota.environment.externalip.enabled}', 10) },
-      { quota : { name: extIPperEnv }, value: parseInt('${quota.environment.externalip.maxcount}', 10) },
-      { quota : { name: extIPperNode }, value: parseInt('${quota.environment.externalip.maxcount.per.node}', 10) }
+      { quota : { name: perEnv, description: getQuotaDescription(perEnv) }, value: parseInt('${quota.environment.maxnodescount}', 10) },
+      { quota : { name: maxEnvs, description: getQuotaDescription(maxEnvs) }, value: parseInt('${quota.environment.maxcount}', 10) },
+      { quota : { name: perNodeGroup, description: getQuotaDescription(perNodeGroup) }, value: parseInt('${quota.environment.maxsamenodescount}', 10) },
+      { quota : { name: maxCloudletsPerRec, description: getQuotaDescription(maxCloudletsPerRec) }, value: parseInt('${quota.environment.maxcloudletsperrec}', 10) },
+      { quota : { name: extIP, description: getQuotaDescription(extIP) }, value: parseInt('${quota.environment.externalip.enabled}', 10) },
+      { quota : { name: extIPperEnv, description: getQuotaDescription(extIPperEnv) }, value: parseInt('${quota.environment.externalip.maxcount}', 10) },
+      { quota : { name: extIPperNode, description: getQuotaDescription(extIPperNode) }, value: parseInt('${quota.environment.externalip.maxcount.per.node}', 10) }
     ];
     group = { groupType: '${account.groupType}' };
 } else {      
@@ -187,6 +187,10 @@ function setDisplayWarning(field, warn_text, height) {
   fields[field].hideLabel = true;
   fields[field].hidden = false;
   fields[field].height = height;
+}
+
+function getQuotaDescription(name) {
+  return jelastic.billing.account.GetQuotas(name).array[0].quota.description;
 }
 
 function err(e, text, cur){
