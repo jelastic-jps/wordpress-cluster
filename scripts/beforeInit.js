@@ -160,10 +160,7 @@ if (!prod || group.groupType == 'trial') {
     ? "WordPress cluster is not available for " + group.groupType + ". Please upgrade your account."
     : "WordPress cluster is not available. " + markup + " Please upgrade your account.";
   addDisplayWarning(warn_text, 30);
-
-  settings.fields.push(
-    {"type": "compositefield","height": 0,"hideLabel": true,"width": 0,"items": [{"height": 0,"type": "string","required": true}]}
-  );
+  settings.submitType = 'upgrade';
 }
 
 function disableFields(names) {
