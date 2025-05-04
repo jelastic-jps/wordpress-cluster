@@ -1,7 +1,7 @@
 type: install
 jpsVersion: '1.7.2'
-name: WordPress Cluster Kit v2
-id: wordpress-cluster
+name: WordPress Cluster Kit v2 JE-61515
+id: wordpress-cluster-je-61515
 categories:
   - apps/clusters
   - apps/content-management
@@ -11,7 +11,7 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.2.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/v2.2.0
 
 onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
@@ -20,6 +20,7 @@ skipNodeEmails: true
 nodes: definedInOnBeforeInstall
 
 settings:
+  onBeforeInit: return settings;
   fields:
     - caption: Scaling Strategy
       type: list
@@ -44,7 +45,7 @@ settings:
     - caption: Advanced Features
       type: displayfield
       name: displayfield
-      markup:
+      markup: ""
 
     - caption: Install LiteSpeed High-Performance Web Server (Additional License Fee)
       type: checkbox
@@ -126,12 +127,12 @@ settings:
       disabled: false
       tooltip: "WooCommerce is a free open-source e-commerce plugin designed specifically for WordPress. This is a great platform for a store of any size."
 
-    - type: displayfield
+    - type: spinner
       hideLabel: true
       hidden: true
       name: bl_count
       value: 2
-      markup:
+      markup: ""
 
 mixins:
  - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
