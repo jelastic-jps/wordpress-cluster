@@ -11,7 +11,7 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/v2.2.0
+baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
 
 onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
@@ -20,6 +20,7 @@ skipNodeEmails: true
 nodes: definedInOnBeforeInstall
 
 settings:
+  onBeforeInit: return settings;
   fields:
     - caption: Scaling Strategy
       type: list
@@ -44,7 +45,7 @@ settings:
     - caption: Advanced Features
       type: displayfield
       name: displayfield
-      markup:
+      markup: ""
 
     - caption: Install LiteSpeed High-Performance Web Server (Additional License Fee)
       type: checkbox
@@ -126,15 +127,15 @@ settings:
       disabled: false
       tooltip: "WooCommerce is a free open-source e-commerce plugin designed specifically for WordPress. This is a great platform for a store of any size."
 
-    - type: displayfield
+    - type: spinner
       hideLabel: true
       hidden: true
       name: bl_count
       value: 2
-      markup:
+      markup: ""
 
 mixins:
- - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
+ - https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
  - /scripts/common.yml
 
 globals:
@@ -167,7 +168,7 @@ onInstall:
         var actions = [];
         if ('${settings.le-addon:false}' == 'true')
           actions.push({
-            jps: "https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}?_r=${fn.random}",
+            jps: "https://cdn.jsdelivr.net/gh/jelastic-jps/lets-encrypt@master/manifest.jps",
             nodeGroup: "bl",
             skipEmail: "true",
             settings: {
@@ -178,7 +179,7 @@ onInstall:
           });
         if ('${settings.cdn-addon:false}' == 'true')
           actions.push({
-            jps: "https://raw.githubusercontent.com/jelastic-jps/cdn/master/manifest.yml?_r=${fn.random}",
+            jps: "https://cdn.jsdelivr.net/gh/jelastic-jps/cdn@master/manifest.yml",
             nodeGroup: "bl",
             skipEmail: "true",
             settings: {
@@ -263,12 +264,12 @@ actions:
   optimization:
     - log: Load Balancers and App servers optimization
     - install:
-      - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
+      - jps: https://cdn.jsdelivr.net/gh/jelastic/templates@master/config_v2.jps
         settings:
           targetGroup: bl
           targetNodes: bl
           optimization: wordpress
-      - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
+      - jps: https://cdn.jsdelivr.net/gh/jelastic/templates@master/config_v2.jps
         settings:
           targetGroup: cp
           targetNodes: cp

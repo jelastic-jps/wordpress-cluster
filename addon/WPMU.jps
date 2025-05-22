@@ -3,7 +3,7 @@ jpsVersion: '1.1'
 name: Multisites addon for WordPress cluster
 description: Multisites addon for WordPress cluster
 logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master
+baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
 settings:
   main:
     fields:

@@ -20,7 +20,7 @@ addons:
     type: update
     name: WordPress Site Address (URL)
     description: The Site Address(URL) setting is the address you want people to type in their browser to reach your WordPress blog.
-    logo: https://github.com/jelastic-jps/wordpress/blob/master/wordpress-edition/images/logo/cluster.svg
+    logo: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress@master/wordpress-edition/images/logo/cluster.svg
     settings:
       fields:
         - type: string
@@ -43,7 +43,7 @@ addons:
     type: update
     name: Cache Manager
     description: Clean all caches at once. Object Cache, Static Cache...
-    logo: https://github.com/jelastic-jps/wordpress/blob/master/wordpress-edition/images/logo/cluster.svg
+    logo: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress@master/wordpress-edition/images/logo/cluster.svg
     
     buttons:
       - caption: Clean all caches

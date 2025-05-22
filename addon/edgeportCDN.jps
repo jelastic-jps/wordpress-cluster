@@ -2,7 +2,7 @@ jpsType: update
 jpsVersion: '1.1'
 name: Addon for EdgePort CDN
 description: Addon for EdgePort CDN
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/wordpress-master/master
+baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
 
 onInstall:
   - install-edgeport-CDN
@@ -10,7 +10,7 @@ onInstall:
 
 actions:
   install-edgeport-CDN:
-    - install: https://raw.githubusercontent.com/jelastic-jps/cdn/master/manifest.yml?_r=${fn.random}
+    - install: https://cdn.jsdelivr.net/gh/jelastic-jps/cdn@master/manifest.yml
       
   configure-edgeport-CDN:
     - script: return jelastic.dev.scripting.Eval("c05ffa5b45628a2a0c95467ebca8a0b4", session, "cdn.info", {partnerCode:1})
