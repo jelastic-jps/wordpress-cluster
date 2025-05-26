@@ -3,7 +3,7 @@ jpsVersion: '1.1'
 id: wordpress-multisite
 name: WordPress Multisite
 description: WordPress Multisite
-logo: https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/images/wp-cluster.png
+logo: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/images/wp-cluster.png
 
 settings:
     fields:
