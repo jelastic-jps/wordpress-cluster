@@ -13,6 +13,17 @@ logo: /images/wp-cluster-kit.svg
 
 baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
 
+globals:
+  cdnUrl: https://cdn.jsdelivr.net/gh
+  PATH: ${baseUrl}
+  DB_USER: ${settings.DB_USER:user-[fn.random]}
+  DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
+  DB_HOST: sqldb
+  PROTOCOL: http
+  WP_ADMIN_PASS: ${settings.WP_ADMIN_PASS:[fn.password(10)]}
+  LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
+  SUCCESS: default
+
 onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
 
@@ -138,16 +149,6 @@ mixins:
  - https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
  - /scripts/common.yml
 
-globals:
-  PATH: ${baseUrl}
-  DB_USER: ${settings.DB_USER:user-[fn.random]}
-  DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
-  DB_HOST: sqldb
-  PROTOCOL: http
-  WP_ADMIN_PASS: ${settings.WP_ADMIN_PASS:[fn.password(10)]}
-  LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
-  SUCCESS: default
-
 onInstall:
   - addLimits
   - addMetadata
@@ -168,7 +169,7 @@ onInstall:
         var actions = [];
         if ('${settings.le-addon:false}' == 'true')
           actions.push({
-            jps: "https://cdn.jsdelivr.net/gh/jelastic-jps/lets-encrypt@master/manifest.jps",
+            jps: "${globals.cdnUrl}/jelastic-jps/lets-encrypt@master/manifest.jps",
             nodeGroup: "bl",
             skipEmail: "true",
             settings: {
@@ -179,7 +180,7 @@ onInstall:
           });
         if ('${settings.cdn-addon:false}' == 'true')
           actions.push({
-            jps: "https://cdn.jsdelivr.net/gh/jelastic-jps/cdn@master/manifest.yml",
+            jps: "${globals.cdnUrl}/jelastic-jps/cdn@master/manifest.yml",
             nodeGroup: "bl",
             skipEmail: "true",
             settings: {
@@ -264,12 +265,12 @@ actions:
   optimization:
     - log: Load Balancers and App servers optimization
     - install:
-      - jps: https://cdn.jsdelivr.net/gh/jelastic/templates@master/config_v2.jps
+      - jps: ${globals.cdnUrl}/jelastic/templates@master/config_v2.jps
         settings:
           targetGroup: bl
           targetNodes: bl
           optimization: wordpress
-      - jps: https://cdn.jsdelivr.net/gh/jelastic/templates@master/config_v2.jps
+      - jps: ${globals.cdnUrl}/jelastic/templates@master/config_v2.jps
         settings:
           targetGroup: cp
           targetNodes: cp
