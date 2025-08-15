@@ -1,5 +1,5 @@
 globals:
-  version_lscache: 7.3
-  version_w3total: 2.8.10
+  version_lscache: "7.3"
+  version_w3total: 2.8.12
   version_woocommerce: 10.0.4
   version_wordpress: 6.8.2
