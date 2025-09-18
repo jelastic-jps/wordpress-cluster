@@ -96,5 +96,5 @@ actions:
     
   setupPlugins:
     - cmd[${nodes.cp.master.id}]: |-
-        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST ${globals.REDIS_HOST} --REDIS_PORT ${globals.REDIS_PORT} --REDIS_USER ${globals.REDIS_USER} --REDIS_PSWD ${globals.REDIS_PSWD};
+        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST ${globals.REDIS_HOST} --REDIS_PORT ${globals.REDIS_PORT} --REDIS_PSWD ${globals.REDIS_PSWD};
    
