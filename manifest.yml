@@ -160,7 +160,6 @@ onInstall:
   - storageHealthCheck
   - storageMount: NFS4
   - if (/litespeed/.test("${nodes.cp.nodeType}")): setPassword
-  - getRedisPswd
   - installWordpress
   - if ('${settings.mu-addon:false}' == 'true'): configureMultisite  
   - if (${settings.woocommerce:false}): installWoocommerce
@@ -308,11 +307,6 @@ actions:
   configureMultisite:
     - install: /addons/multisite.jps
 
-  getRedisPswd:
-    - cmd[nosqldb]: cat /etc/redis.conf | tail -1 | awk '{print $2}';
-    - setGlobals:
-        REDIS_PSWD: ${response.out}
-
   installWordpress:
     - install: /scripts/installWP.jps
       settings:
@@ -321,8 +315,6 @@ actions:
         db_pass: ${globals.DB_PASS}
         cache_host: cache
         cache_port: 11211
-        cache_user: admin
-        cache_pswd: ${globals.REDIS_PSWD}
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
