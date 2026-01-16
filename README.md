@@ -17,7 +17,7 @@ This package creates a dedicated WordPress cluster environment that contains the
 - a highly available MariaDB cluster (either Galera or Primary-Primary replication) to store and operate user data
 - a dedicated Shared Storage (either a single node or a fault-tolerant cluster based on GlusterFS) for sharing common data
  
-![WordPress cluster topology](images/01-wp-cluster-topology.png)
+![WordPress cluster topology](images/01-wp-cluster-topology-memcached.png)
 
 
 ## Deployment to Cloud
