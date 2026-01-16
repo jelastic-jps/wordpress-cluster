@@ -13,7 +13,7 @@ This package creates a dedicated WordPress cluster environment that contains the
 
 - two load balancers (either LiteSpeed ADC or NGINX) for distributing the incoming traffic within a cluster
 - two application servers (either LiteSpeed or NGINX) with automatic horizontal scaling to handle load spikes
-- a Redis high-performance RAM-allocated data structure store used as a high-speed caching solution
+- a Memcached server as a high-speed caching solution
 - a highly available MariaDB cluster (either Galera or Primary-Primary replication) to store and operate user data
 - a dedicated Shared Storage (either a single node or a fault-tolerant cluster based on GlusterFS) for sharing common data
  
