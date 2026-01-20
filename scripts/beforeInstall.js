@@ -85,7 +85,6 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10,
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true",
       WAF: "${settings.waf:false}",
       WP_PROTECT: "OFF"
     },      
@@ -109,8 +108,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "cp",
     restartDelay: 10,
     env: {
-      SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true"
+      SERVER_WEBROOT: "/var/www/webroot/ROOT"
     },
     volumes: [
       "/var/www/webroot/ROOT"
@@ -119,11 +117,11 @@ if ('${settings.ls-addon:false}'== 'true') {
 }
 
 resp.nodes.push({
-  nodeType: "redis",
+  nodeType: "memcached-dockerized",
   count: 1,
-  cloudlets: ${settings.nosqldb.cloudlets:8},
-  diskLimit: "${settings.nosqldb.diskspace:[quota.disk.limitation]}",
-  nodeGroup: "nosqldb"
+  cloudlets: ${settings.cache.cloudlets:8},
+  diskLimit: "${settings.cache.diskspace:[quota.disk.limitation]}",
+  nodeGroup: "cache"
 })
 
 return resp;
