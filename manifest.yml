@@ -5,12 +5,24 @@ id: wordpress-cluster
 categories:
   - apps/clusters
   - apps/content-management
+  - apps/wordpress
 description:
   text: WordPress Cluster Kit with highly available Load Balancer and Shared Storage with GlusterFS, database clustering, and scaling mode to create an optimal environment for highly-loaded projects. The package provides integrated autoscaling and high availability for development and production environments. Clustered topology ensures effective handling of heavy workload.
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/JE-65196
+baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
+
+globals:
+  cdnUrl: https://cdn.jsdelivr.net/gh
+  PATH: ${baseUrl}
+  DB_USER: ${settings.DB_USER:user-[fn.random]}
+  DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
+  DB_HOST: sqldb
+  PROTOCOL: http
+  WP_ADMIN_PASS: ${settings.WP_ADMIN_PASS:[fn.password(10)]}
+  LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
+  SUCCESS: default
 
 onBeforeInit: /scripts/beforeInit.js?_r=${fn.random}
 onBeforeInstall: /scripts/beforeInstall.js?_r=${fn.random}
@@ -19,6 +31,7 @@ skipNodeEmails: true
 nodes: definedInOnBeforeInstall
 
 settings:
+  onBeforeInit: return settings;
   fields:
     - caption: Scaling Strategy
       type: list
@@ -43,7 +56,7 @@ settings:
     - caption: Advanced Features
       type: displayfield
       name: displayfield
-      markup:
+      markup: ""
 
     - caption: Install LiteSpeed High-Performance Web Server (Additional License Fee)
       type: checkbox
@@ -99,7 +112,8 @@ settings:
     - caption: Install Lightning-Fast Premium CDN
       type: checkbox
       name: cdn-addon
-      value: true
+      value: false
+      hidden: true
       disabled: false
       tooltip: "Jelastic CDN is an HTTP/3 premium content delivery network of 160+ Super PoPs (points of presence) with bandwidth capacity up to 115 Tbps, advanced caching and acceleration strategies based on best-in-class IP Anycast technology."
 
@@ -124,25 +138,16 @@ settings:
       disabled: false
       tooltip: "WooCommerce is a free open-source e-commerce plugin designed specifically for WordPress. This is a great platform for a store of any size."
 
-    - type: displayfield
+    - type: spinner
       hideLabel: true
       hidden: true
       name: bl_count
       value: 2
-      markup:
+      markup: ""
 
 mixins:
- - https://raw.githubusercontent.com/jelastic-jps/wordpress-cluster/master/configs/vers.yaml
-
-globals:
-  PATH: ${baseUrl}
-  DB_USER: ${settings.DB_USER:user-[fn.random]}
-  DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
-  DB_HOST: sqldb
-  PROTOCOL: http
-  WP_ADMIN_PASS: ${settings.WP_ADMIN_PASS:[fn.password(10)]}
-  LS_ADMIN_PASS: ${settings.LS_ADMIN_PASS:[fn.password(10)]}
-  SUCCESS: default
+ - https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
+ - /scripts/common.yml
 
 onInstall:
   - addLimits
@@ -150,13 +155,11 @@ onInstall:
   - setProtocol
   - setDomain
   - initLEsettings
-  - if (${settings.is_trigger:true}): setTriggers
   - optimization
   - setupCacheSync
   - storageHealthCheck
   - storageMount: NFS4
   - if (/litespeed/.test("${nodes.cp.nodeType}")): setPassword
-  - getRedisPswd
   - installWordpress
   - if ('${settings.mu-addon:false}' == 'true'): configureMultisite  
   - if (${settings.woocommerce:false}): installWoocommerce
@@ -165,7 +168,7 @@ onInstall:
         var actions = [];
         if ('${settings.le-addon:false}' == 'true')
           actions.push({
-            jps: "https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps?_r=${fn.random}?_r=${fn.random}",
+            jps: "${globals.cdnUrl}/jelastic-jps/lets-encrypt@master/manifest.jps",
             nodeGroup: "bl",
             skipEmail: "true",
             settings: {
@@ -176,7 +179,7 @@ onInstall:
           });
         if ('${settings.cdn-addon:false}' == 'true')
           actions.push({
-            jps: "https://raw.githubusercontent.com/edgeport/cdn/master/manifest.yml?_r=${fn.random}",
+            jps: "${globals.cdnUrl}/jelastic-jps/cdn@master/manifest.yml",
             nodeGroup: "bl",
             skipEmail: "true",
             settings: {
@@ -191,6 +194,7 @@ onInstall:
     - jps: /scripts/cacheClean.jps?_r=${fn.random}
     - jps: /scripts/addons.jps?_r=${fn.random}
     - jps: /scripts/events.jps?_r=${fn.random}
+  - if (${settings.is_trigger:true}): setTriggers
   - if ('${settings.success_email}' != 'false'):
       - return:
           type: success
@@ -260,12 +264,12 @@ actions:
   optimization:
     - log: Load Balancers and App servers optimization
     - install:
-      - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
+      - jps: ${globals.cdnUrl}/jelastic/templates@master/config_v2.jps
         settings:
           targetGroup: bl
           targetNodes: bl
           optimization: wordpress
-      - jps: https://raw.githubusercontent.com/jelastic/templates/master/config_v2.jps?_r=${fn.random}
+      - jps: ${globals.cdnUrl}/jelastic/templates@master/config_v2.jps
         settings:
           targetGroup: cp
           targetNodes: cp
@@ -303,21 +307,14 @@ actions:
   configureMultisite:
     - install: /addons/multisite.jps
 
-  getRedisPswd:
-    - cmd[nosqldb]: cat /etc/redis.conf | tail -1 | awk '{print $2}';
-    - setGlobals:
-        REDIS_PSWD: ${response.out}
-
   installWordpress:
     - install: /scripts/installWP.jps
       settings:
         db_host: ${globals.DB_HOST}
         db_user: ${globals.DB_USER}
         db_pass: ${globals.DB_PASS}
-        redis_host: nosqldb
-        redis_port: 6379
-        redis_user: admin
-        redis_pswd: ${globals.REDIS_PSWD}
+        cache_host: cache
+        cache_port: 11211
         wp_admin_pass: ${globals.WP_ADMIN_PASS}
         wp_title: "Hello World"
         wp_url: ${globals.PROTOCOL}://${globals.DOMAIN}/
@@ -335,5 +332,5 @@ actions:
           
   installWoocommerce:
     cmd[${nodes.cp.master.id}]: |-
-      wp plugin install woocommerce --version=${globals.version_woocommerce} --activate --path=${SERVER_WEBROOT} &>> /var/log/run.log;
+      wp plugin install woocommerce --version=${globals.version_woocommerce} --activate --path=/var/www/webroot/ROOT &>> /var/log/run.log;
   

@@ -4,7 +4,7 @@ name: WordPress Core Installation
 description: WordPress Core Installation
 
 mixins:
- - https://raw.githubusercontent.com/jelastic-jps/wordpress/master/configs/vers.yaml
+ - https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
 
 globals:
   WP_ADMIN_PASS: ${settings.wp_admin_pass}
@@ -13,10 +13,10 @@ globals:
   DB_NAME: wp_${fn.random}
   DB_USER: ${settings.db_user}
   DB_PASS: ${settings.db_pass}
-  REDIS_HOST: ${settings.redis_host:}
-  REDIS_PORT: ${settings.redis_port:}
-  REDIS_USER: ${settings.redis_user:}
-  REDIS_PSWD: ${settings.redis_pswd:}
+  CACHE_HOST: ${settings.cache_host:}
+  CACHE_PORT: ${settings.cache_port:}
+  CACHE_USER: ${settings.cache_user:}
+  CACHE_PSWD: ${settings.cache_pswd:}
   WP_URL: ${settings.wp_url}
   CLUSTER: ${settings.cluster:true}
 
@@ -31,7 +31,11 @@ onInstall:
 actions:
   deployWordPress:
     - cmd[${nodes.cp.master.id}]: |-
-        wget -qO- 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz' | tar xz -C /tmp && mv /tmp/wordpress/* /var/www/webroot/ROOT;
+        wget -qO /tmp/wordpress.tar.gz 'https://wordpress.org/wordpress-${globals.version_wordpress}.tar.gz';
+        [ -d /tmp/wordpress/ ] && rm -rf /tmp/wordpress;
+        tar -xzf /tmp/wordpress.tar.gz -C /tmp/;
+        rsync -a /tmp/wordpress/* /var/www/webroot/ROOT/;
+        rsync -a --checksum /tmp/wordpress/* /var/www/webroot/ROOT/;
     - addContext [cp]:
         name: ROOT
         fileName: WordPress
@@ -55,7 +59,7 @@ actions:
   installScripts:
     - cmd[cp]: |-
         [ ! -d $HOME/bin ] && mkdir $HOME/bin;
-        curl -o $HOME/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp;
+        curl -o $HOME/bin/wp https://cdn.jsdelivr.net/gh/wp-cli/builds@gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp;
         echo "apache_modules:" > ~/bin/wp-cli.yml;
         echo "  - mod_rewrite" >> ~/bin/wp-cli.yml;
         echo "export PATH=$PATH:$HOME/bin/" >> $HOME/.bash_profile;
@@ -92,5 +96,5 @@ actions:
     
   setupPlugins:
     - cmd[${nodes.cp.master.id}]: |-
-        bash ~/bin/setupWP.sh --pgcache true --objectcache true --REDIS_HOST ${globals.REDIS_HOST} --REDIS_PORT ${globals.REDIS_PORT} --REDIS_USER ${globals.REDIS_USER} --REDIS_PSWD ${globals.REDIS_PSWD};
+        bash ~/bin/setupWP.sh --pgcache true --objectcache true --CACHE_HOST ${globals.CACHE_HOST} --CACHE_PORT ${globals.CACHE_PORT};
    

@@ -1,0 +1,97 @@
+actions:
+  applyEnvSettings:
+    script: |
+      var envs = '${this.targetAppid}'.split(',');
+      let nodes = [];
+      let nodeGroups = [], node, nodesByGroup, cloudlets, diskspace, count;
+      
+      function getNodesByGroup(targetAppid, group) {
+        let groupNodes = [];
+        let resp = jelastic.env.control.GetEnvInfo(targetAppid, session);
+        if (resp.result != 0) return resp;
+        let nodes = resp.nodes;
+        for (let i = 0, n = nodes.length; i < n; i++) {
+            if (nodes[i].nodeGroup == group) {
+                groupNodes.push(nodes[i]);
+            }
+        }
+        return { result: 0, nodes: groupNodes }
+      };
+      
+      for (var i=0, n = envs.length; i < n; i++) {
+        let targetAppid = envs[i];
+        let resp = jelastic.env.control.GetEnvInfo(targetAppid, session);
+        if (resp.result != 0) return resp;
+        
+        var env = resp.env;
+        
+        for (let i = 0, n = resp.nodes.length; i < n; i++) {
+            node = resp.nodes[i];
+
+            if (nodeGroups.indexOf(String(node.nodeGroup)) == -1) {
+                nodeGroups.push(String(node.nodeGroup));
+                
+                nodesByGroup = getNodesByGroup(targetAppid, node.nodeGroup);
+                if (nodesByGroup.result != 0) return nodesByGroup;
+                
+                cloudlets = node.flexibleCloudlets;
+                diskspace = node.diskLimit / 1000;                
+                count = nodesByGroup.nodes.length;
+                
+                if (node.nodeGroup == 'bl') {
+                  if (!/cloudlets/.test('${this.bl.cloudlets}'))
+                    cloudlets = String(node.flexibleCloudlets) != '${this.bl.cloudlets}' ? '${this.bl.cloudlets}' : node.flexibleCloudlets;
+                  if (!/diskspace/.test('${this.bl.diskspace}'))
+                    diskspace = String(diskspace) != '${this.bl.diskspace}' ? '${this.bl.diskspace}' : diskspace;
+                  if (!/nodes/.test('${this.bl.nodes}'))
+                    count = String(nodesByGroup.nodes.length) != '${this.bl.nodes}' ? '${this.bl.nodes}' : nodesByGroup.nodes.length;    
+                }
+                
+                if (node.nodeGroup == 'cp') {
+                  if (!/cloudlets/.test('${this.cp.cloudlets}'))
+                    cloudlets = String(node.flexibleCloudlets) != '${this.cp.cloudlets}' ? '${this.cp.cloudlets}' : node.flexibleCloudlets;
+                  if (!/diskspace/.test('${this.cp.diskspace}'))
+                    diskspace = String(node.diskLimit) != '${this.cp.diskspace}' ? '${this.cp.diskspace}' : node.diskLimit;
+                  if (!/nodes/.test('${this.cp.nodes}'))
+                    count = String(nodesByGroup.nodes.length) != '${this.cp.nodes}' ? '${this.cp.nodes}' : nodesByGroup.nodes.length;    
+                }                
+                
+                if (node.nodeGroup == 'sqldb') {
+                  if (!/cloudlets/.test('${this.sqldb.cloudlets}'))
+                    cloudlets = String(node.flexibleCloudlets) != '${this.sqldb.cloudlets}' ? '${this.sqldb.cloudlets}' : node.flexibleCloudlets;
+                  if (!/diskspace/.test('${this.sqldb.diskspace}'))
+                    diskspace = String(node.diskLimit) != '${this.sqldb.diskspace}' ? '${this.sqldb.diskspace}' : node.diskLimit;
+                }                
+                
+                if (node.nodeGroup == 'nosqldb') {
+                  if (!/cloudlets/.test('${this.nosqldb.cloudlets}'))
+                    cloudlets = String(node.flexibleCloudlets) != '${this.nosqldb.cloudlets}' ? '${this.nosqldb.cloudlets}' : node.flexibleCloudlets;
+                  if (!/diskspace/.test('${this.nosqldb.diskspace}'))
+                    diskspace = String(node.diskLimit) != '${this.nosqldb.diskspace}' ? '${this.nosqldb.diskspace}' : node.diskLimit;
+                }              
+
+                if (node.nodeGroup == 'storage') {
+                  if (!/cloudlets/.test('${this.storage.cloudlets}'))
+                    cloudlets = String(node.flexibleCloudlets) != '${this.storage.cloudlets}' ? '${this.storage.cloudlets}' : node.flexibleCloudlets;
+                  if (!/diskspace/.test('${this.storage.diskspace}'))
+                    diskspace = String(node.diskLimit) != '${this.storage.diskspace}' ? '${this.storage.diskspace}' : node.diskLimit;
+                }
+                
+                nodes.push({
+                    flexibleCloudlets: cloudlets,
+                    fixedCloudlets: node.fixedCloudlets,
+                    nodeType: node.nodeType,
+                    nodeGroup: node.nodeGroup,
+                    diskLimit: diskspace,
+                    count: count
+                });
+            }
+        }
+        resp = api.env.control.ChangeTopology({
+          envName: targetAppid,
+          session: session,
+          env: env,
+          nodes: nodes
+        });
+      }
+      return { result: 0 };

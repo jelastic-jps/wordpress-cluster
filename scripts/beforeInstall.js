@@ -14,8 +14,8 @@ if ('${settings.glusterfs:false}' == 'true') {
     nodeType: "storage",
     count: 3,
     cluster: true,
-    flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
-    fixedCloudlets: ${settings.st_fixedCloudlets:1},
+    cloudlets: ${settings.storage.cloudlets:8},
+    diskLimit: "${settings.storage.diskspace:[quota.disk.limitation]}",
     nodeGroup: "storage",
     restartDelay: 10,
     validation: {
@@ -27,8 +27,8 @@ if ('${settings.glusterfs:false}' == 'true') {
   resp.nodes.push({
     nodeType: "storage",
     count: 1,
-    flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
-    fixedCloudlets: ${settings.st_fixedCloudlets:1},
+    cloudlets: ${settings.storage.cloudlets:8},
+    diskLimit: "${settings.storage.diskspace:[quota.disk.limitation]}",
     nodeGroup: "storage",
     validation: {
       minCount: 1,
@@ -39,8 +39,8 @@ if ('${settings.glusterfs:false}' == 'true') {
 
 resp.nodes.push({
   nodeType: "mariadb-dockerized",
-  flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
-  fixedCloudlets: ${settings.db_fixedCloudlets:1},
+  cloudlets: ${settings.sqldb.cloudlets:16},
+  diskLimit: "${settings.sqldb.diskspace:[quota.disk.limitation]}",
   count: db_count,
   nodeGroup: "sqldb",
   restartDelay: 10,
@@ -67,9 +67,9 @@ resp.nodes.push({
 if ('${settings.ls-addon:false}'== 'true') {
   resp.nodes.push({
     nodeType: "litespeedadc",
-    count: ${settings.bl_count:2},
-    flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
-    fixedCloudlets: ${settings.bl_fixedCloudlets:1},
+    count: ${settings.bl.nodes:[settings.bl_count]},
+    cloudlets: ${settings.bl.cloudlets:8},
+    diskLimit: "${settings.bl.diskspace:[quota.disk.limitation]}",
     nodeGroup: "bl",
     restartDelay: 10,
     env: {
@@ -78,15 +78,13 @@ if ('${settings.ls-addon:false}'== 'true') {
     }
   }, {
     nodeType: "litespeedphp",
-    engine: "php8.1",
-    count: ${settings.cp_count:2},
-    flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
-    fixedCloudlets: ${settings.cp_fixedCloudlets:1},
+    count: ${settings.cp.nodes:2},
+    cloudlets: ${settings.cp.cloudlets:8},
+    diskLimit: "${settings.cp.diskspace:[quota.disk.limitation]}",
     nodeGroup: "cp",
     restartDelay: 10,
     env: {
       SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true",
       WAF: "${settings.waf:false}",
       WP_PROTECT: "OFF"
     },      
@@ -97,22 +95,20 @@ if ('${settings.ls-addon:false}'== 'true') {
 } else {
   resp.nodes.push({
     nodeType: "nginx",
-    count: ${settings.bl_count:2},
-    flexibleCloudlets: ${settings.bl_flexibleCloudlets:8},
-    fixedCloudlets: ${settings.bl_fixedCloudlets:1},
+    count: ${settings.bl.nodes:[settings.bl_count]},
+    cloudlets: ${settings.bl.cloudlets:8},
+    diskLimit: "${settings.bl.diskspace:[quota.disk.limitation]}",
     nodeGroup: "bl",
     restartDelay: 10
   }, {
     nodeType: "nginxphp",
-    engine: "php8.1",
-    count: ${settings.cp_count:2},
-    flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
-    fixedCloudlets: ${settings.cp_fixedCloudlets:1},
+    count: ${settings.cp.nodes:2},
+    cloudlets: ${settings.cp.cloudlets:8},
+    diskLimit: "${settings.cp.diskspace:[quota.disk.limitation]}",
     nodeGroup: "cp",
     restartDelay: 10,
     env: {
-      SERVER_WEBROOT: "/var/www/webroot/ROOT",
-      REDIS_ENABLED: "true"
+      SERVER_WEBROOT: "/var/www/webroot/ROOT"
     },
     volumes: [
       "/var/www/webroot/ROOT"
@@ -121,11 +117,11 @@ if ('${settings.ls-addon:false}'== 'true') {
 }
 
 resp.nodes.push({
-  nodeType: "redis",
+  nodeType: "memcached-dockerized",
   count: 1,
-  flexibleCloudlets: ${settings.st_flexibleCloudlets:16},
-  fixedCloudlets: ${settings.st_fixedCloudlets:1},
-  nodeGroup: "nosqldb"
+  cloudlets: ${settings.cache.cloudlets:8},
+  diskLimit: "${settings.cache.diskspace:[quota.disk.limitation]}",
+  nodeGroup: "cache"
 })
 
 return resp;
