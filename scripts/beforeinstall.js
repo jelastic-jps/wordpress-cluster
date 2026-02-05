@@ -144,7 +144,7 @@ if ('${settings.ls_addon:false}'== 'true') {
     displayName: "Load balancer"
   }, {
     nodeType: "nginxphp",
-    count: ${settings.cp_count:2},
+    count: ${settings.cp_count:1},
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:8},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
     diskLimit: ${settings.cp_diskLimit:10},
