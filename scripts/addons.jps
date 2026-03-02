@@ -56,13 +56,13 @@ actions:
   litespeed-cache-clean:
     - if (nodes.bl):
         cmd[bl]: |-
-          [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* &>> /var/log/run.log;
+          [ -d /tmp/lscache/vhosts/Jelastic/ ] && rm -rf /tmp/lscache/vhosts/Jelastic/* || true;
     - cmd[cp]: |-
-        [ -d /var/www/webroot/.cache/vhosts/Jelastic/ ] && rm -rf /var/www/webroot/.cache/vhosts/Jelastic/* &>> /var/log/run.log;
+        [ -d /var/www/webroot/.cache/vhosts/Jelastic/ ] && rm -rf /var/www/webroot/.cache/vhosts/Jelastic/* || true;
 
   nginx-cache-clean:
     - cmd[cp]: |-
-        [ -d /var/www/webroot/ROOT/.cache/ ] && rm -rf /var/www/webroot/ROOT/.cache/* &>> /var/log/run.log;
+        [ -d /var/www/webroot/ROOT/.cache/ ] && rm -rf /var/www/webroot/ROOT/.cache/* || true;
 
   wordpress-cache-clean:
     - cmd[cp]: |-
