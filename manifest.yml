@@ -11,10 +11,10 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
+baseUrl: https://fastly.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
 
 globals:
-  cdnUrl: https://cdn.jsdelivr.net/gh
+  cdnUrl: https://fastly.jsdelivr.net/gh
   PATH: ${baseUrl}
   DB_USER: ${settings.DB_USER:user-[fn.random]}
   DB_PASS: ${settings.DB_PASS:[fn.password(10)]}
@@ -146,7 +146,7 @@ settings:
       markup: ""
 
 mixins:
- - https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
+ - https://fastly.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
  - /scripts/common.yml
 
 onInstall:
