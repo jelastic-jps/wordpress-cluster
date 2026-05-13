@@ -4,7 +4,7 @@ name: WordPress Core Installation
 description: WordPress Core Installation
 
 mixins:
- - https://cdn.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
+ - https://fastly.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@master/configs/vers.yaml
 
 globals:
   WP_ADMIN_PASS: ${settings.wp_admin_pass}
@@ -59,7 +59,7 @@ actions:
   installScripts:
     - cmd[cp]: |-
         [ ! -d $HOME/bin ] && mkdir $HOME/bin;
-        curl -o $HOME/bin/wp https://cdn.jsdelivr.net/gh/wp-cli/builds@gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp;
+        curl -o $HOME/bin/wp https://fastly.jsdelivr.net/gh/wp-cli/builds@gh-pages/phar/wp-cli.phar && chmod +x $HOME/bin/wp;
         echo "apache_modules:" > ~/bin/wp-cli.yml;
         echo "  - mod_rewrite" >> ~/bin/wp-cli.yml;
         echo "export PATH=$PATH:$HOME/bin/" >> $HOME/.bash_profile;
