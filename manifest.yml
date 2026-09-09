@@ -53,6 +53,22 @@ settings:
           caption: High Load
           tooltip: <h3>High load scaling strategy</h3>add 2 new nodes when CPU > 30% <p>remove when CPU < 10%</p>
 
+    - caption: PHP version
+      type: list
+      name: php_engine
+      default: php8.5
+      required: true
+      width: 225
+      values:
+        - value: php8.5
+          caption: PHP 8.5
+        - value: php8.4
+          caption: PHP 8.4
+        - value: php8.3
+          caption: PHP 8.3
+        - value: php8.2
+          caption: PHP 8.2
+  
     - caption: Advanced Features
       type: displayfield
       name: displayfield

@@ -78,6 +78,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     }
   }, {
     nodeType: "litespeedphp",
+    engine: "${settings.php_engine:php8.5}",
     count: ${settings.cp.nodes:2},
     cloudlets: ${settings.cp.cloudlets:8},
     diskLimit: "${settings.cp.diskspace:[quota.disk.limitation]}",
@@ -102,6 +103,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     restartDelay: 10
   }, {
     nodeType: "nginxphp",
+    engine: "${settings.php_engine:php8.5}",
     count: ${settings.cp.nodes:2},
     cloudlets: ${settings.cp.cloudlets:8},
     diskLimit: "${settings.cp.diskspace:[quota.disk.limitation]}",
