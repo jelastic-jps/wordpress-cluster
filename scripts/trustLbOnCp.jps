@@ -1,0 +1,72 @@
+jpsType: update
+name: Trust Load Balancer IPs on CP
+id: trust-lb-on-cp
+
+onInstall:
+  - if (/litespeed/.test("${nodes.cp.nodeType}")):
+      - collectLbIps
+      - applyAllowList
+
+actions:
+  collectLbIps:
+    script: |
+      var resp = jelastic.env.control.GetEnvInfo('${env.envName}', session);
+      if (resp.result != 0) return resp;
+
+      var list = [];
+      for (var i = 0; i < resp.nodes.length; i++) {
+        if (resp.nodes[i].nodeGroup != 'bl') continue;
+        if (resp.nodes[i].intIP) list.push(resp.nodes[i].intIP);
+      }
+      list.sort();
+      var block = [];
+      for (var j = 0; j < list.length; j++) block.push(list[j] + 'T');
+      return { result: 0, block: block.join(', ') };
+
+  applyAllowList:
+    - cmd[cp]: |-
+        CONF=/var/www/conf/httpd_config.xml
+        LOG=/var/log/run.log
+        BLOCK="${response.block}"
+
+        log() { echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) trustLbOnCp: $*" >> "$LOG" 2>/dev/null || true; }
+
+        XMLSTARLET=$(command -v xmlstarlet 2>/dev/null || echo /usr/bin/xmlstarlet)
+        [ -x "$XMLSTARLET" ] || { log "xmlstarlet not found"; exit 1; }
+        [ -r "$CONF" ] || { log "missing $CONF"; exit 1; }
+
+        count() { "$XMLSTARLET" sel -t -v "count($1)" "$CONF" | tr -d '[:space:]'; }
+        if [ "$(count /httpServerConfig/security/accessControl/allow)" != 0 ]; then
+          XPATH="/httpServerConfig/security/accessControl/allow[1]"
+        elif [ "$(count /httpServerConfig/accessControl/allow)" != 0 ]; then
+          XPATH="/httpServerConfig/accessControl/allow[1]"
+        else
+          log "server-level accessControl allow not found"; exit 1
+        fi
+
+        old=$("$XMLSTARLET" sel -t -v "$XPATH" "$CONF" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+        has_all=0
+        if echo "$old" | grep -qiE '(^|[[:space:],])ALL([[:space:],]|$)'; then
+          has_all=1
+        fi
+
+        if [ -n "$BLOCK" ]; then
+          [ "$has_all" -eq 1 ] && new="$BLOCK, ALL" || new="$BLOCK"
+        else
+          [ "$has_all" -eq 1 ] && new="ALL" || new=""
+        fi
+
+        if [ "$new" = "$old" ]; then
+          log "unchanged"; exit 0
+        fi
+
+        "$XMLSTARLET" ed --inplace -P -u "$XPATH" -v "$new" "$CONF" || { log "xmlstarlet update failed"; exit 1; }
+        log "allow updated to $new"
+
+        echo "trustLbOnCp: graceful restart" >> /var/log/run.log
+        if [ -x /usr/local/lsws/bin/lswsctrl ]; then
+          /usr/local/lsws/bin/lswsctrl restart >> /var/log/run.log 2>&1
+        else
+          sudo jem service restart >> /var/log/run.log 2>&1
+        fi

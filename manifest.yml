@@ -11,7 +11,7 @@ description:
   short: WordPress Cluster with built-in kit v2 for choosing optimal servers, database clustering type, scaling mode and a set of advanced features for highly-loaded projects
 logo: /images/wp-cluster-kit.svg
 
-baseUrl: https://fastly.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/JE-76541
 
 globals:
   cdnUrl: https://fastly.jsdelivr.net/gh
@@ -210,6 +210,7 @@ onInstall:
     - jps: /scripts/cacheClean.jps?_r=${fn.random}
     - jps: /scripts/addons.jps?_r=${fn.random}
     - jps: /scripts/events.jps?_r=${fn.random}
+  - install: /scripts/trustLbOnCp.jps?_r=${fn.random}
   - if (${settings.is_trigger:true}): setTriggers
   - if ('${settings.success_email}' != 'false'):
       - return:
