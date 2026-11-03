@@ -77,10 +77,12 @@ actions:
         cd ~/bin/ && wp rewrite structure '/%postname%/' --hard --path=/var/www/webroot/ROOT;
         
   installPlugins:
+    - cmd[${nodes.cp.master.id}]: |-
+        wget --tries=10 --waitretry=5 --retry-connrefused ${baseUrl}../configs/wordpress/wp-jelastic.php -O /var/www/webroot/ROOT/wp-jelastic.php
+        grep -q "wp-jelastic.php" /var/www/webroot/ROOT/wp-config.php || { mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT; }
+
     - if (/lemp/.test("${nodes.cp.nodeType}") || /nginxphp/.test("${nodes.cp.nodeType}")):
         cmd[${nodes.cp.master.id}]: |-
-          wget ${baseUrl}../configs/wordpress/wp-jelastic.php -O /var/www/webroot/ROOT/wp-jelastic.php
-          mv /var/www/webroot/ROOT/wp-config.php /tmp; sed -i "s/.*'wp-settings.php';.*/require_once ABSPATH . 'wp-jelastic.php';\n&/" /tmp/wp-config.php; mv /tmp/wp-config.php /var/www/webroot/ROOT;
           wp plugin install w3-total-cache --version=${globals.version_w3total} --activate --path=/var/www/webroot/ROOT &>> /var/log/run.log;
           wp cache flush --path=/var/www/webroot/ROOT &>> /var/log/run.log;
           wp plugin install nginx-cache --activate --path=/var/www/webroot/ROOT &>> /var/log/run.log;
