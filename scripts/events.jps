@@ -1,15 +1,21 @@
 type: update
 id: wordpress-cluster-events
 name: WordPress Cluster Events
-baseUrl: https://fastly.jsdelivr.net/gh/jelastic-jps/wordpress-cluster@2.2.0
+baseUrl: https://raw.githubusercontent.com/sych74/wordpress-cluster/JE-76541
 
-onAfterScaleOut[nodeGroup:bl]: setupCacheSync
+onAfterScaleOut[nodeGroup:bl]:
+  - setupCacheSync
+  - trustLbOnCp
 
-onAfterScaleIn[bl]: setupCacheSync
+onAfterScaleIn[bl]:
+  - setupCacheSync
+  - trustLbOnCp
 
 onAfterScaleIn[cp]: updateTriggers
 
-onAfterScaleOut[nodeGroup:cp]: updateTriggers
+onAfterScaleOut[nodeGroup:cp]:
+  - updateTriggers
+  - trustLbOnCp
 
 onAfterStart:
   cmd[cp]: sudo jem service restart
@@ -17,9 +23,13 @@ onAfterStart:
 onAfterInstallAddon [nodeGroup:bl, id:letsencrypt-ssl-addon]:
   - cmd[${nodes.bl.master.id}]: source /opt/letsencrypt/settings && echo $domain
   - cmd[${nodes.cp.master.id}]: bash ~/bin/setupWP.sh --url https://${response.out};
+  - trustLbOnCp
 
 onAfterClone:
   - install: /scripts/setupHA4LB.jps?_r=${fn.random}
+    envName: ${event.response.env.envName}
+
+  - install: /scripts/trustLbOnCp.jps?_r=${fn.random}
     envName: ${event.response.env.envName}
   
   - install: /scripts/setupDomain.jps?_r=${fn.random}
@@ -43,6 +53,7 @@ onBeforeMigrate:
 
 onAfterMigrate:
   - install: /scripts/setupHA4LB.jps?_r=${fn.random}
+  - install: /scripts/trustLbOnCp.jps?_r=${fn.random}
   - cmd[${nodes.cp.master.id}]: if test -f ~/migrate; then cat ~/migrate; fi
   - if (/${response.out}/.test(true)):
     - install: /scripts/setupDomain.jps?_r=${fn.random}
@@ -54,7 +65,10 @@ actions:
   setupCacheSync:
     - if (/litespeed/.test("${nodes.bl.nodeType}")):
       - install: /scripts/setupHA4LB.jps?_r=${fn.random}
-  
+
+  trustLbOnCp:
+    - install: /scripts/trustLbOnCp.jps?_r=${fn.random}
+
   updateTriggers:
     if (!${event.params.auto:true}):
       - log: update scaling trigger
