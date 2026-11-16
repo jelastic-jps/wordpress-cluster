@@ -102,7 +102,7 @@ if ('${settings.ls-addon:false}'== 'true') {
     nodeGroup: "bl",
     restartDelay: 10
   }, {
-    nodeType: "nginxphp",
+    nodeType: "nginxphp-dockerized",
     engine: "${settings.php_engine:php8.5}",
     count: ${settings.cp.nodes:2},
     cloudlets: ${settings.cp.cloudlets:8},
